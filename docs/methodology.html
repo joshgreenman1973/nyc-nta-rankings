@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Methodology | Every neighborhood, ranked</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Archivo:wdth,wght@62..125,400..900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#f5efe0;--ink:#181310;--ink2:#4a4238;--rule:#c9bda3;--mn:#e02d3c}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--paper);color:var(--ink);font-family:"Spectral",Georgia,serif;line-height:1.6}
+.wrap{max-width:760px;margin:0 auto;padding:40px 20px 80px}
+h1{font-family:"Alfa Slab One",serif;font-weight:400;font-size:clamp(30px,5vw,46px);line-height:1.05;margin-bottom:8px}
+h2{font-family:"Archivo",sans-serif;font-weight:900;font-stretch:72%;text-transform:uppercase;letter-spacing:.08em;font-size:16px;border-bottom:2px solid var(--ink);padding-bottom:4px;margin:34px 0 10px}
+p,li{font-size:16px;margin:8px 0;color:var(--ink2)}
+b{color:var(--ink)}
+a{color:var(--mn);font-weight:600}
+ul{padding-left:22px}
+.back{font-family:"Archivo",sans-serif;font-weight:800;font-size:14px;text-transform:uppercase;letter-spacing:.06em;text-decoration:none;color:var(--ink)}
+code{font-size:14px;background:#efe6d0;padding:1px 5px;border-radius:3px}
+table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14.5px;font-family:"Archivo",sans-serif;font-stretch:85%}
+th,td{border:1px solid var(--rule);padding:6px 8px;text-align:left;vertical-align:top}
+th{background:#efe6d0;font-weight:800}
+</style>
+</head>
+<body>
+<div class="wrap">
+<a class="back" href="index.html">&larr; Back to the board</a>
+<h1>Methodology</h1>
+<p><i>Every number on the board traces to a public government dataset. This page documents what each category measures, where it comes from, how it was computed and what to watch out for.</i></p>
+
+<h2>Geography</h2>
+<p>The units are the Department of City Planning's <b>2020 neighborhood tabulation areas (NTAs)</b> &mdash; 262 areas built from census tracts. The board ranks the <b>197 residential NTAs</b> (City Planning type 0) and excludes parks, cemeteries, airports and Rikers Island, which have few or no residents. Boundaries come from the <a href="https://data.cityofnewyork.us/City-Government/2020-Neighborhood-Tabulation-Areas-NTAs-/9nt8-h7nd">2020 NTA file on NYC Open Data</a>, which is clipped to the shoreline; land areas are computed from those boundaries (square feet &divide; 27,878,400).</p>
+
+<h2>Census categories</h2>
+<p>All demographic, economic, housing and commuting categories come from the <b>American Community Survey (ACS) 2020-2024 five-year estimates</b>, as tabulated at the NTA level by the Department of City Planning and published as four Excel workbooks (demographic, social, economic, housing) on <a href="https://www.nyc.gov/content/planning/pages/resources/datasets/american-community-survey">City Planning's ACS page</a>. Values were read directly from those files with no adjustment. Category definitions (universes such as "population 25 and older") are noted under the board title.</p>
+<ul>
+<li><b>Margins of error.</b> ACS figures are survey estimates. The board shows the Census Bureau's published 90% margin of error (&plusmn;) next to each estimate where one exists. Neighborhoods whose values sit within each other's margins are statistically indistinguishable; treat near ties as ties.</li>
+<li><b>Top-coding.</b> The census caps published medians: household income at $200,000, gross rent at $3,500, home value at $2,000,000. Values at the cap display with a plus sign and tie for first.</li>
+<li><b>Suppression.</b> A handful of values are unpublished for small neighborhoods; those rows show "no data" and are not ranked in that category.</li>
+<li><b>Derived categories.</b> "Share never married" = never-married men plus never-married women, divided by population 15 and older. "Single-family homes" = 1-unit detached share plus 1-unit attached share. Population density = ACS population &divide; land area.</li>
+</ul>
+
+<h2>Administrative counts and rates</h2>
+<p>Event data was downloaded from NYC Open Data and the state open data portal, geocoded to NTAs by point-in-polygon assignment against the 2020 boundaries (99%+ of records matched in every dataset), then converted to rates using ACS denominators.</p>
+<table>
+<tr><th>Category</th><th>Dataset</th><th>Window</th><th>Notes</th></tr>
+<tr><td>Felony complaints; violent felonies</td><td><a href="https://data.cityofnewyork.us/Public-Safety/NYPD-Complaint-Data-Historic/qgea-i56i">NYPD complaint data (historic)</a></td><td>Calendar 2025, by report date (RPT_DT)</td><td>Violent = murder and non-negligent manslaughter, rape, robbery, felony assault. Complaints are counted where the crime occurred; job centers like Midtown rank high relative to their resident population.</td></tr>
+<tr><td>311 requests; noise; rodent; illegal parking</td><td><a href="https://data.cityofnewyork.us/Social-Services/311-Service-Requests-from-2010-to-Present/erm2-nwe9">311 service requests</a></td><td>Aug. 1, 2025-July 31, 2026</td><td>Noise = every complaint type beginning with "Noise." 311 measures reporting, not conditions; a few prolific callers can move a small neighborhood's rate.</td></tr>
+<tr><td>Traffic crashes; crash injuries</td><td><a href="https://data.cityofnewyork.us/Public-Safety/Motor-Vehicle-Collisions-Crashes/h9gi-nx95">Motor vehicle collisions</a></td><td>Calendar 2025</td><td>Police-reported crashes only. Injuries include deaths. About 3% of crashes lack coordinates and are excluded.</td></tr>
+<tr><td>Evictions</td><td><a href="https://data.cityofnewyork.us/City-Government/Evictions/6z8x-wfk4">Evictions (Department of Investigation)</a></td><td>Executed in calendar 2025</td><td>Residential evictions executed by city marshals, per 1,000 renter-occupied units (ACS). Undercounts total displacement, which mostly happens before a marshal arrives.</td></tr>
+<tr><td>Restaurants</td><td><a href="https://data.cityofnewyork.us/Health/DOHMH-New-York-City-Restaurant-Inspection-Results/43nn-pn8j">Restaurant inspection results</a></td><td>Current active file</td><td>Unique establishments (by CAMIS id) in the Health Department's inspection file.</td></tr>
+<tr><td>Street trees</td><td><a href="https://data.cityofnewyork.us/Environment-Historic-/Forestry-Tree-Points/hn5i-inap">Parks Department forestry tree points</a></td><td>Current</td><td>Live street trees (dead trees and stumps excluded), per square mile. Park interiors are separate NTAs, so this measures trees along streets.</td></tr>
+<tr><td>Subway stations</td><td><a href="https://data.ny.gov/Transportation/MTA-Subway-Stations/39hk-dx4f">MTA subway stations</a></td><td>Current</td><td>Station complexes whose coordinates fall inside the boundary. Stations just outside a neighborhood's edge don't count toward it.</td></tr>
+</table>
+
+<h2>Ranking rules</h2>
+<ul>
+<li>Ranks run 1-197 among neighborhoods with published data; ties share a rank.</li>
+<li>Bars are proportional to the value and always start at zero.</li>
+<li>Borough filters and search change what is displayed but never change a neighborhood's rank, which is always computed against all 197.</li>
+<li>No category is labeled "best" or "worst." High felony rates and high restaurant counts are both just facts about a place; the reader decides what they mean.</li>
+</ul>
+
+<h2>Honest limitations</h2>
+<ul>
+<li>Per-resident rates use nighttime (residential) population. Neighborhoods with huge daytime populations &mdash; Midtown, the Financial District &mdash; will look extreme on anything divided by residents.</li>
+<li>ACS five-year estimates average 2020-2024; fast-changing neighborhoods lag reality.</li>
+<li>311 and crime complaints measure what gets reported, which varies with reporting habits, not only conditions.</li>
+<li>The eviction, restaurant and tree files are administrative and inherit their agencies' lags and gaps.</li>
+</ul>
+
+<h2>Reproducibility</h2>
+<p>The full pipeline &mdash; fetch scripts, point-in-polygon aggregation and the build step that produces <code>rankings.json</code> &mdash; is in the <a href="https://github.com/joshgreenman1973/nyc-nta-rankings">GitHub repository</a>. Data was pulled Aug. 2, 2026. This project was built with the help of artificial intelligence (Claude); if a number looks wrong, check it against the source datasets linked above.</p>
+
+<p style="margin-top:30px"><a class="back" href="index.html">&larr; Back to the board</a></p>
+</div>
+</body>
+</html>

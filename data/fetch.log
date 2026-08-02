@@ -1,0 +1,11 @@
+[14:51:48] start collisions2025
+[14:51:48] start nypd2025
+[14:51:48] start evictions2025
+[14:51:48] start trees
+[14:51:48] done evictions2025: 419590 bytes,    17792 lines
+[14:51:48] done collisions2025: 2694419 bytes,    85547 lines
+[14:51:53] done nypd2025: 34714011 bytes,   579562 lines
+[14:52:24] done trees: 45733959 bytes,   993105 lines
+[14:52:25] start t311
+[14:54:13] done t311: 231595907 bytes,  3917407 lines
+ALL FETCHES OK

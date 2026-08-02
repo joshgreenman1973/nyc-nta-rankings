@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Every neighborhood, ranked</title>
+<meta name="description" content="All 197 of New York City's residential neighborhoods, ranked 61 different ways with verifiable government data.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Archivo:wdth,wght@62..125,400..900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f5efe0; --paper2:#efe6d0; --ink:#181310; --ink2:#4a4238; --rule:#c9bda3;
+  --mn:#e02d3c; --bk:#1560bd; --qn:#ff5910; --bx:#0f8a5f; --si:#8338ec;
+  --maroon:#7a1f2b; --navy:#12244d;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--paper); color:var(--ink);
+  font-family:"Spectral",Georgia,serif;
+  -webkit-font-smoothing:antialiased;
+}
+body::before{
+  content:""; position:fixed; inset:0; pointer-events:none; z-index:50; opacity:.5;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .04 0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.cond{font-family:"Archivo",sans-serif;font-stretch:66%}
+
+/* ============ masthead ============ */
+header{border-bottom:4px solid var(--ink); position:relative; overflow:hidden}
+.mast{max-width:1060px;margin:0 auto;padding:34px 20px 18px}
+.kicker{font-family:"Archivo",sans-serif;font-weight:800;font-stretch:75%;letter-spacing:.14em;text-transform:uppercase;font-size:13px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.kicker .dots{display:inline-flex;gap:4px}
+.kicker .dots i{width:11px;height:11px;border-radius:50%;display:inline-block}
+h1{
+  font-family:"Alfa Slab One",serif;font-weight:400;
+  font-size:clamp(40px,7.2vw,84px);line-height:.98;margin:10px 0 12px;
+  text-shadow:3px 3px 0 var(--paper2), 5px 5px 0 var(--rule);
+}
+h1 .accent{color:var(--mn)}
+.dek{font-size:clamp(15px,1.8vw,19px);max-width:64ch;color:var(--ink2)}
+.dek b{color:var(--ink)}
+
+/* ticker */
+.ticker{border-top:2px solid var(--ink);background:var(--ink);color:var(--paper);overflow:hidden;white-space:nowrap}
+.ticker-track{display:inline-block;padding:7px 0;animation:tick 36s linear infinite}
+.ticker:hover .ticker-track{animation-play-state:paused}
+@keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.ticker span{font-family:"Archivo",sans-serif;font-stretch:75%;font-weight:600;font-size:13.5px;letter-spacing:.02em;margin:0 18px}
+.ticker b{font-weight:900;color:#ffd166;text-transform:uppercase;letter-spacing:.06em}
+
+/* ============ controls ============ */
+.controls{position:sticky;top:0;z-index:40;background:var(--paper);border-bottom:2px solid var(--ink);box-shadow:0 3px 0 rgba(24,19,16,.08)}
+.controls-inner{max-width:1060px;margin:0 auto;padding:10px 20px}
+.groups{display:flex;gap:6px;overflow-x:auto;padding-bottom:8px;scrollbar-width:thin}
+.gtab{
+  font-family:"Archivo",sans-serif;font-weight:800;font-stretch:75%;font-size:13px;letter-spacing:.05em;text-transform:uppercase;
+  border:2px solid var(--ink);background:transparent;color:var(--ink);padding:7px 13px;cursor:pointer;white-space:nowrap;border-radius:999px;
+  transition:background .15s,color .15s;
+}
+.gtab:hover{background:var(--paper2)}
+.gtab.on{background:var(--ink);color:var(--paper)}
+.cats{display:flex;gap:6px;flex-wrap:wrap;padding:8px 0 4px}
+.cat{
+  font-family:"Archivo",sans-serif;font-weight:600;font-stretch:80%;font-size:13.5px;
+  border:1.5px solid var(--ink2);background:var(--paper);color:var(--ink);
+  padding:5px 11px;border-radius:4px;cursor:pointer;transition:all .12s;
+}
+.cat:hover{border-color:var(--ink);transform:translateY(-1px);box-shadow:2px 2px 0 var(--rule)}
+.cat.on{background:var(--gcolor,var(--ink));border-color:var(--gcolor,var(--ink));color:#fff;font-weight:800}
+.toolrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:6px 0 8px;border-top:1px dashed var(--rule);margin-top:4px}
+.toolrow input[type=search]{
+  font-family:"Archivo",sans-serif;font-size:14px;padding:7px 10px;border:2px solid var(--ink);background:#fffdf6;border-radius:4px;min-width:180px;flex:1;max-width:280px;
+}
+.boro-chips{display:flex;gap:5px}
+.bchip{
+  font-family:"Archivo",sans-serif;font-weight:900;font-size:12px;width:32px;height:28px;border-radius:4px;cursor:pointer;
+  border:2px solid var(--ink);background:var(--paper);color:var(--ink);transition:all .12s;
+}
+.bchip.on{color:#fff}
+.bchip.on.mn{background:var(--mn);border-color:var(--mn)}
+.bchip.on.bk{background:var(--bk);border-color:var(--bk)}
+.bchip.on.qn{background:var(--qn);border-color:var(--qn)}
+.bchip.on.bx{background:var(--bx);border-color:var(--bx)}
+.bchip.on.si{background:var(--si);border-color:var(--si)}
+.dirbtn{
+  font-family:"Archivo",sans-serif;font-weight:800;font-stretch:75%;font-size:13px;text-transform:uppercase;letter-spacing:.04em;
+  border:2px solid var(--ink);background:var(--paper);padding:6px 11px;border-radius:4px;cursor:pointer;
+}
+.dirbtn:hover{background:var(--paper2)}
+
+/* ============ board ============ */
+main{max-width:1060px;margin:0 auto;padding:18px 20px 60px}
+.board-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+.board-title{font-family:"Alfa Slab One",serif;font-size:clamp(21px,3.4vw,32px);line-height:1.1}
+.board-src{font-family:"Archivo",sans-serif;font-stretch:80%;font-size:12.5px;color:var(--ink2);letter-spacing:.02em;text-align:right}
+.board-note{font-style:italic;color:var(--ink2);font-size:14px;margin-bottom:12px}
+#board{position:relative}
+.row{
+  display:grid;grid-template-columns:64px minmax(150px,240px) 1fr;gap:10px;align-items:center;
+  padding:5px 8px 5px 0;border-bottom:1px solid var(--rule);cursor:pointer;background:transparent;
+  width:100%;border-left:none;border-right:none;border-top:none;text-align:left;font:inherit;color:inherit;
+  transition:background .15s;
+}
+.row:hover{background:var(--paper2)}
+.row.top1{border-bottom:2px solid var(--ink)}
+.rank{
+  font-family:"Archivo",sans-serif;font-stretch:62%;font-weight:900;font-size:30px;line-height:1;
+  text-align:right;font-variant-numeric:tabular-nums;color:var(--ink);
+}
+.row.nodata .rank{color:var(--rule)}
+.who{min-width:0}
+.nm{font-family:"Archivo",sans-serif;font-weight:800;font-stretch:78%;font-size:16.5px;line-height:1.12;overflow-wrap:anywhere}
+.bo{font-family:"Archivo",sans-serif;font-weight:700;font-stretch:75%;font-size:11px;letter-spacing:.1em;text-transform:uppercase;display:inline-flex;align-items:center;gap:5px;margin-top:1px;color:var(--ink2)}
+.bo i{width:9px;height:9px;border-radius:50%;display:inline-block}
+.barwrap{display:flex;align-items:center;gap:9px;min-width:0}
+.bar{height:22px;border-radius:2px;min-width:2px;transition:width .6s cubic-bezier(.22,.9,.35,1);box-shadow:inset 0 -4px 0 rgba(0,0,0,.18)}
+.val{font-family:"Archivo",sans-serif;font-weight:900;font-stretch:70%;font-size:16px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.moe{font-weight:500;font-size:11.5px;color:var(--ink2)}
+.row.nodata .val{color:var(--ink2);font-weight:600;font-style:italic}
+@media (max-width:640px){
+  .cats{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:thin;padding-bottom:6px}
+  .cat{white-space:nowrap;flex:0 0 auto}
+  .toolrow input[type=search]{min-width:120px}
+  .row{grid-template-columns:44px 1fr;grid-template-rows:auto auto;row-gap:2px;padding:7px 4px 7px 0}
+  .rank{font-size:24px;grid-row:span 2}
+  .barwrap{grid-column:2}
+  .bar{height:15px}
+  .val{font-size:14px}
+  .nm{font-size:15px}
+}
+
+/* detail drawer */
+#drawer{
+  position:fixed;inset:auto 0 0 0;max-height:82vh;overflow-y:auto;z-index:60;
+  background:var(--paper);border-top:4px solid var(--ink);box-shadow:0 -12px 40px rgba(24,19,16,.35);
+  transform:translateY(102%);transition:transform .35s cubic-bezier(.22,.9,.3,1);
+}
+#drawer.open{transform:translateY(0)}
+.dwrap{max-width:1060px;margin:0 auto;padding:20px 20px 40px}
+.dhead{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;border-bottom:2px solid var(--ink);padding-bottom:10px;margin-bottom:14px}
+.dhead h2{font-family:"Alfa Slab One",serif;font-size:clamp(22px,4vw,34px);line-height:1.05}
+.dhead .bo{font-size:12px}
+.dclose{font-family:"Archivo",sans-serif;font-weight:900;font-size:15px;border:2px solid var(--ink);background:var(--paper);border-radius:4px;padding:5px 11px;cursor:pointer}
+.dclose:hover{background:var(--ink);color:var(--paper)}
+.dgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:4px 26px}
+.dgroup{margin-top:10px}
+.dgroup h3{font-family:"Archivo",sans-serif;font-weight:900;font-stretch:70%;text-transform:uppercase;letter-spacing:.1em;font-size:13px;border-bottom:2px solid var(--ink);padding-bottom:3px;margin-bottom:4px}
+.dline{display:flex;justify-content:space-between;gap:8px;font-size:13.5px;padding:2.5px 0;border-bottom:1px dotted var(--rule);font-family:"Archivo",sans-serif;font-stretch:85%;cursor:pointer}
+.dline:hover{background:var(--paper2)}
+.dline .dv{font-weight:800;white-space:nowrap;font-variant-numeric:tabular-nums}
+.dline .dr{
+  font-weight:900;font-stretch:70%;min-width:44px;text-align:center;border-radius:3px;padding:0 4px;margin-left:6px;
+  background:var(--ink);color:var(--paper);font-size:12px;line-height:19px;align-self:center;
+}
+.dline .dr.hi{background:var(--mn)} .dline .dr.lo{background:var(--bk)}
+
+/* footer */
+footer{border-top:4px solid var(--ink);background:var(--paper2)}
+.fwrap{max-width:1060px;margin:0 auto;padding:26px 20px 40px;font-size:14.5px;color:var(--ink2)}
+.fwrap a{color:var(--ink);font-weight:600}
+.fwrap p{margin:6px 0}
+.aibtn{
+  font-family:"Archivo",sans-serif;font-weight:800;font-size:13px;letter-spacing:.03em;
+  background:var(--maroon);color:#fff;border:none;border-radius:4px;padding:8px 14px;cursor:pointer;margin-top:10px;
+}
+.aipop{
+  display:none;background:var(--navy);color:#eef2ff;border-radius:6px;padding:14px 16px;max-width:56ch;margin-top:10px;font-size:14px;line-height:1.5;
+}
+.aipop.show{display:block}
+.aipop a{color:#ffd166}
+#scrim{position:fixed;inset:0;background:rgba(24,19,16,.25);z-index:55;opacity:0;pointer-events:none;transition:opacity .3s}
+#scrim.show{opacity:1;pointer-events:auto}
+.count-note{font-family:"Archivo",sans-serif;font-stretch:80%;font-size:13px;color:var(--ink2);margin:10px 0 2px}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="mast">
+    <div class="kicker">
+      <span class="dots"><i style="background:var(--mn)"></i><i style="background:var(--bk)"></i><i style="background:var(--qn)"></i><i style="background:var(--bx)"></i><i style="background:var(--si)"></i></span>
+      New York City &middot; The standings
+    </div>
+    <h1>Every neighborhood,<br><span class="accent">ranked</span></h1>
+    <p class="dek">All <b>197</b> of New York City's residential neighborhood tabulation areas, sorted <b><span id="ncats">61</span> different ways</b> &mdash; population, money, housing, commutes, crime, noise, trees, rats and more. Pick a category and watch the board reshuffle. Every number comes from the Census Bureau, a city agency or the Metropolitan Transportation Authority. <a href="methodology.html" style="color:var(--ink)">Methodology&nbsp;&rarr;</a></p>
+  </div>
+  <div class="ticker" aria-hidden="true"><div class="ticker-track" id="ticker"></div></div>
+</header>
+
+<div class="controls">
+  <div class="controls-inner">
+    <div class="groups" id="groups"></div>
+    <div class="cats" id="cats"></div>
+    <div class="toolrow">
+      <input type="search" id="q" placeholder="Find a neighborhood&hellip;" aria-label="Find a neighborhood">
+      <div class="boro-chips" id="boros" title="Filter boroughs"></div>
+      <button class="dirbtn" id="dir" title="Flip sort order">High &rarr; low</button>
+    </div>
+  </div>
+</div>
+
+<main>
+  <div class="board-head">
+    <div class="board-title" id="btitle"></div>
+    <div class="board-src" id="bsrc"></div>
+  </div>
+  <div class="board-note" id="bnote"></div>
+  <div class="count-note" id="cnote"></div>
+  <div id="board" role="list"></div>
+</main>
+
+<div id="scrim"></div>
+<aside id="drawer" aria-label="Neighborhood detail">
+  <div class="dwrap">
+    <div class="dhead">
+      <div>
+        <h2 id="dname"></h2>
+        <span class="bo" id="dboro"></span>
+      </div>
+      <button class="dclose" id="dclose">Close &times;</button>
+    </div>
+    <p style="font-family:'Archivo',sans-serif;font-stretch:85%;font-size:13.5px;color:var(--ink2);margin-bottom:6px">
+      Where this neighborhood ranks in every category, out of 197. Tap any line to re-sort the big board by it.
+    </p>
+    <div class="dgrid" id="dbody"></div>
+  </div>
+</aside>
+
+<footer>
+  <div class="fwrap">
+    <p><b style="color:var(--ink)">Sources:</b> United States Census Bureau, American Community Survey 2020-2024 five-year estimates, as compiled by the New York City Department of City Planning; NYC Open Data (New York Police Department complaints, 311 service requests, motor vehicle collisions, city marshal evictions, restaurant inspections, Parks Department street tree points); Metropolitan Transportation Authority subway stations. Boundaries: Department of City Planning 2020 neighborhood tabulation areas.</p>
+    <p>Survey figures show a &plusmn; margin of error where the Census Bureau publishes one. Administrative counts (crime, 311, collisions, evictions) are exact counts of reported events, converted to rates using ACS population. Full definitions, time windows and caveats: <a href="methodology.html">methodology</a>.</p>
+    <p>Built <span id="builtdate"></span> by Josh Greenman. Code and data pipeline on <a href="https://github.com/joshgreenman1973/nyc-nta-rankings">GitHub</a>.</p>
+    <button class="aibtn" id="aibtn">About AI and this page</button>
+    <div class="aipop" id="aipop">This project was built with the help of artificial intelligence (Claude). All numbers come directly from the government sources listed above and the calculation steps are documented in the <a href="methodology.html">methodology</a>, but AI-assisted work can contain errors. If a number looks wrong, please check the source data before relying on it.</div>
+  </div>
+</footer>
+
+<script>
+/* ================= metric configuration ================= */
+/* fmt: int, pct, usd, dec, min, yrs, mi2 | dir: default sort descending */
+const GROUPS = [
+  ["people","People","#e02d3c"],
+  ["money","Money & work","#0f8a5f"],
+  ["homes","Homes","#1560bd"],
+  ["moving","Getting around","#8338ec"],
+  ["streets","Street life","#ff5910"],
+];
+const TOPCODE = {median_hh_income:200000, median_rent:3500, median_home_value:2000000};
+const ACS = "Census ACS 2020-2024";
+const M = [
+ // id, group, label, fmt, source, note
+ ["population","people","Population","int",ACS,"Total residents."],
+ ["density","people","Population density","int",ACS,"Residents per square mile of land."],
+ ["land_area","people","Land area","mi2","City Planning","Square miles, shoreline-clipped."],
+ ["median_age","people","Median age","dec",ACS,""],
+ ["pct_under18","people","Share under 18","pct",ACS,""],
+ ["pct_65plus","people","Share 65 and older","pct",ACS,""],
+ ["pct_hispanic","people","Share Hispanic","pct",ACS,""],
+ ["pct_white_nh","people","Share white (non-Hispanic)","pct",ACS,""],
+ ["pct_black_nh","people","Share Black (non-Hispanic)","pct",ACS,""],
+ ["pct_asian_nh","people","Share Asian (non-Hispanic)","pct",ACS,""],
+ ["pct_foreign_born","people","Share foreign-born","pct",ACS,""],
+ ["pct_lang_not_english","people","Speak a language other than English at home","pct",ACS,"Population 5 and older."],
+ ["pct_limited_english","people","Limited English proficiency","pct",ACS,"Speak English less than 'very well,' population 5 and older."],
+ ["avg_hh_size","people","Average household size","dec",ACS,""],
+ ["pct_never_married","people","Share never married","pct",ACS,"Population 15 and older."],
+ ["pct_veterans","people","Share veterans","pct",ACS,"Civilian population 18 and older."],
+ ["pct_disability","people","Share with a disability","pct",ACS,"Civilian noninstitutionalized population."],
+ ["pct_same_house","people","Lived in same home a year ago","pct",ACS,"Population 1 and older."],
+
+ ["median_hh_income","money","Median household income","usd",ACS,"Census top-codes this at $200,000."],
+ ["per_capita_income","money","Per capita income","usd",ACS,""],
+ ["pct_hh_200k","money","Households earning $200,000+","pct",ACS,""],
+ ["pct_poverty","money","Share below poverty line","pct",ACS,""],
+ ["pct_child_poverty","money","Children below poverty line","pct",ACS,""],
+ ["pct_snap","money","Households receiving SNAP","pct",ACS,"Supplemental Nutrition Assistance Program (food stamps)."],
+ ["unemployment","money","Unemployment rate","pct",ACS,"Share of civilian labor force."],
+ ["labor_force","money","Labor force participation","pct",ACS,"Share of population 16 and older in the labor force."],
+ ["pct_bachelors","money","Bachelor's degree or higher","pct",ACS,"Population 25 and older."],
+ ["pct_grad_degree","money","Graduate or professional degree","pct",ACS,"Population 25 and older."],
+ ["pct_no_hs","money","No high school diploma","pct",ACS,"Population 25 and older."],
+ ["pct_govt_workers","money","Government workers","pct",ACS,"Share of employed civilians."],
+ ["pct_self_employed","money","Self-employed","pct",ACS,"Unincorporated business, share of employed civilians."],
+ ["pct_uninsured","money","No health insurance","pct",ACS,"Civilian noninstitutionalized population."],
+ ["pct_internet","money","Households with internet","pct",ACS,"Broadband or any paid subscription."],
+
+ ["median_rent","homes","Median gross rent","usd",ACS,"Rent plus utilities; census top-codes this at $3,500."],
+ ["median_home_value","homes","Median home value","usd",ACS,"Owner-occupied; census top-codes this at $2 million."],
+ ["pct_renters","homes","Renter households","pct",ACS,"Share of occupied units."],
+ ["pct_rent_burdened","homes","Rent-burdened (30%+ of income)","pct",ACS,"Share of renter households paying cash rent."],
+ ["pct_severe_rent_burden","homes","Severely rent-burdened (50%+)","pct",ACS,"Share of renter households paying cash rent."],
+ ["eviction_rate","homes","Evictions per 1,000 renter households","dec","City marshals, 2025","Residential evictions executed by city marshals."],
+ ["pct_prewar","homes","Pre-war housing (built before 1939)","pct",ACS,""],
+ ["pct_built_2010","homes","Housing built 2010 or later","pct",ACS,""],
+ ["pct_big_buildings","homes","Units in 20+ unit buildings","pct",ACS,""],
+ ["pct_single_family","homes","Single-family homes","pct",ACS,"1-unit detached or attached, share of all units."],
+ ["pct_crowded","homes","Crowded homes (over 1 person per room)","pct",ACS,"Share of occupied units."],
+ ["median_rooms","homes","Median rooms per home","dec",ACS,""],
+ ["pct_vacant","homes","Vacant housing units","pct",ACS,"Share of all units, including for sale or rent."],
+
+ ["mean_commute","moving","Mean commute time","min",ACS,"Workers 16 and older who commute."],
+ ["pct_transit","moving","Commute by public transit","pct",ACS,""],
+ ["pct_walk_work","moving","Walk to work","pct",ACS,""],
+ ["pct_drive_alone","moving","Drive alone to work","pct",ACS,""],
+ ["pct_wfh","moving","Work from home","pct",ACS,""],
+ ["pct_no_vehicle","moving","Households with no vehicle","pct",ACS,""],
+ ["subway_stations","moving","Subway stations","int","MTA","Station count inside the neighborhood boundary."],
+ ["collision_rate","moving","Traffic crashes per 1,000 residents","dec","Police-reported, 2025",""],
+ ["injury_rate","moving","People hurt in crashes per 1,000 residents","dec","Police-reported, 2025","Injuries plus deaths in reported crashes."],
+
+ ["restaurant_rate","streets","Restaurants per 1,000 residents","dec","Health Dept. inspections","Establishments in the city's active inspection file."],
+ ["tree_density","streets","Street trees per square mile","int","Parks Dept., current","Live trees in the Parks Department's street tree database."],
+ ["felony_rate","streets","Felony complaints per 1,000 residents","dec","NYPD, 2025","Crimes reported to police where they occurred; business districts rank high relative to residents."],
+ ["violent_rate","streets","Violent felonies per 1,000 residents","dec","NYPD, 2025","Murder, rape, robbery and felony assault complaints."],
+ ["complaints_rate","streets","311 requests per 1,000 residents","int","311, Aug. 2025-July 2026","All service requests, from potholes to noise."],
+ ["noise_rate","streets","Noise complaints per 1,000 residents","dec","311, Aug. 2025-July 2026","All 311 noise complaint types; a few prolific callers can move a neighborhood."],
+ ["rodent_rate","streets","Rodent complaints per 1,000 residents","dec","311, Aug. 2025-July 2026",""],
+ ["parking_rate","streets","Illegal parking complaints per 1,000 residents","dec","311, Aug. 2025-July 2026",""],
+];
+
+const BOROS = {Manhattan:["mn","var(--mn)","M"],Brooklyn:["bk","var(--bk)","B"],Queens:["qn","var(--qn)","Q"],Bronx:["bx","var(--bx)","X"],"Staten Island":["si","var(--si)","S"]};
+
+/* ================= state ================= */
+let DATA=null, areas=[], ranks={}, cur="population", desc=true, boroFilter=new Set(Object.keys(BOROS)), query="";
+const byId=Object.fromEntries(M.map(m=>[m[0],m]));
+
+const fmtV=(id,v)=>{
+  if(v==null) return "no data";
+  const f=byId[id][3];
+  let s;
+  if(f==="usd") s="$"+Math.round(v).toLocaleString("en-US");
+  else if(f==="pct") s=(Math.round(v*10)/10).toLocaleString("en-US")+"%";
+  else if(f==="int") s=Math.round(v).toLocaleString("en-US");
+  else if(f==="min") s=(Math.round(v*10)/10)+" min";
+  else if(f==="mi2") s=v.toLocaleString("en-US")+" sq mi";
+  else s=(Math.round(v*10)/10).toLocaleString("en-US");
+  if(TOPCODE[id] && v>=TOPCODE[id]) s+="+";
+  return s;
+};
+const fmtMoe=(id,m)=>{
+  if(m==null) return "";
+  const f=byId[id][3];
+  if(f==="usd") return "±$"+Math.round(m).toLocaleString("en-US");
+  if(f==="pct") return "±"+(Math.round(m*10)/10);
+  return "±"+(m>=100?Math.round(m).toLocaleString("en-US"):Math.round(m*10)/10);
+};
+
+/* ================= boot ================= */
+fetch("rankings.json").then(r=>r.json()).then(d=>{
+  DATA=d; areas=d.areas;
+  document.getElementById("builtdate").textContent=new Date(d.built+"T12:00:00").toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"}).replace(/^(\w{3}) /,"$1. ");
+  const missing=M.filter(m=>!(m[0] in areas[0].values));
+  if(missing.length) console.warn("config metrics missing from data:",missing.map(m=>m[0]));
+  document.getElementById("ncats").textContent=M.length;
+  computeRanks(); buildControls(); buildTicker(); buildRows(); apply(false);
+});
+
+function computeRanks(){
+  for(const [id] of M){
+    const vals=areas.filter(a=>a.values[id]?.v!=null).sort((a,b)=>b.values[id].v-a.values[id].v);
+    const r={}; let prev=null, prevRank=0;
+    vals.forEach((a,i)=>{
+      const v=a.values[id].v;
+      const rank=(prev!==null&&v===prev)?prevRank:i+1;
+      r[a.code]=rank; prev=v; prevRank=rank;
+    });
+    ranks[id]={map:r,n:vals.length};
+  }
+}
+
+/* ================= controls ================= */
+let curGroup="people";
+function buildControls(){
+  const g=document.getElementById("groups");
+  GROUPS.forEach(([gid,label])=>{
+    const b=document.createElement("button");
+    b.className="gtab"+(gid===curGroup?" on":""); b.textContent=label; b.dataset.g=gid;
+    b.onclick=()=>{curGroup=gid; g.querySelectorAll(".gtab").forEach(x=>x.classList.toggle("on",x.dataset.g===gid)); buildCats();};
+    g.appendChild(b);
+  });
+  buildCats();
+  const bc=document.getElementById("boros");
+  for(const [name,[cls,,letter]] of Object.entries(BOROS)){
+    const b=document.createElement("button");
+    b.className=`bchip ${cls} on`; b.textContent=letter; b.title=name;
+    b.onclick=()=>{
+      if(boroFilter.has(name)&&boroFilter.size===1){boroFilter=new Set(Object.keys(BOROS));}
+      else if(boroFilter.size===5){boroFilter=new Set([name]);}
+      else if(boroFilter.has(name)){boroFilter.delete(name);}
+      else boroFilter.add(name);
+      document.querySelectorAll(".bchip").forEach(x=>x.classList.toggle("on",boroFilter.has(x.title)));
+      apply(true);
+    };
+    bc.appendChild(b);
+  }
+  document.getElementById("dir").onclick=()=>{desc=!desc;document.getElementById("dir").innerHTML=desc?"High &rarr; low":"Low &rarr; high";apply(true);};
+  document.getElementById("q").addEventListener("input",e=>{query=e.target.value.trim().toLowerCase();apply(true);});
+  document.getElementById("dclose").onclick=closeDrawer;
+  document.getElementById("scrim").onclick=closeDrawer;
+  document.getElementById("aibtn").onclick=()=>document.getElementById("aipop").classList.toggle("show");
+  document.addEventListener("keydown",e=>{if(e.key==="Escape")closeDrawer();});
+}
+function buildCats(){
+  const c=document.getElementById("cats"); c.innerHTML="";
+  const gcolor=GROUPS.find(g=>g[0]===curGroup)[2];
+  M.filter(m=>m[1]===curGroup).forEach(m=>{
+    const b=document.createElement("button");
+    b.className="cat"+(m[0]===cur?" on":""); b.textContent=m[2]; b.dataset.id=m[0];
+    b.style.setProperty("--gcolor",gcolor);
+    b.onclick=()=>selectMetric(m[0]);
+    c.appendChild(b);
+  });
+  c.querySelector(".cat.on")?.scrollIntoView({inline:"center",block:"nearest"});
+}
+function selectMetric(id){
+  cur=id;
+  const grp=byId[id][1];
+  if(grp!==curGroup){curGroup=grp;document.querySelectorAll(".gtab").forEach(x=>x.classList.toggle("on",x.dataset.g===grp));buildCats();}
+  document.querySelectorAll(".cat").forEach(x=>x.classList.toggle("on",x.dataset.id===id));
+  apply(true);
+}
+
+/* ================= ticker ================= */
+function buildTicker(){
+  /* chunked marquee: one giant animated strip can exceed GPU texture
+     limits and blank the whole page, so cycle 8 leaders at a time */
+  const items=M.map(([id,,label])=>{
+    const leader=areas.filter(a=>a.values[id]?.v!=null).sort((a,b)=>b.values[id].v-a.values[id].v)[0];
+    if(!leader) return "";
+    return `<span><b>${label}:</b> ${leader.name} (${fmtV(id,leader.values[id].v)})</span>`;
+  }).filter(Boolean);
+  const el=document.getElementById("ticker");
+  let chunk=0;
+  const CH=8;
+  const show=()=>{
+    const bits=items.slice(chunk*CH,chunk*CH+CH).join("&#9670;")+"&#9670;";
+    el.innerHTML=bits+bits;
+    chunk=(chunk+1)%Math.ceil(items.length/CH);
+  };
+  show();
+  el.addEventListener("animationiteration",show);
+}
+
+/* ================= board ================= */
+const rowEls={};
+function buildRows(){
+  const board=document.getElementById("board");
+  areas.forEach(a=>{
+    const [cls,color]=BOROS[a.boro];
+    const el=document.createElement("button");
+    el.className="row"; el.setAttribute("role","listitem");
+    el.innerHTML=`<span class="rank"></span>
+      <span class="who"><span class="nm">${a.name}</span><br><span class="bo"><i style="background:${color}"></i>${a.boro}</span></span>
+      <span class="barwrap"><span class="bar" style="background:${color}"></span><span class="val"></span></span>`;
+    el.onclick=()=>openDrawer(a.code);
+    rowEls[a.code]=el;
+    board.appendChild(el);
+  });
+}
+
+function apply(animate){
+  const [id,,label,,src,note]=byId[cur];
+  document.getElementById("btitle").textContent=label;
+  document.getElementById("bsrc").textContent=src;
+  document.getElementById("bnote").textContent=note;
+
+  const board=document.getElementById("board");
+  const first={};
+  if(animate) for(const c in rowEls){ if(rowEls[c].style.display!=="none") first[c]=rowEls[c].getBoundingClientRect().top; }
+
+  const visible=areas.filter(a=>boroFilter.has(a.boro)&&(!query||a.name.toLowerCase().includes(query)));
+  const has=visible.filter(a=>a.values[id]?.v!=null).sort((a,b)=>desc?b.values[id].v-a.values[id].v:a.values[id].v-b.values[id].v);
+  const nots=visible.filter(a=>a.values[id]?.v==null);
+  const ordered=[...has,...nots];
+  const max=Math.max(...has.map(a=>Math.abs(a.values[id].v)),1e-9);
+
+  document.getElementById("cnote").textContent=
+    (visible.length<areas.length?`${visible.length} of 197 shown`:`197 neighborhoods`)+
+    (nots.length?` · ${nots.length} without data in this category`:"");
+
+  const shown=new Set(ordered.map(a=>a.code));
+  for(const c in rowEls) rowEls[c].style.display=shown.has(c)?"":"none";
+
+  ordered.forEach((a,i)=>{
+    const el=rowEls[a.code];
+    board.appendChild(el);
+    const vm=a.values[id]||{v:null,m:null};
+    const globalRank=ranks[id].map[a.code];
+    el.classList.toggle("nodata",vm.v==null);
+    el.classList.toggle("top1",i===0&&vm.v!=null);
+    el.querySelector(".rank").textContent=vm.v==null?"—":globalRank;
+    const bar=el.querySelector(".bar");
+    bar.style.width=vm.v==null?"0":(Math.abs(vm.v)/max*100).toFixed(2)+"%";
+    const moe=vm.m!=null?` <span class="moe">${fmtMoe(id,vm.m)}</span>`:"";
+    el.querySelector(".val").innerHTML=vm.v==null?"no data":fmtV(id,vm.v)+moe;
+  });
+
+  if(animate){
+    const moves=[];
+    ordered.forEach(a=>{
+      const el=rowEls[a.code];
+      if(first[a.code]==null) return;
+      const dy=first[a.code]-el.getBoundingClientRect().top;
+      if(Math.abs(dy)>2) moves.push([el,dy]);
+    });
+    moves.forEach(([el,dy],i)=>{
+      el.style.transition="none"; el.style.transform=`translateY(${dy}px)`;
+    });
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
+      moves.forEach(([el],i)=>{
+        el.style.transition=`transform .55s cubic-bezier(.22,.9,.3,1) ${Math.min(i*4,220)}ms`;
+        el.style.transform="";
+      });
+    }));
+  }
+}
+
+/* ================= drawer ================= */
+function openDrawer(code){
+  const a=areas.find(x=>x.code===code);
+  const [,color]=BOROS[a.boro];
+  document.getElementById("dname").textContent=a.name;
+  document.getElementById("dboro").innerHTML=`<i style="background:${color};width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:5px"></i>${a.boro} · ${a.code}`;
+  const body=document.getElementById("dbody"); body.innerHTML="";
+  GROUPS.forEach(([gid,glabel])=>{
+    const wrap=document.createElement("div"); wrap.className="dgroup";
+    wrap.innerHTML=`<h3>${glabel}</h3>`;
+    M.filter(m=>m[1]===gid).forEach(([id,,label])=>{
+      const vm=a.values[id]||{v:null};
+      const r=ranks[id].map[a.code];
+      const line=document.createElement("div"); line.className="dline";
+      const rankHtml=vm.v==null?`<span class="dr" style="background:var(--rule);color:var(--ink2)">—</span>`
+        :`<span class="dr ${r<=20?"hi":r>ranks[id].n-20?"lo":""}">#${r}</span>`;
+      line.innerHTML=`<span>${label}</span><span style="display:flex;align-items:center"><span class="dv">${fmtV(id,vm.v)}</span>${rankHtml}</span>`;
+      line.onclick=()=>{closeDrawer();selectMetric(id);window.scrollTo({top:0,behavior:"smooth"});};
+      wrap.appendChild(line);
+    });
+    body.appendChild(wrap);
+  });
+  document.getElementById("drawer").classList.add("open");
+  document.getElementById("scrim").classList.add("show");
+}
+function closeDrawer(){
+  document.getElementById("drawer").classList.remove("open");
+  document.getElementById("scrim").classList.remove("show");
+}
+</script>
+</body>
+</html>
