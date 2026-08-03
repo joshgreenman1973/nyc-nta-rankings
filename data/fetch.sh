@@ -24,7 +24,9 @@ fetch collisions2025 h9gi-nx95 "latitude,longitude,number_of_persons_injured,num
 P2=$!
 fetch evictions2025 6z8x-wfk4 "latitude,longitude" "executed_date >= '2025-01-01' AND executed_date <= '2025-12-31' AND residential_commercial_ind = 'Residential'" "" 100000 &
 P3=$!
-fetch trees hn5i-inap "geometry" "tpcondition not in ('Dead','Stump')" "" 20000000 &
+# Full structure = a standing tree (excludes Retired/removed points and stumps);
+# condition != 'Dead' drops standing dead trees.
+fetch trees hn5i-inap "geometry" "tpstructure = 'Full' AND tpcondition != 'Dead'" "" 20000000 &
 P4=$!
 FAILED=0
 for p in $P1 $P2 $P3 $P4; do wait $p || FAILED=1; done

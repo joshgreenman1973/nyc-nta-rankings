@@ -27,7 +27,7 @@ for f in gj["features"]:
 
     vals = {k: v for k, v in a.items() if not k.startswith("_")}
     vals["density"] = {"v": round(pop / sqmi) if pop else None, "m": None}
-    vals["land_area"] = {"v": round(sqmi, 2), "m": None}
+    vals["land_area"] = {"v": round(sqmi, 3), "m": None}
 
     def rate(metric, num_key, den, per=1000.0, nd=1):
         n = c.get(num_key, 0)
@@ -55,6 +55,8 @@ for f in gj["features"]:
         if vm["v"] is not None:
             if k in ("median_hh_income", "per_capita_income", "median_home_value", "median_rent", "population", "density"):
                 vm["v"] = round(vm["v"])
+            elif k == "land_area":
+                pass  # keep 3 decimals so density arithmetic is reproducible
             elif isinstance(vm["v"], float):
                 vm["v"] = round(vm["v"], 1)
         if vm.get("m") is not None:

@@ -35,8 +35,8 @@ header{border-bottom:4px solid var(--ink); position:relative; overflow:hidden}
 .kicker .dots i{width:11px;height:11px;border-radius:50%;display:inline-block}
 h1{
   font-family:"Alfa Slab One",serif;font-weight:400;
-  font-size:clamp(40px,7.2vw,84px);line-height:.98;margin:10px 0 12px;
-  text-shadow:3px 3px 0 var(--paper2), 5px 5px 0 var(--rule);
+  font-size:clamp(30px,5vw,56px);line-height:1;margin:10px 0 12px;
+  text-shadow:2px 2px 0 var(--paper2), 4px 4px 0 var(--rule);
 }
 h1 .accent{color:var(--mn)}
 .dek{font-size:clamp(15px,1.8vw,19px);max-width:64ch;color:var(--ink2)}
@@ -172,6 +172,45 @@ main{max-width:1060px;margin:0 auto;padding:18px 20px 60px}
 .dhead{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;border-bottom:2px solid var(--ink);padding-bottom:10px;margin-bottom:14px}
 .dhead h2{font-family:"Alfa Slab One",serif;font-size:clamp(22px,4vw,34px);line-height:1.05}
 .dhead .bo{font-size:12px}
+.dmap{flex:0 0 auto;width:170px;max-width:34vw}
+.dmap svg{display:block;width:100%;height:auto}
+.dmap .base{fill:#e6dcc4;stroke:#c9bda3;stroke-width:1}
+.dmap .park{fill:#dcd6bd;stroke:none}
+.dmap .sel{stroke:#181310;stroke-width:2.5}
+.dmap figcaption{font-family:"Archivo",sans-serif;font-stretch:80%;font-size:11px;color:var(--ink2);text-align:center;margin-top:3px}
+.dsort{display:flex;gap:5px;margin:0 0 6px}
+.dsort button{
+  font-family:"Archivo",sans-serif;font-weight:800;font-stretch:75%;font-size:12px;letter-spacing:.04em;text-transform:uppercase;
+  border:1.5px solid var(--ink);background:var(--paper);color:var(--ink);padding:4px 10px;border-radius:999px;cursor:pointer;
+}
+.dsort button.on{background:var(--ink);color:var(--paper)}
+/* what's-an-NTA popover */
+.whatbtn{
+  font:inherit;color:var(--ink);background:none;border:none;padding:0;cursor:pointer;
+  border-bottom:2px dotted var(--mn);font-weight:600;
+}
+.whatpop{
+  display:none;max-width:64ch;margin-top:12px;background:#fffdf6;border:2px solid var(--ink);border-radius:6px;
+  padding:14px 16px;font-size:15px;line-height:1.55;color:var(--ink2);box-shadow:4px 4px 0 var(--rule);
+}
+.whatpop.show{display:block}
+.whatpop b{color:var(--ink)}
+/* reverse-lookup dropdown */
+.lookup{position:relative;flex:1;max-width:280px;min-width:180px}
+.lookup input{width:100%;max-width:none;min-width:0}
+.lk-list{
+  position:absolute;top:calc(100% + 4px);left:0;right:0;z-index:45;background:#fffdf6;border:2px solid var(--ink);
+  border-radius:4px;box-shadow:4px 4px 0 var(--rule);max-height:300px;overflow-y:auto;display:none;
+}
+.lk-list.show{display:block}
+.lk{
+  display:flex;justify-content:space-between;align-items:center;gap:8px;width:100%;text-align:left;
+  font-family:"Archivo",sans-serif;font-stretch:85%;font-size:13.5px;padding:7px 10px;
+  background:none;border:none;border-bottom:1px solid var(--rule);cursor:pointer;color:var(--ink);
+}
+.lk:hover,.lk.hot{background:var(--paper2)}
+.lk .lkb{font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink2);display:inline-flex;align-items:center;gap:4px}
+.lk .lkb i{width:8px;height:8px;border-radius:50%;display:inline-block}
 .dclose{font-family:"Archivo",sans-serif;font-weight:900;font-size:15px;border:2px solid var(--ink);background:var(--paper);border-radius:4px;padding:5px 11px;cursor:pointer}
 .dclose:hover{background:var(--ink);color:var(--paper)}
 .dgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:4px 26px}
@@ -214,7 +253,8 @@ footer{border-top:4px solid var(--ink);background:var(--paper2)}
       New York City &middot; The standings
     </div>
     <h1>Every neighborhood,<br><span class="accent">ranked</span></h1>
-    <p class="dek">All <b>197</b> of New York City's residential neighborhood tabulation areas, sorted <b><span id="ncats">61</span> different ways</b> &mdash; population, money, housing, commutes, crime, noise, trees, rats and more. Pick a category and watch the board reshuffle, flip it first-to-last or last-to-first, or mix your own ranking from any categories. Every number comes from the Census Bureau, a city agency or the Metropolitan Transportation Authority. <a href="methodology.html" style="color:var(--ink)">Methodology&nbsp;&rarr;</a></p>
+    <p class="dek">All <b>197</b> of New York City's residential <button class="whatbtn" id="whatbtn">neighborhood tabulation areas</button>, sorted <b><span id="ncats">61</span> different ways</b> &mdash; population, money, housing, commutes, crime, noise, trees, rats and more. Pick a category and watch the board reshuffle, flip it first-to-last or last-to-first, or mix your own ranking from any categories. Every number comes from the Census Bureau, a city agency or the Metropolitan Transportation Authority. <a href="methodology.html" style="color:var(--ink)">Methodology&nbsp;&rarr;</a></p>
+    <div class="whatpop" id="whatpop"><b>What's a neighborhood tabulation area?</b> New York City has no official neighborhood borders, so the Department of City Planning draws <b>neighborhood tabulation areas (NTAs)</b> — 262 statistical areas built from whole 2020 census tracts, sized so census survey data stays reliable. This board ranks the 197 residential ones and leaves out parks, cemeteries, airports and Rikers Island. The names are City Planning's, and an NTA doesn't always match what locals call the place — some neighborhoods are split (Bedford-Stuyvesant East and West), others merged. Tap any neighborhood's row to see its boundary on a map, or read the <a href="methodology.html">methodology</a>.</div>
   </div>
   <div class="ticker" aria-hidden="true"><div class="ticker-track" id="ticker"></div></div>
 </header>
@@ -224,7 +264,8 @@ footer{border-top:4px solid var(--ink);background:var(--paper2)}
     <div class="groups" id="groups"></div>
     <div class="cats" id="cats"></div>
     <div class="toolrow">
-      <input type="search" id="q" placeholder="Find a neighborhood&hellip;" aria-label="Find a neighborhood">
+      <div class="lookup"><input type="search" id="q" placeholder="Look up a neighborhood&hellip;" aria-label="Look up a neighborhood" autocomplete="off">
+        <div class="lk-list" id="lklist"></div></div>
       <div class="boro-chips" id="boros" title="Filter boroughs"></div>
       <button class="dirbtn" id="dir" title="Flip the order of the board">&#8645; First &rarr; last</button>
     </div>
@@ -249,11 +290,16 @@ footer{border-top:4px solid var(--ink);background:var(--paper2)}
         <h2 id="dname"></h2>
         <span class="bo" id="dboro"></span>
       </div>
+      <figure class="dmap" id="dmap" aria-label="Location map"></figure>
       <button class="dclose" id="dclose">Close &times;</button>
     </div>
     <p style="font-family:'Archivo',sans-serif;font-stretch:85%;font-size:13.5px;color:var(--ink2);margin-bottom:6px">
       Where this neighborhood ranks in every category, out of 197. Tap any line to re-sort the big board by it.
     </p>
+    <div class="dsort" id="dsort">
+      <button data-s="group" class="on">By topic</button>
+      <button data-s="rank">By rank</button>
+    </div>
     <div class="dgrid" id="dbody"></div>
   </div>
 </aside>
@@ -303,7 +349,7 @@ const M = [
  ["pct_disability","people","Share with a disability","pct",ACS,"Civilian noninstitutionalized population."],
  ["pct_same_house","people","Lived in same home a year ago","pct",ACS,"Population 1 and older."],
 
- ["median_hh_income","money","Median household income","usd",ACS,"Census top-codes this at $200,000."],
+ ["median_hh_income","money","Median household income","usd",ACS,"Computed from income brackets whose top bracket is $200,000 or more, so the median caps there."],
  ["per_capita_income","money","Per capita income","usd",ACS,""],
  ["pct_hh_200k","money","Households earning $200,000+","pct",ACS,""],
  ["pct_poverty","money","Share below poverty line","pct",ACS,""],
@@ -319,8 +365,8 @@ const M = [
  ["pct_uninsured","money","No health insurance","pct",ACS,"Civilian noninstitutionalized population."],
  ["pct_internet","money","Households with internet","pct",ACS,"Broadband or any paid subscription."],
 
- ["median_rent","homes","Median gross rent","usd",ACS,"Rent plus utilities; census top-codes this at $3,500."],
- ["median_home_value","homes","Median home value","usd",ACS,"Owner-occupied; census top-codes this at $2 million."],
+ ["median_rent","homes","Median gross rent","usd",ACS,"Rent plus utilities; the published median caps at $3,500."],
+ ["median_home_value","homes","Median home value","usd",ACS,"Owner-occupied; the published median caps at $2 million."],
  ["pct_renters","homes","Renter households","pct",ACS,"Share of occupied units."],
  ["pct_rent_burdened","homes","Rent-burdened (30%+ of income)","pct",ACS,"Share of renter households paying cash rent."],
  ["pct_severe_rent_burden","homes","Severely rent-burdened (50%+)","pct",ACS,"Share of renter households paying cash rent."],
@@ -339,12 +385,12 @@ const M = [
  ["pct_drive_alone","moving","Drive alone to work","pct",ACS,""],
  ["pct_wfh","moving","Work from home","pct",ACS,""],
  ["pct_no_vehicle","moving","Households with no vehicle","pct",ACS,""],
- ["subway_stations","moving","Subway stations","int","MTA","Station count inside the neighborhood boundary."],
+ ["subway_stations","moving","Subway stations","int","MTA","Stations inside the boundary, as the MTA counts them — Times Square-42nd Street is five stations, not one — including the 21 Staten Island Railway stations."],
  ["collision_rate","moving","Traffic crashes per 1,000 residents","dec","Police-reported, 2025",""],
  ["injury_rate","moving","People hurt in crashes per 1,000 residents","dec","Police-reported, 2025","Injuries plus deaths in reported crashes."],
 
  ["restaurant_rate","streets","Restaurants per 1,000 residents","dec","Health Dept. inspections","Establishments in the city's active inspection file."],
- ["tree_density","streets","Street trees per square mile","int","Parks Dept., current","Live trees in the Parks Department's street tree database."],
+ ["tree_density","streets","Parks-managed trees per square mile","int","Parks Dept., current","Live standing trees in the Parks Department's forestry database — street trees plus park trees the agency actively manages; natural woodland isn't inventoried tree by tree."],
  ["felony_rate","streets","Felony complaints per 1,000 residents","dec","NYPD, 2025","Crimes reported to police where they occurred; business districts rank high relative to residents."],
  ["violent_rate","streets","Violent felonies per 1,000 residents","dec","NYPD, 2025","Murder, rape, robbery and felony assault complaints."],
  ["complaints_rate","streets","311 requests per 1,000 residents","int","311, Aug. 2025-July 2026","All service requests, from potholes to noise."],
@@ -396,10 +442,13 @@ fetch("rankings.json").then(r=>r.json()).then(d=>{
   if(h.startsWith("m=")&&byId[h.slice(2)]){cur=h.slice(2);curGroup=byId[cur][1];}
   else if(h.startsWith("ratio=")){const [a,b]=h.slice(6).split("~");if(byId[a]&&byId[b]){pendingRatio=[a,b];curGroup="combo";}}
   else if(h.startsWith("blend=")){const ids=h.slice(6).split("~").filter(x=>byId[x]);if(ids.length>=2){pendingBlend=ids;curGroup="combo";}}
+  let pendingHood=null;
+  if(h.startsWith("hood=")&&areas.some(a=>a.code===h.slice(5))) pendingHood=h.slice(5);
   buildControls(); buildTicker(); buildRows();
   if(pendingRatio){setRatio(pendingRatio[0],pendingRatio[1],false);buildCats();}
   else if(pendingBlend){setBlend(pendingBlend,false);buildCats();}
   else apply(false);
+  if(pendingHood) openDrawer(pendingHood);
 });
 
 function computeRanks(){
@@ -588,7 +637,33 @@ function buildControls(){
     bc.appendChild(b);
   }
   document.getElementById("dir").onclick=()=>{desc=!desc;document.getElementById("dir").innerHTML=desc?"&#8645; First &rarr; last":"&#8645; Last &rarr; first";apply(true);};
-  document.getElementById("q").addEventListener("input",e=>{query=e.target.value.trim().toLowerCase();apply(true);});
+  const q=document.getElementById("q"), lk=document.getElementById("lklist");
+  const renderLk=()=>{
+    lk.innerHTML="";
+    if(!query){lk.classList.remove("show");return;}
+    const matches=areas.filter(a=>a.name.toLowerCase().includes(query)).slice(0,8);
+    if(!matches.length){lk.classList.remove("show");return;}
+    matches.forEach(a=>{
+      const [,color]=BOROS[a.boro];
+      const b=document.createElement("button"); b.className="lk";
+      b.innerHTML=`<span>${a.name}</span><span class="lkb"><i style="background:${color}"></i>${a.boro}</span>`;
+      b.onclick=()=>{lk.classList.remove("show");openDrawer(a.code);};
+      lk.appendChild(b);
+    });
+    lk.classList.add("show");
+  };
+  q.addEventListener("input",e=>{query=e.target.value.trim().toLowerCase();renderLk();apply(true);});
+  q.addEventListener("keydown",e=>{
+    if(e.key==="Enter"){const f=lk.querySelector(".lk"); if(f) f.click();}
+    if(e.key==="Escape"){lk.classList.remove("show");}
+  });
+  document.addEventListener("click",e=>{if(!e.target.closest(".lookup")) lk.classList.remove("show");});
+  document.getElementById("whatbtn").onclick=()=>document.getElementById("whatpop").classList.toggle("show");
+  document.getElementById("dsort").querySelectorAll("button").forEach(b=>b.onclick=()=>{
+    dsortMode=b.dataset.s;
+    document.getElementById("dsort").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));
+    if(drawerCode) fillDrawer(drawerCode);
+  });
   document.getElementById("dclose").onclick=closeDrawer;
   document.getElementById("scrim").onclick=closeDrawer;
   document.getElementById("aibtn").onclick=()=>document.getElementById("aipop").classList.toggle("show");
@@ -714,33 +789,81 @@ function apply(animate){
 }
 
 /* ================= drawer ================= */
+let drawerCode=null, dsortMode="group", shapesData=null, prevHash="";
+
+async function ensureShapes(){
+  if(!shapesData){
+    try{shapesData=await (await fetch("shapes.json")).json();}
+    catch(e){shapesData=null;}
+  }
+  return shapesData;
+}
+function ringPath(r){
+  let s="M"+r[0]+" "+r[1];
+  for(let i=2;i<r.length;i+=2) s+="L"+r[i]+" "+r[i+1];
+  return s+"Z";
+}
+async function renderLocator(code,color){
+  const el=document.getElementById("dmap"); el.innerHTML="";
+  const S=await ensureShapes();
+  if(!S||!S.shapes[code]||drawerCode!==code) return;
+  let base="",park="",sel="";
+  for(const [c,o] of Object.entries(S.shapes)){
+    const d=o.r.map(ringPath).join("");
+    if(c===code) sel+=`<path d="${d}" fill="${color}" class="sel"/>`;
+    else if(o.t!=="0") park+=`<path d="${d}" class="park"/>`;
+    else base+=`<path d="${d}" class="base"/>`;
+  }
+  el.innerHTML=`<svg viewBox="0 0 ${S.w} ${S.h}" role="img" aria-label="Map highlighting this neighborhood">${base}${park}${sel}</svg><figcaption>City Planning boundary</figcaption>`;
+}
+function drawerLine(a,id,label){
+  const vm=a.values[id]||{v:null};
+  const r=ranks[id].map[a.code];
+  const line=document.createElement("div"); line.className="dline";
+  const rankHtml=vm.v==null?`<span class="dr" style="background:var(--rule);color:var(--ink2)">—</span>`
+    :`<span class="dr ${r<=20?"hi":r>ranks[id].n-20?"lo":""}">#${r}</span>`;
+  line.innerHTML=`<span>${label}</span><span style="display:flex;align-items:center"><span class="dv">${fmtV(id,vm.v)}</span>${rankHtml}</span>`;
+  line.onclick=()=>{closeDrawer();selectMetric(id);window.scrollTo({top:0,behavior:"smooth"});};
+  return line;
+}
+function fillDrawer(code){
+  const a=areas.find(x=>x.code===code);
+  const body=document.getElementById("dbody"); body.innerHTML="";
+  if(dsortMode==="rank"){
+    const wrap=document.createElement("div"); wrap.className="dgroup";
+    wrap.innerHTML="<h3>Every category, rank 1 to 197</h3>";
+    M.map(([id,,label])=>({id,label,r:ranks[id].map[code]??1e9}))
+      .sort((x,y)=>x.r-y.r)
+      .forEach(({id,label})=>wrap.appendChild(drawerLine(a,id,label)));
+    body.appendChild(wrap);
+  }else{
+    GROUPS.filter(g=>g[0]!=="all"&&g[0]!=="combo").forEach(([gid,glabel])=>{
+      const wrap=document.createElement("div"); wrap.className="dgroup";
+      wrap.innerHTML=`<h3>${glabel}</h3>`;
+      M.filter(m=>m[1]===gid).forEach(([id,,label])=>wrap.appendChild(drawerLine(a,id,label)));
+      body.appendChild(wrap);
+    });
+  }
+}
 function openDrawer(code){
   const a=areas.find(x=>x.code===code);
+  if(!a) return;
+  drawerCode=code;
   const [,color]=BOROS[a.boro];
   document.getElementById("dname").textContent=a.name;
   document.getElementById("dboro").innerHTML=`<i style="background:${color};width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:5px"></i>${a.boro} · ${a.code}`;
-  const body=document.getElementById("dbody"); body.innerHTML="";
-  GROUPS.forEach(([gid,glabel])=>{
-    const wrap=document.createElement("div"); wrap.className="dgroup";
-    wrap.innerHTML=`<h3>${glabel}</h3>`;
-    M.filter(m=>m[1]===gid).forEach(([id,,label])=>{
-      const vm=a.values[id]||{v:null};
-      const r=ranks[id].map[a.code];
-      const line=document.createElement("div"); line.className="dline";
-      const rankHtml=vm.v==null?`<span class="dr" style="background:var(--rule);color:var(--ink2)">—</span>`
-        :`<span class="dr ${r<=20?"hi":r>ranks[id].n-20?"lo":""}">#${r}</span>`;
-      line.innerHTML=`<span>${label}</span><span style="display:flex;align-items:center"><span class="dv">${fmtV(id,vm.v)}</span>${rankHtml}</span>`;
-      line.onclick=()=>{closeDrawer();selectMetric(id);window.scrollTo({top:0,behavior:"smooth"});};
-      wrap.appendChild(line);
-    });
-    body.appendChild(wrap);
-  });
+  fillDrawer(code);
+  renderLocator(code,color);
+  if(!location.hash.startsWith("#hood=")) prevHash=location.hash;
+  history.replaceState(null,"","#hood="+code);
   document.getElementById("drawer").classList.add("open");
   document.getElementById("scrim").classList.add("show");
 }
 function closeDrawer(){
   document.getElementById("drawer").classList.remove("open");
   document.getElementById("scrim").classList.remove("show");
+  if(location.hash.startsWith("#hood=")) history.replaceState(null,"",prevHash||location.pathname);
+  drawerCode=null;
 }
 </script>
 </body>
