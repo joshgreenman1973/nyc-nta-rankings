@@ -68,6 +68,14 @@ h1 .accent{color:var(--mn)}
   padding:5px 11px;border-radius:4px;cursor:pointer;transition:all .12s;
 }
 .cat:hover{border-color:var(--ink);transform:translateY(-1px);box-shadow:2px 2px 0 var(--rule)}
+#tip{
+  position:fixed;z-index:80;max-width:330px;background:var(--ink);color:var(--paper);
+  font-family:"Archivo",sans-serif;font-stretch:85%;font-size:13px;line-height:1.45;
+  padding:9px 12px;border-radius:5px;box-shadow:4px 4px 0 rgba(24,19,16,.25);
+  pointer-events:none;opacity:0;transition:opacity .12s;
+}
+#tip.show{opacity:1}
+#tip .tsrc{display:block;margin-top:5px;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#ffd166}
 .cat.on{background:var(--gcolor,var(--ink));border-color:var(--gcolor,var(--ink));color:#fff;font-weight:800}
 .toolrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:6px 0 8px;border-top:1px dashed var(--rule);margin-top:4px}
 .toolrow input[type=search]{
@@ -388,74 +396,74 @@ const GROUPS = [
 const TOPCODE = {median_hh_income:200000, median_rent:3500, median_home_value:2000000};
 const ACS = "Census ACS 2020-2024";
 const M = [
- // id, group, label, fmt, source, note
- ["population","people","Population","int",ACS,"Total residents, 2020-2024 average — the newest neighborhood-level census data (the city's July 2025 total, available only citywide, is about 1.2% higher)."],
- ["density","people","Residents per square mile","int",ACS,"Population density: ACS population divided by land area."],
- ["land_area","people","Land area","mi2","City Planning","Square miles, shoreline-clipped."],
- ["median_age","people","Median age","dec",ACS,""],
- ["pct_under18","people","Share under 18","pct",ACS,""],
- ["pct_65plus","people","Share 65 and older","pct",ACS,""],
- ["pct_hispanic","people","Share Hispanic","pct",ACS,""],
- ["pct_white_nh","people","Share white (non-Hispanic)","pct",ACS,""],
- ["pct_black_nh","people","Share Black (non-Hispanic)","pct",ACS,""],
- ["pct_asian_nh","people","Share Asian (non-Hispanic)","pct",ACS,""],
- ["pct_foreign_born","people","Share foreign-born","pct",ACS,""],
- ["pct_lang_not_english","people","Speak a language other than English at home","pct",ACS,"Population 5 and older."],
- ["pct_limited_english","people","Limited English proficiency","pct",ACS,"Speak English less than 'very well,' population 5 and older."],
- ["avg_hh_size","people","Average household size","dec",ACS,""],
- ["pct_never_married","people","Share never married","pct",ACS,"Population 15 and older."],
- ["pct_veterans","people","Share veterans","pct",ACS,"Civilian population 18 and older."],
- ["pct_disability","people","Share with a disability","pct",ACS,"Civilian noninstitutionalized population."],
- ["pct_same_house","people","Lived in same home a year ago","pct",ACS,"Population 1 and older."],
+ // id, group, label, fmt, source, note (definition shown under the board title and in hover tips)
+ ["population","people","Population","int",ACS,"Total residents, 2020-2024 average — the newest neighborhood-level census data. Counts where people live: a business district's workers and a park's visitors don't count. The city's July 2025 total, available only citywide, is about 1.2% higher."],
+ ["density","people","Residents per square mile","int",ACS,"Population density: ACS population divided by land area. Nighttime residential density — not daytime crowding, which no census measure captures."],
+ ["land_area","people","Land area","mi2","City Planning","Square miles inside the City Planning boundary, clipped to the shoreline. Big parks, airports and cemeteries are separate areas and don't count toward any neighborhood here."],
+ ["median_age","people","Median age","dec",ACS,"Half of residents are older, half younger. A survey estimate, not a count."],
+ ["pct_under18","people","Share under 18","pct",ACS,"Residents younger than 18 as a share of all residents."],
+ ["pct_65plus","people","Share 65 and older","pct",ACS,"Residents 65 or older as a share of all residents."],
+ ["pct_hispanic","people","Share Hispanic","pct",ACS,"Residents identifying as Hispanic or Latino of any race, using the census definition. Self-reported."],
+ ["pct_white_nh","people","Share white (non-Hispanic)","pct",ACS,"Residents identifying as white alone and not Hispanic. Self-reported; people choosing two or more races aren't in any single-race group."],
+ ["pct_black_nh","people","Share Black (non-Hispanic)","pct",ACS,"Residents identifying as Black or African American alone and not Hispanic. Self-reported; people choosing two or more races aren't in any single-race group."],
+ ["pct_asian_nh","people","Share Asian (non-Hispanic)","pct",ACS,"Residents identifying as Asian alone and not Hispanic. Self-reported; people choosing two or more races aren't in any single-race group."],
+ ["pct_foreign_born","people","Share foreign-born","pct",ACS,"Residents born outside the United States and its territories, regardless of citizenship or legal status. People born in Puerto Rico are U.S.-born, not foreign-born."],
+ ["pct_lang_not_english","people","Speak a language other than English at home","pct",ACS,"Residents 5 and older who speak a language other than English at home. Says nothing about English ability — most also speak English."],
+ ["pct_limited_english","people","Limited English proficiency","pct",ACS,"Residents 5 and older who told the census they speak English less than 'very well.' Self-assessed."],
+ ["avg_hh_size","people","Average household size","dec",ACS,"People per occupied home. Excludes group quarters such as dorms, shelters and nursing homes."],
+ ["pct_never_married","people","Share never married","pct",ACS,"Residents 15 and older who have never been married — including people in unmarried partnerships. Computed from the male and female counts in the census tables."],
+ ["pct_veterans","people","Share veterans","pct",ACS,"Civilian residents 18 and older who ever served on active duty. Excludes current active-duty personnel."],
+ ["pct_disability","people","Share with a disability","pct",ACS,"Civilian noninstitutionalized residents reporting at least one of six census disability types: hearing, vision, cognitive, ambulatory, self-care or independent living."],
+ ["pct_same_house","people","Lived in same home a year ago","pct",ACS,"Residents 1 and older living in the same home as a year earlier. Higher means less turnover; it says nothing about owning vs. renting."],
 
- ["median_hh_income","money","Median household income","usd",ACS,"Computed from income brackets whose top bracket is $200,000 or more, so the median caps there."],
- ["per_capita_income","money","Per capita income","usd",ACS,""],
- ["pct_hh_200k","money","Households earning $200,000+","pct",ACS,""],
- ["pct_poverty","money","Share below poverty line","pct",ACS,""],
- ["pct_child_poverty","money","Children below poverty line","pct",ACS,""],
- ["pct_snap","money","Households receiving SNAP","pct",ACS,"Supplemental Nutrition Assistance Program (food stamps)."],
- ["unemployment","money","Unemployment rate","pct",ACS,"Share of civilian labor force."],
- ["labor_force","money","Labor force participation","pct",ACS,"Share of population 16 and older in the labor force."],
- ["pct_bachelors","money","Bachelor's degree or higher","pct",ACS,"Population 25 and older."],
- ["pct_grad_degree","money","Graduate or professional degree","pct",ACS,"Population 25 and older."],
- ["pct_no_hs","money","No high school diploma","pct",ACS,"Population 25 and older."],
- ["pct_govt_workers","money","Government workers","pct",ACS,"Share of employed civilians."],
- ["pct_self_employed","money","Self-employed","pct",ACS,"Unincorporated business, share of employed civilians."],
- ["pct_uninsured","money","No health insurance","pct",ACS,"Civilian noninstitutionalized population."],
- ["pct_internet","money","Households with internet","pct",ACS,"Broadband or any paid subscription."],
+ ["median_hh_income","money","Median household income","usd",ACS,"Half of households earn more, half less. Households, not individuals. Computed from income brackets whose top bracket is $200,000-or-more, so the median caps there. The federal definition of income — before taxes, excluding capital-gains-style windfalls."],
+ ["per_capita_income","money","Per capita income","usd",ACS,"Total income divided by every resident, including children. A few very high earners can pull it far above what a typical resident makes — compare with median household income."],
+ ["pct_hh_200k","money","Households earning $200,000+","pct",ACS,"Households with pre-tax income of $200,000 or more in the past 12 months."],
+ ["pct_poverty","money","Share below poverty line","pct",ACS,"Residents below the federal poverty threshold, which is the same nationwide — it does not adjust for New York City's cost of living, so local hardship is understated."],
+ ["pct_child_poverty","money","Children below poverty line","pct",ACS,"Residents under 18 below the federal poverty threshold (same nationwide standard, no local cost-of-living adjustment)."],
+ ["pct_snap","money","Households receiving SNAP","pct",ACS,"Households that received Supplemental Nutrition Assistance Program (food stamp) benefits at any point in the past 12 months."],
+ ["unemployment","money","Unemployment rate","pct",ACS,"Unemployed share of the civilian labor force — people without a job who are looking for one. People not seeking work (retirees, students, discouraged workers) count in neither the numerator nor the denominator."],
+ ["labor_force","money","Labor force participation","pct",ACS,"Residents 16 and older who are working or looking for work. Retirees, full-time students and caregivers outside the workforce lower it — it is not an employment rate."],
+ ["pct_bachelors","money","Bachelor's degree or higher","pct",ACS,"Residents 25 and older holding at least a bachelor's degree. Younger residents and students don't count in this measure."],
+ ["pct_grad_degree","money","Graduate or professional degree","pct",ACS,"Residents 25 and older holding a master's, professional or doctoral degree."],
+ ["pct_no_hs","money","No high school diploma","pct",ACS,"Residents 25 and older without a high school diploma or equivalency."],
+ ["pct_govt_workers","money","Government workers","pct",ACS,"Federal, state or local government employees as a share of employed civilian residents — where government workers live, not where government jobs are."],
+ ["pct_self_employed","money","Self-employed","pct",ACS,"Residents working in their own unincorporated business, as a share of employed civilians. People whose own business is incorporated count as private employees instead."],
+ ["pct_uninsured","money","No health insurance","pct",ACS,"Civilian noninstitutionalized residents with no health coverage of any kind — public or private."],
+ ["pct_internet","money","Households with internet","pct",ACS,"Households with an internet subscription of any kind, including cellular-only data plans."],
 
- ["median_rent","homes","Median gross rent","usd",ACS,"Rent plus utilities; the published median caps at $3,500."],
- ["median_home_value","homes","Median home value","usd",ACS,"Owner-occupied; the published median caps at $2 million."],
- ["pct_renters","homes","Renter households","pct",ACS,"Share of occupied units."],
- ["pct_rent_burdened","homes","Rent-burdened (30%+ of income)","pct",ACS,"Share of renter households paying cash rent."],
- ["pct_severe_rent_burden","homes","Severely rent-burdened (50%+)","pct",ACS,"Share of renter households paying cash rent."],
- ["eviction_rate","homes","Evictions per 1,000 renter households","dec","City marshals, 2025","Residential evictions executed by city marshals."],
- ["pct_prewar","homes","Pre-war housing (built before 1939)","pct",ACS,""],
- ["pct_built_2010","homes","Housing built 2010 or later","pct",ACS,""],
- ["pct_big_buildings","homes","Units in 20+ unit buildings","pct",ACS,""],
- ["pct_single_family","homes","Single-family homes","pct",ACS,"1-unit detached or attached, share of all units."],
- ["pct_crowded","homes","Crowded homes (over 1 person per room)","pct",ACS,"Share of occupied units."],
- ["median_rooms","homes","Median rooms per home","dec",ACS,""],
- ["pct_vacant","homes","Vacant housing units","pct",ACS,"Share of all units, including for sale or rent."],
+ ["median_rent","homes","Median gross rent","usd",ACS,"What the middle renting household pays, counting rent plus utilities. Reflects what current tenants actually pay — including long-held and regulated leases — not what a new apartment asks. Caps at $3,500 because of the data's top bracket."],
+ ["median_home_value","homes","Median home value","usd",ACS,"Owners' own estimate of what their home would sell for; half say more, half less. Not a record of actual sale prices. Caps at $2 million."],
+ ["pct_renters","homes","Renter households","pct",ACS,"Renter-occupied share of occupied homes. The remainder are owner-occupied; vacant units aren't in the base."],
+ ["pct_rent_burdened","homes","Rent-burdened (30%+ of income)","pct",ACS,"Renter households paying 30% or more of income on gross rent, among those paying cash rent. Includes the severely burdened."],
+ ["pct_severe_rent_burden","homes","Severely rent-burdened (50%+)","pct",ACS,"Renter households paying 50% or more of income on gross rent — a subset of the rent-burdened group."],
+ ["eviction_rate","homes","Evictions per 1,000 renter households","dec","City marshals, 2025","Residential evictions executed by city marshals in 2025, per 1,000 renter households. Most displacement happens earlier — tenants who move after a court filing or a rent hike never appear here."],
+ ["pct_prewar","homes","Pre-war housing (built before 1939)","pct",ACS,"Homes in buildings built before 1939, the census's oldest category."],
+ ["pct_built_2010","homes","Housing built 2010 or later","pct",ACS,"Homes in buildings built in 2010 or later — a measure of recent construction, not of quality."],
+ ["pct_big_buildings","homes","Units in 20+ unit buildings","pct",ACS,"Homes in buildings with 20 or more units."],
+ ["pct_single_family","homes","Single-family homes","pct",ACS,"Homes that are one-unit houses, whether detached or attached rowhouses, as a share of all units."],
+ ["pct_crowded","homes","Crowded homes (over 1 person per room)","pct",ACS,"Occupied homes with more than one person per room — the standard census crowding measure. Bathrooms don't count as rooms."],
+ ["median_rooms","homes","Median rooms per home","dec",ACS,"Half of homes have more rooms, half fewer. Rooms, not bedrooms — kitchens and living rooms count; bathrooms don't."],
+ ["pct_vacant","homes","Vacant housing units","pct",ACS,"Units vacant when surveyed — for sale or rent, awaiting occupancy, seasonal or otherwise empty. Not a measure of abandonment or 'warehousing.'"],
 
- ["mean_commute","moving","Mean commute time","min",ACS,"Workers 16 and older who commute."],
- ["pct_transit","moving","Commute by public transit","pct",ACS,""],
- ["pct_walk_work","moving","Walk to work","pct",ACS,""],
- ["pct_drive_alone","moving","Drive alone to work","pct",ACS,""],
- ["pct_wfh","moving","Work from home","pct",ACS,""],
- ["pct_no_vehicle","moving","Households with no vehicle","pct",ACS,""],
- ["subway_stations","moving","Subway stations","int","MTA","Stations inside the boundary, as the MTA counts them — Times Square-42nd Street is five stations, not one — including the 21 Staten Island Railway stations."],
- ["collision_rate","moving","Traffic crashes per 1,000 residents","dec","Police-reported, 2025",""],
- ["injury_rate","moving","People hurt in crashes per 1,000 residents","dec","Police-reported, 2025","Injuries plus deaths in reported crashes."],
+ ["mean_commute","moving","Mean commute time","min",ACS,"Average one-way travel time to work for commuting workers 16 and older. People who work from home are excluded entirely."],
+ ["pct_transit","moving","Commute by public transit","pct",ACS,"Workers whose main commute is subway, bus, rail or ferry. Each worker counts once, by their primary mode."],
+ ["pct_walk_work","moving","Walk to work","pct",ACS,"Workers whose main commute is walking all the way."],
+ ["pct_drive_alone","moving","Drive alone to work","pct",ACS,"Workers who drive to work alone (carpooling counted separately)."],
+ ["pct_wfh","moving","Work from home","pct",ACS,"Workers who worked from home most of the reference week — no commute at all."],
+ ["pct_no_vehicle","moving","Households with no vehicle","pct",ACS,"Households with no cars, vans or trucks available to them."],
+ ["subway_stations","moving","Subway stations","int","MTA","Stations whose coordinates fall inside the boundary, as the MTA counts them — Times Square-42nd Street is five stations, not one — including the 21 Staten Island Railway stations. A station just across a boundary street counts for the neighbor."],
+ ["collision_rate","moving","Traffic crashes per 1,000 residents","dec","Police-reported, 2025","Police-reported motor vehicle crashes in 2025, counted where they happened, per 1,000 residents. Busy through-routes raise a neighborhood's rate; unreported fender-benders don't appear."],
+ ["injury_rate","moving","People hurt in crashes per 1,000 residents","dec","Police-reported, 2025","People injured or killed in reported 2025 crashes — drivers, passengers, cyclists and pedestrians alike — per 1,000 residents, counted where the crash occurred."],
 
- ["restaurant_rate","streets","Restaurants per 1,000 residents","dec","Health Dept. inspections","Establishments in the city's active inspection file."],
- ["tree_density","streets","Parks-managed trees per square mile","int","Parks Dept., current","Live standing trees in the Parks Department's forestry database — street trees plus park trees the agency actively manages; natural woodland isn't inventoried tree by tree."],
- ["felony_rate","streets","Felony complaints per 1,000 residents","dec","NYPD, 2025","Crimes reported to police where they occurred; business districts rank high relative to residents."],
- ["violent_rate","streets","Violent felonies per 1,000 residents","dec","NYPD, 2025","Murder, rape, robbery and felony assault complaints."],
- ["complaints_rate","streets","311 requests per 1,000 residents","int","311, Aug. 2025-July 2026","All service requests, from potholes to noise."],
- ["noise_rate","streets","Noise complaints per 1,000 residents","dec","311, Aug. 2025-July 2026","All 311 noise complaint types; a few prolific callers can move a neighborhood."],
- ["rodent_rate","streets","Rodent complaints per 1,000 residents","dec","311, Aug. 2025-July 2026",""],
- ["parking_rate","streets","Illegal parking complaints per 1,000 residents","dec","311, Aug. 2025-July 2026",""],
+ ["restaurant_rate","streets","Restaurants per 1,000 residents","dec","Health Dept. inspections","Food establishments in the Health Department's active inspection file, per 1,000 residents. Job centers score high because the denominator is residents, not visitors. Includes some recently closed spots the file hasn't purged."],
+ ["tree_density","streets","Parks-managed trees per square mile","int","Parks Dept., current","Standing live trees the Parks Department manages — street trees plus maintained park trees — per square mile. Natural woodland isn't inventoried tree by tree, so forested edges undercount."],
+ ["felony_rate","streets","Felony complaints per 1,000 residents","dec","NYPD, 2025","Felonies reported to the NYPD in 2025, counted where the crime occurred, per 1,000 residents. Complaints, not arrests or convictions. Job and entertainment centers rank high because victims there mostly live elsewhere."],
+ ["violent_rate","streets","Violent felonies per 1,000 residents","dec","NYPD, 2025","2025 complaints for murder, rape, robbery or felony assault, per 1,000 residents, counted where the crime occurred. Complaints, not convictions; other serious crimes like burglary are in the broader felony measure."],
+ ["complaints_rate","streets","311 requests per 1,000 residents","int","311, Aug. 2025-July 2026","Every 311 service request over 12 months — noise, heat, potholes, parking and more — per 1,000 residents. Measures what residents report, which reflects reporting habits as much as conditions."],
+ ["noise_rate","streets","Noise complaints per 1,000 residents","dec","311, Aug. 2025-July 2026","All 311 complaint types beginning with 'Noise' over 12 months, per 1,000 residents. A handful of repeat callers can dominate a neighborhood's total — reports, not decibels."],
+ ["rodent_rate","streets","Rodent complaints per 1,000 residents","dec","311, Aug. 2025-July 2026","311 rodent complaints (sightings and conditions) over 12 months, per 1,000 residents. Reports, not a rat census — attentive blocks can outscore infested ones."],
+ ["parking_rate","streets","Illegal parking complaints per 1,000 residents","dec","311, Aug. 2025-July 2026","311 illegal-parking complaints over 12 months, per 1,000 residents. Reflects both parking behavior and neighbors' willingness to report it."],
 ];
 
 const BOROS = {Manhattan:["mn","var(--mn)","M"],Brooklyn:["bk","var(--bk)","B"],Queens:["qn","var(--qn)","Q"],Bronx:["bx","var(--bx)","X"],"Staten Island":["si","var(--si)","S"]};
@@ -675,6 +683,28 @@ function renderBuilder(c){
   renderChips();
 }
 
+/* ================= definition tooltips ================= */
+const tipEl=document.createElement("div"); tipEl.id="tip"; document.body.appendChild(tipEl);
+function showTip(target,id){
+  const m=byId[id]; if(!m||!m[5]) return;
+  tipEl.innerHTML=`${m[5]}<span class="tsrc">${m[4]}</span>`;
+  const r=target.getBoundingClientRect();
+  tipEl.style.left="0px"; tipEl.style.top="0px"; tipEl.classList.add("show");
+  const tw=tipEl.offsetWidth, th=tipEl.offsetHeight;
+  const vw=window.innerWidth||document.documentElement.clientWidth||1200;
+  const vh=window.innerHeight||document.documentElement.clientHeight||800;
+  let x=Math.min(Math.max(8,r.left), Math.max(8,vw-tw-8));
+  let y=r.bottom+8;
+  if(y+th>vh-8) y=r.top-th-8;
+  tipEl.style.left=x+"px"; tipEl.style.top=Math.max(8,y)+"px";
+}
+function hideTip(){tipEl.classList.remove("show");}
+document.addEventListener("mouseover",e=>{
+  const t=e.target.closest("[data-tip]");
+  if(t) showTip(t,t.dataset.tip); else hideTip();
+});
+document.addEventListener("scroll",hideTip,true);
+
 /* ================= controls ================= */
 let curGroup="people";
 function buildControls(){
@@ -742,7 +772,7 @@ function buildCats(){
   const list=curGroup==="all"?M:M.filter(m=>m[1]===curGroup);
   list.forEach(m=>{
     const b=document.createElement("button");
-    b.className="cat"+(m[0]===cur?" on":""); b.textContent=m[2]; b.dataset.id=m[0];
+    b.className="cat"+(m[0]===cur?" on":""); b.textContent=m[2]; b.dataset.id=m[0]; b.dataset.tip=m[0];
     b.style.setProperty("--gcolor",GROUPS.find(g=>g[0]===m[1])[2]);
     b.onclick=()=>selectMetric(m[0]);
     c.appendChild(b);
@@ -947,7 +977,7 @@ function renderCmp(){
     const cells=sel.map(a=>({v:a.values[id]?.v,r:ranks[id].map[a.code]}));
     const ranked=cells.filter(c=>c.v!=null);
     const leadR=ranked.length>1?Math.min(...ranked.map(c=>c.r)):null;
-    tr.innerHTML=`<td class="cat" title="Sort the board by this">${label}</td>`+cells.map(c=>{
+    tr.innerHTML=`<td class="cat" data-tip="${id}">${label}</td>`+cells.map(c=>{
       if(c.v==null) return `<td class="nod">no data</td>`;
       const lead=leadR!=null&&c.r===leadR?" lead":"";
       return `<td class="${lead.trim()}"><span class="v">${fmtV(id,c.v)}</span><span class="r">#${c.r}</span></td>`;
@@ -990,7 +1020,7 @@ async function renderLocator(code,color){
 function drawerLine(a,id,label){
   const vm=a.values[id]||{v:null};
   const r=ranks[id].map[a.code];
-  const line=document.createElement("div"); line.className="dline";
+  const line=document.createElement("div"); line.className="dline"; line.dataset.tip=id;
   const rankHtml=vm.v==null?`<span class="dr" style="background:var(--rule);color:var(--ink2)">—</span>`
     :`<span class="dr ${r<=20?"hi":r>ranks[id].n-20?"lo":""}">#${r}</span>`;
   line.innerHTML=`<span>${label}</span><span style="display:flex;align-items:center"><span class="dv">${fmtV(id,vm.v)}</span>${rankHtml}</span>`;
