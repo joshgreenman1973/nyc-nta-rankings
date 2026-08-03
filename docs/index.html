@@ -272,6 +272,7 @@ footer{border-top:4px solid var(--ink);background:var(--paper2)}
 /* ================= metric configuration ================= */
 /* fmt: int, pct, usd, dec, min, yrs, mi2 | dir: default sort descending */
 const GROUPS = [
+  ["all","All","#181310"],
   ["people","People","#e02d3c"],
   ["money","Money & work","#0f8a5f"],
   ["homes","Homes","#1560bd"],
@@ -283,7 +284,7 @@ const TOPCODE = {median_hh_income:200000, median_rent:3500, median_home_value:20
 const ACS = "Census ACS 2020-2024";
 const M = [
  // id, group, label, fmt, source, note
- ["population","people","Population","int",ACS,"Total residents."],
+ ["population","people","Population","int",ACS,"Total residents, 2020-2024 average — the newest neighborhood-level census data (the city's July 2025 total, available only citywide, is about 1.2% higher)."],
  ["density","people","Population density","int",ACS,"Residents per square mile of land."],
  ["land_area","people","Land area","mi2","City Planning","Square miles, shoreline-clipped."],
  ["median_age","people","Median age","dec",ACS,""],
@@ -485,7 +486,7 @@ const PRESETS=[
 ];
 function metricSelect(id){
   const s=document.createElement("select"); s.id=id;
-  GROUPS.filter(g=>g[0]!=="combo").forEach(([gid,glabel])=>{
+  GROUPS.filter(g=>g[0]!=="combo"&&g[0]!=="all").forEach(([gid,glabel])=>{
     const og=document.createElement("optgroup"); og.label=glabel;
     M.filter(m=>m[1]===gid).forEach(m=>{
       const o=document.createElement("option"); o.value=m[0]; o.textContent=m[2];
@@ -596,11 +597,11 @@ function buildControls(){
 function buildCats(){
   const c=document.getElementById("cats"); c.innerHTML="";
   if(curGroup==="combo"){renderBuilder(c);return;}
-  const gcolor=GROUPS.find(g=>g[0]===curGroup)[2];
-  M.filter(m=>m[1]===curGroup).forEach(m=>{
+  const list=curGroup==="all"?M:M.filter(m=>m[1]===curGroup);
+  list.forEach(m=>{
     const b=document.createElement("button");
     b.className="cat"+(m[0]===cur?" on":""); b.textContent=m[2]; b.dataset.id=m[0];
-    b.style.setProperty("--gcolor",gcolor);
+    b.style.setProperty("--gcolor",GROUPS.find(g=>g[0]===m[1])[2]);
     b.onclick=()=>selectMetric(m[0]);
     c.appendChild(b);
   });
@@ -610,7 +611,7 @@ function selectMetric(id){
   cur=id; custom=null;
   history.replaceState(null,"","#m="+id);
   const grp=byId[id][1];
-  if(grp!==curGroup){curGroup=grp;document.querySelectorAll(".gtab").forEach(x=>x.classList.toggle("on",x.dataset.g===grp));buildCats();}
+  if(grp!==curGroup&&curGroup!=="all"){curGroup=grp;document.querySelectorAll(".gtab").forEach(x=>x.classList.toggle("on",x.dataset.g===grp));buildCats();}
   document.querySelectorAll(".cat").forEach(x=>x.classList.toggle("on",x.dataset.id===id));
   apply(true);
 }
