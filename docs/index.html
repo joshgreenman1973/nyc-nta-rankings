@@ -320,6 +320,7 @@ footer{border-top:4px solid var(--ink);background:var(--paper2)}
       <div class="boro-chips" id="boros" title="Filter boroughs"></div>
       <button class="dirbtn" id="dir" title="Flip the order of the board">&#8645; First &rarr; last</button>
       <button class="dirbtn" id="cmpbtn" title="Compare up to four neighborhoods">Compare</button>
+      <button class="dirbtn" id="copybtn" title="Copy a link that reproduces this view">&#10697; Copy link</button>
     </div>
   </div>
 </div>
@@ -344,6 +345,7 @@ footer{border-top:4px solid var(--ink);background:var(--paper2)}
       </div>
       <figure class="dmap" id="dmap" aria-label="Location map"></figure>
       <span style="display:flex;gap:6px;flex:0 0 auto">
+        <button class="dclose" id="dcopy">&#10697; Copy link</button>
         <button class="dclose" id="dcompare">+ Compare</button>
         <button class="dclose" id="dclose">Close &times;</button>
       </span>
@@ -363,7 +365,10 @@ footer{border-top:4px solid var(--ink);background:var(--paper2)}
   <div class="dwrap">
     <div class="cmp-head">
       <h2>Compare neighborhoods</h2>
-      <button class="dclose" id="cmpclose">Close &times;</button>
+      <span style="display:flex;gap:6px">
+        <button class="dclose" id="cmpcopy">&#10697; Copy link</button>
+        <button class="dclose" id="cmpclose">Close &times;</button>
+      </span>
     </div>
     <div class="cmp-slots" id="cmpslots"></div>
     <div class="cmp-topics" id="cmptopics"></div>
@@ -503,8 +508,10 @@ fetch("rankings.json").then(r=>r.json()).then(d=>{
   if(missing.length) console.warn("config metrics missing from data:",missing.map(m=>m[0]));
   document.getElementById("ncats").textContent=M.length;
   computeRanks();
-  /* restore a shared link: #m=<id>, #ratio=<a>~<b> or #blend=<a>~<b>~... */
-  const h=decodeURIComponent(location.hash.slice(1));
+  /* restore a shared link: #m=<id>, #ratio=<a>~<b>, #blend=<a>~..., #hood=<code>, #cmp=<codes>; ";last" = reversed order */
+  let h=decodeURIComponent(location.hash.slice(1));
+  let rev=false;
+  if(h.endsWith(";last")){rev=true;h=h.slice(0,-5);}
   let pendingRatio=null, pendingBlend=null;
   if(h.startsWith("m=")&&byId[h.slice(2)]){cur=h.slice(2);curGroup=byId[cur][1];}
   else if(h.startsWith("ratio=")){const [a,b]=h.slice(6).split("~");if(byId[a]&&byId[b]){pendingRatio=[a,b];curGroup="combo";}}
@@ -516,6 +523,7 @@ fetch("rankings.json").then(r=>r.json()).then(d=>{
     if(codes.length) pendingCmp=codes;
   }
   buildControls(); buildTicker(); buildRows();
+  if(rev){desc=false;document.getElementById("dir").innerHTML="&#8645; Last &rarr; first";}
   if(pendingRatio){setRatio(pendingRatio[0],pendingRatio[1],false);buildCats();}
   else if(pendingBlend){setBlend(pendingBlend,false);buildCats();}
   else apply(false);
@@ -574,7 +582,7 @@ function setRatio(aId,bId,animate=true){
     note:`Each neighborhood's "${A[2].toLowerCase()}" divided by its "${B[2].toLowerCase()}." Sources: ${A[4]===B[4]?A[4]:A[4]+"; "+B[4]}.`,
     val:ar=>vmap[ar.code], moeStr:()=>"", fmt:smart,
     ranks:makeRanks(vmap,true), invert:false};
-  history.replaceState(null,"","#ratio="+aId+"~"+bId);
+  syncViewHash();
   document.querySelectorAll(".cat").forEach(x=>x.classList.remove("on"));
   apply(animate);
 }
@@ -594,7 +602,7 @@ function setBlend(ids,animate=true){
     val:ar=>vmap[ar.code], moeStr:()=>"",
     fmt:v=>"avg rank "+v.toFixed(1),
     ranks:makeRanks(vmap,false), invert:true};
-  history.replaceState(null,"","#blend="+ids.join("~"));
+  syncViewHash();
   document.querySelectorAll(".cat").forEach(x=>x.classList.remove("on"));
   apply(animate);
 }
@@ -683,6 +691,30 @@ function renderBuilder(c){
   renderChips();
 }
 
+/* ================= permalinks ================= */
+function dirSuffix(){return desc?"":";last";}
+function syncViewHash(){
+  if(location.hash.startsWith("#hood=")||location.hash.startsWith("#cmp=")) return;
+  let base;
+  if(custom) base=custom.type==="ratio"?"#ratio="+custom.a+"~"+custom.b:"#blend="+custom.ids.join("~");
+  else base="#m="+cur;
+  history.replaceState(null,"",base+dirSuffix());
+}
+async function copyLink(btn,pre){
+  if(pre) pre();
+  const url=location.href;
+  let ok=false;
+  try{await navigator.clipboard.writeText(url); ok=true;}
+  catch(e){
+    const ta=document.createElement("textarea"); ta.value=url; document.body.appendChild(ta); ta.select();
+    try{ok=document.execCommand("copy");}catch(_){}
+    ta.remove();
+  }
+  const old=btn.innerHTML;
+  btn.innerHTML=ok?"Copied &check;":"Copy failed";
+  setTimeout(()=>{btn.innerHTML=old;},1600);
+}
+
 /* ================= definition tooltips ================= */
 const tipEl=document.createElement("div"); tipEl.id="tip"; document.body.appendChild(tipEl);
 function showTip(target,id){
@@ -730,7 +762,10 @@ function buildControls(){
     };
     bc.appendChild(b);
   }
-  document.getElementById("dir").onclick=()=>{desc=!desc;document.getElementById("dir").innerHTML=desc?"&#8645; First &rarr; last":"&#8645; Last &rarr; first";apply(true);};
+  document.getElementById("dir").onclick=()=>{desc=!desc;document.getElementById("dir").innerHTML=desc?"&#8645; First &rarr; last":"&#8645; Last &rarr; first";syncViewHash();apply(true);};
+  document.getElementById("copybtn").onclick=e=>copyLink(e.currentTarget,syncViewHash);
+  document.getElementById("dcopy").onclick=e=>copyLink(e.currentTarget);
+  document.getElementById("cmpcopy").onclick=e=>copyLink(e.currentTarget,()=>{if(cmp.length)cmpHash();});
   const q=document.getElementById("q"), lk=document.getElementById("lklist");
   const renderLk=()=>{
     lk.innerHTML="";
@@ -781,7 +816,7 @@ function buildCats(){
 }
 function selectMetric(id){
   cur=id; custom=null;
-  history.replaceState(null,"","#m="+id);
+  syncViewHash();
   const grp=byId[id][1];
   if(grp!==curGroup&&curGroup!=="all"){curGroup=grp;document.querySelectorAll(".gtab").forEach(x=>x.classList.toggle("on",x.dataset.g===grp));buildCats();}
   document.querySelectorAll(".cat").forEach(x=>x.classList.toggle("on",x.dataset.id===id));
