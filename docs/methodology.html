@@ -56,6 +56,14 @@ th{background:#efe6d0;font-weight:800}
 <tr><td>Subway stations</td><td><a href="https://data.ny.gov/Transportation/MTA-Subway-Stations/39hk-dx4f">MTA subway stations</a></td><td>Current</td><td>Station complexes whose coordinates fall inside the boundary. Stations just outside a neighborhood's edge don't count toward it.</td></tr>
 </table>
 
+<h2>Make-your-own combinations</h2>
+<p>The "Mix your own" tab builds two kinds of user-defined rankings, computed in the browser from the same category values shown on the board:</p>
+<ul>
+<li><b>Ratio.</b> One category's value divided by another's, for each neighborhood. A neighborhood shows "no data" if either component is unpublished or the denominator is zero. Ratios of top-coded medians (income, rent, home value) use the capped value, so extreme neighborhoods are conservative. Rank 1 is the highest ratio.</li>
+<li><b>Blend.</b> The average of a neighborhood's ranks across 2-6 chosen categories, weighted equally, where rank 1 in a category means the highest value. A neighborhood must have data in every chosen category to be ranked. Rank 1 is the lowest average.</li>
+</ul>
+<p>Combinations are arithmetic on published figures, chosen by the reader; they are not editorial indexes, and margins of error are not propagated through them. Shareable links (the page address updates as you build) reproduce the same combination.</p>
+
 <h2>Ranking rules</h2>
 <ul>
 <li>Ranks run 1-197 among neighborhoods with published data; ties share a rank.</li>

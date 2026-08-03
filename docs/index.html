@@ -85,10 +85,40 @@ h1 .accent{color:var(--mn)}
 .bchip.on.bx{background:var(--bx);border-color:var(--bx)}
 .bchip.on.si{background:var(--si);border-color:var(--si)}
 .dirbtn{
-  font-family:"Archivo",sans-serif;font-weight:800;font-stretch:75%;font-size:13px;text-transform:uppercase;letter-spacing:.04em;
-  border:2px solid var(--ink);background:var(--paper);padding:6px 11px;border-radius:4px;cursor:pointer;
+  font-family:"Archivo",sans-serif;font-weight:900;font-stretch:75%;font-size:13px;text-transform:uppercase;letter-spacing:.04em;
+  border:2px solid var(--ink);background:var(--ink);color:var(--paper);padding:6px 12px;border-radius:4px;cursor:pointer;
 }
-.dirbtn:hover{background:var(--paper2)}
+.dirbtn:hover{background:var(--ink2)}
+/* make-your-own builder */
+.builder{display:flex;flex-direction:column;gap:9px;padding:10px 0 6px}
+.bmode{display:flex;gap:6px;align-items:center}
+.bmode button{
+  font-family:"Archivo",sans-serif;font-weight:800;font-stretch:75%;font-size:12.5px;letter-spacing:.05em;text-transform:uppercase;
+  border:2px solid var(--ink);background:var(--paper);color:var(--ink);padding:5px 12px;border-radius:999px;cursor:pointer;
+}
+.bmode button.on{background:#b5179e;border-color:#b5179e;color:#fff}
+.bhint{font-family:"Archivo",sans-serif;font-stretch:85%;font-size:12.5px;color:var(--ink2)}
+.bpane{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.builder select{
+  font-family:"Archivo",sans-serif;font-size:13.5px;padding:7px 8px;border:2px solid var(--ink);
+  background:#fffdf6;border-radius:4px;max-width:min(46%,320px);
+}
+.divide{font-family:"Alfa Slab One",serif;font-size:20px}
+.gobtn{
+  font-family:"Archivo",sans-serif;font-weight:900;font-stretch:75%;font-size:13px;text-transform:uppercase;letter-spacing:.05em;
+  background:#b5179e;color:#fff;border:2px solid #b5179e;border-radius:4px;padding:7px 14px;cursor:pointer;
+}
+.gobtn:disabled{opacity:.4;cursor:default}
+.blendchips{display:flex;gap:5px;flex-wrap:wrap}
+.blendchips .bc{
+  font-family:"Archivo",sans-serif;font-weight:700;font-stretch:80%;font-size:12.5px;
+  background:var(--paper2);border:1.5px solid var(--ink2);border-radius:4px;padding:4px 8px;cursor:pointer;
+}
+.blendchips .bc:hover{border-color:#b5179e;color:#b5179e}
+.presets{display:flex;gap:6px;flex-wrap:wrap;border-top:1px dashed var(--rule);padding-top:8px}
+@media (max-width:640px){
+  .builder select{max-width:100%}
+}
 
 /* ============ board ============ */
 main{max-width:1060px;margin:0 auto;padding:18px 20px 60px}
@@ -184,7 +214,7 @@ footer{border-top:4px solid var(--ink);background:var(--paper2)}
       New York City &middot; The standings
     </div>
     <h1>Every neighborhood,<br><span class="accent">ranked</span></h1>
-    <p class="dek">All <b>197</b> of New York City's residential neighborhood tabulation areas, sorted <b><span id="ncats">61</span> different ways</b> &mdash; population, money, housing, commutes, crime, noise, trees, rats and more. Pick a category and watch the board reshuffle. Every number comes from the Census Bureau, a city agency or the Metropolitan Transportation Authority. <a href="methodology.html" style="color:var(--ink)">Methodology&nbsp;&rarr;</a></p>
+    <p class="dek">All <b>197</b> of New York City's residential neighborhood tabulation areas, sorted <b><span id="ncats">61</span> different ways</b> &mdash; population, money, housing, commutes, crime, noise, trees, rats and more. Pick a category and watch the board reshuffle, flip it first-to-last or last-to-first, or mix your own ranking from any categories. Every number comes from the Census Bureau, a city agency or the Metropolitan Transportation Authority. <a href="methodology.html" style="color:var(--ink)">Methodology&nbsp;&rarr;</a></p>
   </div>
   <div class="ticker" aria-hidden="true"><div class="ticker-track" id="ticker"></div></div>
 </header>
@@ -196,7 +226,7 @@ footer{border-top:4px solid var(--ink);background:var(--paper2)}
     <div class="toolrow">
       <input type="search" id="q" placeholder="Find a neighborhood&hellip;" aria-label="Find a neighborhood">
       <div class="boro-chips" id="boros" title="Filter boroughs"></div>
-      <button class="dirbtn" id="dir" title="Flip sort order">High &rarr; low</button>
+      <button class="dirbtn" id="dir" title="Flip the order of the board">&#8645; First &rarr; last</button>
     </div>
   </div>
 </div>
@@ -247,6 +277,7 @@ const GROUPS = [
   ["homes","Homes","#1560bd"],
   ["moving","Getting around","#8338ec"],
   ["streets","Street life","#ff5910"],
+  ["combo","Mix your own","#b5179e"],
 ];
 const TOPCODE = {median_hh_income:200000, median_rent:3500, median_home_value:2000000};
 const ACS = "Census ACS 2020-2024";
@@ -325,6 +356,8 @@ const BOROS = {Manhattan:["mn","var(--mn)","M"],Brooklyn:["bk","var(--bk)","B"],
 
 /* ================= state ================= */
 let DATA=null, areas=[], ranks={}, cur="population", desc=true, boroFilter=new Set(Object.keys(BOROS)), query="";
+let custom=null; /* {type:"ratio"|"blend", ...} — active make-your-own combination */
+let blendPicks=[]; /* ids staged in the blend builder */
 const byId=Object.fromEntries(M.map(m=>[m[0],m]));
 
 const fmtV=(id,v)=>{
@@ -355,7 +388,17 @@ fetch("rankings.json").then(r=>r.json()).then(d=>{
   const missing=M.filter(m=>!(m[0] in areas[0].values));
   if(missing.length) console.warn("config metrics missing from data:",missing.map(m=>m[0]));
   document.getElementById("ncats").textContent=M.length;
-  computeRanks(); buildControls(); buildTicker(); buildRows(); apply(false);
+  computeRanks();
+  /* restore a shared link: #m=<id>, #ratio=<a>~<b> or #blend=<a>~<b>~... */
+  const h=decodeURIComponent(location.hash.slice(1));
+  let pendingRatio=null, pendingBlend=null;
+  if(h.startsWith("m=")&&byId[h.slice(2)]){cur=h.slice(2);curGroup=byId[cur][1];}
+  else if(h.startsWith("ratio=")){const [a,b]=h.slice(6).split("~");if(byId[a]&&byId[b]){pendingRatio=[a,b];curGroup="combo";}}
+  else if(h.startsWith("blend=")){const ids=h.slice(6).split("~").filter(x=>byId[x]);if(ids.length>=2){pendingBlend=ids;curGroup="combo";}}
+  buildControls(); buildTicker(); buildRows();
+  if(pendingRatio){setRatio(pendingRatio[0],pendingRatio[1],false);buildCats();}
+  else if(pendingBlend){setBlend(pendingBlend,false);buildCats();}
+  else apply(false);
 });
 
 function computeRanks(){
@@ -369,6 +412,153 @@ function computeRanks(){
     });
     ranks[id]={map:r,n:vals.length};
   }
+}
+
+/* ================= make-your-own combinations ================= */
+function makeRanks(vmap, firstIsHigh){
+  const ents=Object.entries(vmap).filter(([,v])=>v!=null)
+    .sort((x,y)=>firstIsHigh?y[1]-x[1]:x[1]-y[1]);
+  const map={}; let prev=null, pr=0;
+  ents.forEach(([c,v],i)=>{const r=(prev!==null&&v===prev)?pr:i+1;map[c]=r;prev=v;pr=r;});
+  return {map,n:ents.length};
+}
+function smart(v){
+  const av=Math.abs(v);
+  if(av>=100) return Math.round(v).toLocaleString("en-US");
+  if(av>=10) return (Math.round(v*10)/10).toLocaleString("en-US");
+  if(av>=1) return v.toFixed(2);
+  return v.toFixed(3);
+}
+function getSpec(){
+  if(custom) return custom;
+  const [id,,label,,src,note]=byId[cur];
+  return {type:"metric",label,src,note,
+    val:a=>a.values[id]?.v??null,
+    moeStr:a=>{const m=a.values[id]?.m;return m==null?"":fmtMoe(id,m);},
+    fmt:v=>fmtV(id,v),
+    ranks:ranks[id], invert:false};
+}
+function setRatio(aId,bId,animate=true){
+  const A=byId[aId], B=byId[bId];
+  if(!A||!B||aId===bId) return;
+  const vmap={};
+  areas.forEach(ar=>{
+    const va=ar.values[aId]?.v, vb=ar.values[bId]?.v;
+    vmap[ar.code]=(va==null||vb==null||vb===0)?null:va/vb;
+  });
+  custom={type:"ratio",a:aId,b:bId,
+    label:`${A[2]} ÷ ${B[2]}`,
+    src:"your combination",
+    note:`Each neighborhood's "${A[2].toLowerCase()}" divided by its "${B[2].toLowerCase()}." Sources: ${A[4]===B[4]?A[4]:A[4]+"; "+B[4]}.`,
+    val:ar=>vmap[ar.code], moeStr:()=>"", fmt:smart,
+    ranks:makeRanks(vmap,true), invert:false};
+  history.replaceState(null,"","#ratio="+aId+"~"+bId);
+  document.querySelectorAll(".cat").forEach(x=>x.classList.remove("on"));
+  apply(animate);
+}
+function setBlend(ids,animate=true){
+  ids=ids.filter(id=>byId[id]);
+  if(ids.length<2) return;
+  const vmap={};
+  areas.forEach(ar=>{
+    let s=0, ok=true;
+    for(const id of ids){const r=ranks[id].map[ar.code]; if(r==null){ok=false;break;} s+=r;}
+    vmap[ar.code]=ok?Math.round(s/ids.length*10)/10:null;
+  });
+  custom={type:"blend",ids:[...ids],
+    label:"Blend: "+ids.map(id=>byId[id][2]).join(" + "),
+    src:"your combination",
+    note:`Average of each neighborhood's rank across these ${ids.length} categories (rank 1 = highest value in a category). Lowest average leads.`,
+    val:ar=>vmap[ar.code], moeStr:()=>"",
+    fmt:v=>"avg rank "+v.toFixed(1),
+    ranks:makeRanks(vmap,false), invert:true};
+  history.replaceState(null,"","#blend="+ids.join("~"));
+  document.querySelectorAll(".cat").forEach(x=>x.classList.remove("on"));
+  apply(animate);
+}
+const PRESETS=[
+  ["median_rent","median_hh_income"],
+  ["median_home_value","median_hh_income"],
+  ["tree_density","density"],
+  ["noise_rate","complaints_rate"],
+  ["subway_stations","land_area"],
+];
+function metricSelect(id){
+  const s=document.createElement("select"); s.id=id;
+  GROUPS.filter(g=>g[0]!=="combo").forEach(([gid,glabel])=>{
+    const og=document.createElement("optgroup"); og.label=glabel;
+    M.filter(m=>m[1]===gid).forEach(m=>{
+      const o=document.createElement("option"); o.value=m[0]; o.textContent=m[2];
+      og.appendChild(o);
+    });
+    s.appendChild(og);
+  });
+  return s;
+}
+function renderBuilder(c){
+  const wrap=document.createElement("div"); wrap.className="builder";
+  const mode=(custom?.type==="blend")?"blend":"ratio";
+
+  const bm=document.createElement("div"); bm.className="bmode";
+  bm.innerHTML=`<button data-m="ratio">Ratio</button><button data-m="blend">Blend</button>
+    <span class="bhint" id="bhint"></span>`;
+  wrap.appendChild(bm);
+
+  /* ratio pane */
+  const rp=document.createElement("div"); rp.className="bpane"; rp.id="bp-ratio";
+  const selA=metricSelect("selA"), selB=metricSelect("selB");
+  selA.value=custom?.type==="ratio"?custom.a:"median_rent";
+  selB.value=custom?.type==="ratio"?custom.b:"median_hh_income";
+  const div=document.createElement("span"); div.className="divide"; div.textContent="÷";
+  const goR=document.createElement("button"); goR.className="gobtn"; goR.textContent="Rank it";
+  goR.onclick=()=>setRatio(selA.value,selB.value);
+  rp.append(selA,div,selB,goR);
+  wrap.appendChild(rp);
+
+  /* blend pane */
+  const bp=document.createElement("div"); bp.className="bpane"; bp.id="bp-blend";
+  const selC=metricSelect("selC");
+  const add=document.createElement("button"); add.className="gobtn"; add.textContent="+ Add";
+  const chips=document.createElement("div"); chips.className="blendchips";
+  const goB=document.createElement("button"); goB.className="gobtn"; goB.textContent="Rank it";
+  if(custom?.type==="blend") blendPicks=[...custom.ids];
+  const renderChips=()=>{
+    chips.innerHTML="";
+    blendPicks.forEach(id=>{
+      const b=document.createElement("button"); b.className="bc";
+      b.innerHTML=byId[id][2]+" &times;"; b.title="Remove";
+      b.onclick=()=>{blendPicks=blendPicks.filter(x=>x!==id);renderChips();};
+      chips.appendChild(b);
+    });
+    goB.disabled=blendPicks.length<2;
+  };
+  add.onclick=()=>{if(!blendPicks.includes(selC.value)&&blendPicks.length<6){blendPicks.push(selC.value);renderChips();}};
+  goB.onclick=()=>setBlend(blendPicks);
+  bp.append(selC,add,chips,goB);
+  wrap.appendChild(bp);
+
+  /* presets */
+  const pr=document.createElement("div"); pr.className="presets";
+  PRESETS.forEach(([a,b])=>{
+    const btn=document.createElement("button"); btn.className="cat";
+    btn.textContent=byId[a][2]+" ÷ "+byId[b][2];
+    btn.onclick=()=>setRatio(a,b);
+    pr.appendChild(btn);
+  });
+  wrap.appendChild(pr);
+
+  const setMode=m=>{
+    bm.querySelectorAll("button[data-m]").forEach(x=>x.classList.toggle("on",x.dataset.m===m));
+    rp.style.display=m==="ratio"?"":"none";
+    bp.style.display=m==="blend"?"":"none";
+    document.getElementById("bhint").textContent=m==="ratio"
+      ?"Divide any category by any other."
+      :"Average a neighborhood's ranks across 2-6 categories.";
+  };
+  bm.querySelectorAll("button[data-m]").forEach(x=>x.onclick=()=>setMode(x.dataset.m));
+  c.appendChild(wrap);
+  setMode(mode);
+  renderChips();
 }
 
 /* ================= controls ================= */
@@ -396,7 +586,7 @@ function buildControls(){
     };
     bc.appendChild(b);
   }
-  document.getElementById("dir").onclick=()=>{desc=!desc;document.getElementById("dir").innerHTML=desc?"High &rarr; low":"Low &rarr; high";apply(true);};
+  document.getElementById("dir").onclick=()=>{desc=!desc;document.getElementById("dir").innerHTML=desc?"&#8645; First &rarr; last":"&#8645; Last &rarr; first";apply(true);};
   document.getElementById("q").addEventListener("input",e=>{query=e.target.value.trim().toLowerCase();apply(true);});
   document.getElementById("dclose").onclick=closeDrawer;
   document.getElementById("scrim").onclick=closeDrawer;
@@ -405,6 +595,7 @@ function buildControls(){
 }
 function buildCats(){
   const c=document.getElementById("cats"); c.innerHTML="";
+  if(curGroup==="combo"){renderBuilder(c);return;}
   const gcolor=GROUPS.find(g=>g[0]===curGroup)[2];
   M.filter(m=>m[1]===curGroup).forEach(m=>{
     const b=document.createElement("button");
@@ -416,7 +607,8 @@ function buildCats(){
   c.querySelector(".cat.on")?.scrollIntoView({inline:"center",block:"nearest"});
 }
 function selectMetric(id){
-  cur=id;
+  cur=id; custom=null;
+  history.replaceState(null,"","#m="+id);
   const grp=byId[id][1];
   if(grp!==curGroup){curGroup=grp;document.querySelectorAll(".gtab").forEach(x=>x.classList.toggle("on",x.dataset.g===grp));buildCats();}
   document.querySelectorAll(".cat").forEach(x=>x.classList.toggle("on",x.dataset.id===id));
@@ -462,20 +654,21 @@ function buildRows(){
 }
 
 function apply(animate){
-  const [id,,label,,src,note]=byId[cur];
-  document.getElementById("btitle").textContent=label;
-  document.getElementById("bsrc").textContent=src;
-  document.getElementById("bnote").textContent=note;
+  const S=getSpec();
+  document.getElementById("btitle").textContent=S.label;
+  document.getElementById("bsrc").textContent=S.src;
+  document.getElementById("bnote").textContent=S.note;
 
   const board=document.getElementById("board");
   const first={};
   if(animate) for(const c in rowEls){ if(rowEls[c].style.display!=="none") first[c]=rowEls[c].getBoundingClientRect().top; }
 
   const visible=areas.filter(a=>boroFilter.has(a.boro)&&(!query||a.name.toLowerCase().includes(query)));
-  const has=visible.filter(a=>a.values[id]?.v!=null).sort((a,b)=>desc?b.values[id].v-a.values[id].v:a.values[id].v-b.values[id].v);
-  const nots=visible.filter(a=>a.values[id]?.v==null);
+  const has=visible.filter(a=>S.val(a)!=null)
+    .sort((a,b)=>(S.ranks.map[a.code]-S.ranks.map[b.code])*(desc?1:-1)||a.name.localeCompare(b.name));
+  const nots=visible.filter(a=>S.val(a)==null);
   const ordered=[...has,...nots];
-  const max=Math.max(...has.map(a=>Math.abs(a.values[id].v)),1e-9);
+  const max=Math.max(...has.map(a=>Math.abs(S.val(a))),1e-9);
 
   document.getElementById("cnote").textContent=
     (visible.length<areas.length?`${visible.length} of 197 shown`:`197 neighborhoods`)+
@@ -487,15 +680,16 @@ function apply(animate){
   ordered.forEach((a,i)=>{
     const el=rowEls[a.code];
     board.appendChild(el);
-    const vm=a.values[id]||{v:null,m:null};
-    const globalRank=ranks[id].map[a.code];
-    el.classList.toggle("nodata",vm.v==null);
-    el.classList.toggle("top1",i===0&&vm.v!=null);
-    el.querySelector(".rank").textContent=vm.v==null?"—":globalRank;
+    const v=S.val(a);
+    const r=S.ranks.map[a.code];
+    el.classList.toggle("nodata",v==null);
+    el.classList.toggle("top1",i===0&&v!=null);
+    el.querySelector(".rank").textContent=v==null?"—":r;
     const bar=el.querySelector(".bar");
-    bar.style.width=vm.v==null?"0":(Math.abs(vm.v)/max*100).toFixed(2)+"%";
-    const moe=vm.m!=null?` <span class="moe">${fmtMoe(id,vm.m)}</span>`:"";
-    el.querySelector(".val").innerHTML=vm.v==null?"no data":fmtV(id,vm.v)+moe;
+    const w=v==null?0:(S.invert?(S.ranks.n+1-v)/S.ranks.n:Math.abs(v)/max);
+    bar.style.width=(w*100).toFixed(2)+"%";
+    const ms=v==null?"":S.moeStr(a);
+    el.querySelector(".val").innerHTML=v==null?"no data":S.fmt(v)+(ms?` <span class="moe">${ms}</span>`:"");
   });
 
   if(animate){
