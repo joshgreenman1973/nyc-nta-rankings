@@ -7,308 +7,215 @@
 <meta name="description" content="All 197 of New York City's residential neighborhoods, ranked 63 different ways with verifiable government data.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Archivo:wdth,wght@62..125,400..900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Karla:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="house.css">
 <style>
+/* page layer on top of house system v5 (house.css, vendored) */
 :root{
-  --paper:#f5efe0; --paper2:#efe6d0; --ink:#181310; --ink2:#4a4238; --rule:#c9bda3;
-  --mn:#e02d3c; --bk:#1560bd; --qn:#ff5910; --bx:#0f8a5f; --si:#8338ec;
-  --maroon:#7a1f2b; --navy:#12244d;
+  --accent:var(--sun); --rule:var(--line);
+  --mn:var(--vermilion); --bx:var(--mint); --bk:var(--cobalt); --qn:var(--sun); --si:var(--lilac);
+  --gut:clamp(16px,4vw,48px);
 }
-*{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
-body{
-  background:var(--paper); color:var(--ink);
-  font-family:"Spectral",Georgia,serif;
-  -webkit-font-smoothing:antialiased;
-}
-body::before{
-  content:""; position:fixed; inset:0; pointer-events:none; z-index:50; opacity:.5;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .04 0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
-}
-.cond{font-family:"Archivo",sans-serif;font-stretch:66%}
+.lede .whatbtn{font:inherit;color:var(--fg);background:none;border:0;padding:0;cursor:pointer;
+  text-decoration:underline;text-decoration-color:var(--sun);text-decoration-thickness:2px;text-underline-offset:3px}
+.whatpop,.aipop{display:none;max-width:62ch;margin-top:14px;border-left:3px solid var(--sun);padding:4px 0 4px 14px;font-size:15px;line-height:1.55;color:var(--fg2)}
+.whatpop.show,.aipop.show{display:block}
+.whatpop b{color:var(--fg)}
 
-/* ============ masthead ============ */
-header{border-bottom:4px solid var(--ink); position:relative; overflow:hidden}
-.mast{max-width:1060px;margin:0 auto;padding:34px 20px 18px}
-.kicker{font-family:"Archivo",sans-serif;font-weight:800;font-stretch:75%;letter-spacing:.14em;text-transform:uppercase;font-size:13px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.kicker .dots{display:inline-flex;gap:4px}
-.kicker .dots i{width:11px;height:11px;border-radius:50%;display:inline-block}
-h1{
-  font-family:"Alfa Slab One",serif;font-weight:400;
-  font-size:clamp(30px,5vw,56px);line-height:1;margin:10px 0 12px;
-  text-shadow:2px 2px 0 var(--paper2), 4px 4px 0 var(--rule);
-}
-h1 .accent{color:var(--mn)}
-.dek{font-size:clamp(15px,1.8vw,19px);max-width:64ch;color:var(--ink2)}
-.dek b{color:var(--ink)}
+/* opening chart: every neighborhood as a dot */
+.fieldwrap{padding:24px var(--gut) 4px}
+.fieldcap{display:flex;justify-content:space-between;align-items:baseline;gap:6px 20px;flex-wrap:wrap;font-size:var(--t-small);color:var(--fg2);margin:0 0 4px}
+.fieldcap b{color:var(--fg);font-weight:700}
+#field{min-height:170px}
+#field svg{display:block;overflow:visible}
+#field text{font-family:var(--sans);font-size:13px;fill:var(--fg2)}
+#field .lane{stroke:var(--line2);stroke-width:1}
+#field .med{stroke:var(--fg2);stroke-width:1;stroke-dasharray:2 3}
+#field .dot{cursor:pointer;mix-blend-mode:var(--blend);transition:opacity .2s}
+#field .dot.dim{opacity:.1}
+#field .dot.hot{stroke:var(--fg);stroke-width:2;mix-blend-mode:normal}
+.readout{color:var(--fg2)}
+.readout b{color:var(--fg)}
 
-/* ticker */
-.ticker{border-top:2px solid var(--ink);background:var(--ink);color:var(--paper);overflow:hidden;white-space:nowrap}
-.ticker-track{display:inline-block;padding:7px 0;animation:tick 36s linear infinite}
+/* superlatives ticker, kept quiet */
+.ticker{border-top:1px solid var(--line2);border-bottom:1px solid var(--line2);overflow:hidden;white-space:nowrap;margin-top:16px}
+.ticker-track{display:inline-block;padding:9px 0;animation:tick 40s linear infinite}
 .ticker:hover .ticker-track{animation-play-state:paused}
 @keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-.ticker span{font-family:"Archivo",sans-serif;font-stretch:75%;font-weight:600;font-size:13.5px;letter-spacing:.02em;margin:0 18px}
-.ticker b{font-weight:900;color:#ffd166;text-transform:uppercase;letter-spacing:.06em}
+.ticker span{font-size:14px;color:var(--fg2);margin:0 26px 0 0}
+.ticker b{color:var(--fg);font-weight:700}
+@media (prefers-reduced-motion:reduce){.ticker-track{animation:none}}
 
-/* ============ controls ============ */
-.controls{position:sticky;top:0;z-index:40;background:var(--paper);border-bottom:2px solid var(--ink);box-shadow:0 3px 0 rgba(24,19,16,.08)}
-.controls-inner{max-width:1060px;margin:0 auto;padding:10px 20px}
-.groups{display:flex;gap:6px;overflow-x:auto;padding-bottom:8px;scrollbar-width:thin}
-.gtab{
-  font-family:"Archivo",sans-serif;font-weight:800;font-stretch:75%;font-size:13px;letter-spacing:.05em;text-transform:uppercase;
-  border:2px solid var(--ink);background:transparent;color:var(--ink);padding:7px 13px;cursor:pointer;white-space:nowrap;border-radius:999px;
-  transition:background .15s,color .15s;
-}
-.gtab:hover{background:var(--paper2)}
-.gtab.on{background:var(--ink);color:var(--paper)}
-.cats{display:flex;gap:6px;flex-wrap:wrap;padding:8px 0 4px}
-.cat{
-  font-family:"Archivo",sans-serif;font-weight:600;font-stretch:80%;font-size:13.5px;
-  border:1.5px solid var(--ink2);background:var(--paper);color:var(--ink);
-  padding:5px 11px;border-radius:4px;cursor:pointer;transition:all .12s;
-}
-.cat:hover{border-color:var(--ink);transform:translateY(-1px);box-shadow:2px 2px 0 var(--rule)}
-#tip{
-  position:fixed;z-index:80;max-width:330px;background:var(--ink);color:var(--paper);
-  font-family:"Archivo",sans-serif;font-stretch:85%;font-size:13px;line-height:1.45;
-  padding:9px 12px;border-radius:5px;box-shadow:4px 4px 0 rgba(24,19,16,.25);
-  pointer-events:none;opacity:0;transition:opacity .12s;
-}
+/* controls */
+.controls{position:sticky;top:0;z-index:40;display:block;padding:0;background:var(--bg);border-bottom:1px solid var(--line)}
+.controls-inner{padding:0 var(--gut) 10px}
+.groups{display:flex;overflow-x:auto;border-bottom:1px solid var(--line2);scrollbar-width:none}
+.gtab{font-size:15px;font-weight:600;background:none;border:0;border-bottom:3px solid transparent;color:var(--fg2);
+  padding:12px 14px 9px;cursor:pointer;white-space:nowrap;margin-bottom:-1px}
+.gtab:first-child{padding-left:0}
+.gtab:hover{color:var(--fg)}
+.gtab.on{color:var(--fg);border-bottom-color:var(--accent)}
+.cats{display:flex;gap:6px;flex-wrap:wrap;padding:10px 0 2px}
+button.cat,.bmode button,.dsort button,.cmp-topics button{
+  font-size:var(--t-small);font-weight:600;padding:6px 10px;border:1px solid var(--line);background:transparent;color:var(--fg2);cursor:pointer}
+button.cat:hover,.bmode button:hover,.dsort button:hover,.cmp-topics button:hover{border-color:var(--fg);color:var(--fg)}
+button.cat.on,.bmode button.on,.dsort button.on,.cmp-topics button.on{background:var(--fg);border-color:var(--fg);color:var(--bg)}
+#tip{position:fixed;z-index:80;max-width:330px;background:var(--fg);color:var(--bg);font-size:14px;line-height:1.45;
+  padding:10px 12px;pointer-events:none;opacity:0;transition:opacity .12s}
 #tip.show{opacity:1}
-#tip .tsrc{display:block;margin-top:5px;font-size:11px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#ffd166}
-.cat.on{background:var(--gcolor,var(--ink));border-color:var(--gcolor,var(--ink));color:#fff;font-weight:800}
-.toolrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:6px 0 8px;border-top:1px dashed var(--rule);margin-top:4px}
-.toolrow input[type=search]{
-  font-family:"Archivo",sans-serif;font-size:14px;padding:7px 10px;border:2px solid var(--ink);background:#fffdf6;border-radius:4px;min-width:180px;flex:1;max-width:280px;
-}
-.boro-chips{display:flex;gap:5px}
-.bchip{
-  font-family:"Archivo",sans-serif;font-weight:900;font-size:12px;width:32px;height:28px;border-radius:4px;cursor:pointer;
-  border:2px solid var(--ink);background:var(--paper);color:var(--ink);transition:all .12s;
-}
-.bchip.on{color:#fff}
+#tip .tsrc{display:block;margin-top:6px;font-size:13px;font-weight:700;color:#4a4f4a}
+.toolrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:10px 0 0}
+.toolrow input[type=search]{padding:8px 11px;font-size:14px}
+.boro-chips{display:flex;gap:4px}
+.bchip{font-size:13px;font-weight:700;width:32px;height:33px;border:1px solid var(--line);background:transparent;color:var(--fg2);cursor:pointer}
+.bchip:hover{border-color:var(--fg)}
+.bchip.on{color:#111311}
 .bchip.on.mn{background:var(--mn);border-color:var(--mn)}
 .bchip.on.bk{background:var(--bk);border-color:var(--bk)}
 .bchip.on.qn{background:var(--qn);border-color:var(--qn)}
 .bchip.on.bx{background:var(--bx);border-color:var(--bx)}
 .bchip.on.si{background:var(--si);border-color:var(--si)}
-.dirbtn{
-  font-family:"Archivo",sans-serif;font-weight:900;font-stretch:75%;font-size:13px;text-transform:uppercase;letter-spacing:.04em;
-  border:2px solid var(--ink);background:var(--ink);color:var(--paper);padding:6px 12px;border-radius:4px;cursor:pointer;
-}
-.dirbtn:hover{background:var(--ink2)}
+.dirbtn,.dclose{font-size:var(--t-small);font-weight:600;padding:7px 11px;border:1px solid var(--line);background:transparent;color:var(--fg);cursor:pointer;white-space:nowrap}
+.dirbtn:hover,.dclose:hover{border-color:var(--fg)}
 /* make-your-own builder */
-.builder{display:flex;flex-direction:column;gap:9px;padding:10px 0 6px}
-.bmode{display:flex;gap:6px;align-items:center}
-.bmode button{
-  font-family:"Archivo",sans-serif;font-weight:800;font-stretch:75%;font-size:12.5px;letter-spacing:.05em;text-transform:uppercase;
-  border:2px solid var(--ink);background:var(--paper);color:var(--ink);padding:5px 12px;border-radius:999px;cursor:pointer;
-}
-.bmode button.on{background:#b5179e;border-color:#b5179e;color:#fff}
-.bhint{font-family:"Archivo",sans-serif;font-stretch:85%;font-size:12.5px;color:var(--ink2)}
+.builder{display:flex;flex-direction:column;gap:10px;padding:10px 0 2px}
+.bmode{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.bhint{font-size:var(--t-small);color:var(--fg2);margin-left:4px}
 .bpane{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.builder select{
-  font-family:"Archivo",sans-serif;font-size:13.5px;padding:7px 8px;border:2px solid var(--ink);
-  background:#fffdf6;border-radius:4px;max-width:min(46%,320px);
-}
-.divide{font-family:"Alfa Slab One",serif;font-size:20px}
-.gobtn{
-  font-family:"Archivo",sans-serif;font-weight:900;font-stretch:75%;font-size:13px;text-transform:uppercase;letter-spacing:.05em;
-  background:#b5179e;color:#fff;border:2px solid #b5179e;border-radius:4px;padding:7px 14px;cursor:pointer;
-}
-.gobtn:disabled{opacity:.4;cursor:default}
+.builder select{max-width:min(46%,320px)}
+.divide{font-family:var(--display);font-weight:700;font-size:22px}
+.gobtn{font-size:var(--t-small);font-weight:700;background:var(--sun);color:#111311;border:1px solid var(--sun);padding:8px 13px;cursor:pointer}
+.gobtn:disabled{opacity:.35;cursor:default}
 .blendchips{display:flex;gap:5px;flex-wrap:wrap}
-.blendchips .bc{
-  font-family:"Archivo",sans-serif;font-weight:700;font-stretch:80%;font-size:12.5px;
-  background:var(--paper2);border:1.5px solid var(--ink2);border-radius:4px;padding:4px 8px;cursor:pointer;
-}
-.blendchips .bc:hover{border-color:#b5179e;color:#b5179e}
-.presets{display:flex;gap:6px;flex-wrap:wrap;border-top:1px dashed var(--rule);padding-top:8px}
-@media (max-width:640px){
-  .builder select{max-width:100%}
-}
+.blendchips .bc{font-size:13px;font-weight:600;background:var(--bg2);border:1px solid var(--line);color:var(--fg);padding:5px 8px;cursor:pointer}
+.blendchips .bc:hover{border-color:var(--sun)}
+.presets{display:flex;gap:6px;flex-wrap:wrap;border-top:1px solid var(--line2);padding-top:10px}
+@media (max-width:640px){.builder select{max-width:100%}}
 
-/* ============ board ============ */
-main{max-width:1060px;margin:0 auto;padding:18px 20px 60px}
-.board-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:4px}
-.board-title{font-family:"Alfa Slab One",serif;font-size:clamp(21px,3.4vw,32px);line-height:1.1}
-.board-src{font-family:"Archivo",sans-serif;font-stretch:80%;font-size:12.5px;color:var(--ink2);letter-spacing:.02em;text-align:right}
-.board-note{font-style:italic;color:var(--ink2);font-size:14px;margin-bottom:12px}
-#board{position:relative}
-.row{
-  display:grid;grid-template-columns:64px minmax(150px,240px) 1fr;gap:10px;align-items:center;
-  padding:5px 8px 5px 0;border-bottom:1px solid var(--rule);cursor:pointer;background:transparent;
-  width:100%;border-left:none;border-right:none;border-top:none;text-align:left;font:inherit;color:inherit;
-  transition:background .15s;
-}
-.row:hover{background:var(--paper2)}
-.row.top1{border-bottom:2px solid var(--ink)}
-.rank{
-  font-family:"Archivo",sans-serif;font-stretch:62%;font-weight:900;font-size:30px;line-height:1;
-  text-align:right;font-variant-numeric:tabular-nums;color:var(--ink);
-}
-.row.nodata .rank{color:var(--rule)}
+/* the board */
+main{padding:24px var(--gut) 60px}
+.board-head{display:flex;justify-content:space-between;align-items:baseline;gap:6px 16px;flex-wrap:wrap}
+.board-title{font-family:var(--display);font-variation-settings:'wdth' 88;font-weight:700;font-size:1.6rem;line-height:1.12}
+.board-src{font-size:var(--t-small);color:var(--fg2)}
+.board-note{color:var(--fg2);font-size:15px;max-width:72ch;margin:6px 0 0}
+.count-note{font-size:var(--t-small);color:var(--fg2);margin:14px 0 6px}
+#board{position:relative;border-top:1.5px solid var(--fg)}
+.row{display:grid;grid-template-columns:56px minmax(150px,270px) 1fr;gap:12px;align-items:center;
+  padding:6px 8px 6px 0;border:0;border-bottom:1px solid var(--line2);cursor:pointer;background:transparent;
+  width:100%;text-align:left;font:inherit;color:inherit}
+.row:hover{background:var(--bg2)}
+.rank{font-family:var(--display);font-variation-settings:'wdth' 70;font-weight:700;font-size:26px;line-height:1;text-align:right;font-variant-numeric:tabular-nums}
+.row.nodata .rank{color:var(--line)}
 .who{min-width:0}
-.nm{font-family:"Archivo",sans-serif;font-weight:800;font-stretch:78%;font-size:16.5px;line-height:1.12;overflow-wrap:anywhere}
-.bo{font-family:"Archivo",sans-serif;font-weight:700;font-stretch:75%;font-size:11px;letter-spacing:.1em;text-transform:uppercase;display:inline-flex;align-items:center;gap:5px;margin-top:1px;color:var(--ink2)}
-.bo i{width:9px;height:9px;border-radius:50%;display:inline-block}
-.barwrap{display:flex;align-items:center;gap:9px;min-width:0}
-.bar{height:22px;border-radius:2px;min-width:2px;transition:width .6s cubic-bezier(.22,.9,.35,1);box-shadow:inset 0 -4px 0 rgba(0,0,0,.18)}
-.val{font-family:"Archivo",sans-serif;font-weight:900;font-stretch:70%;font-size:16px;white-space:nowrap;font-variant-numeric:tabular-nums}
-.moe{font-weight:500;font-size:11.5px;color:var(--ink2)}
-.row.nodata .val{color:var(--ink2);font-weight:600;font-style:italic}
+.nm{font-family:var(--display);font-variation-settings:'wdth' 85;font-weight:600;font-size:16.5px;line-height:1.15;overflow-wrap:anywhere}
+.bo{font-size:13px;color:var(--fg2);display:inline-flex;align-items:center;gap:6px;margin-top:2px}
+.bo i{width:9px;height:9px;display:inline-block}
+.barwrap{display:flex;align-items:center;gap:10px;min-width:0}
+.bar{height:16px;min-width:2px;transition:width .6s cubic-bezier(.22,.9,.35,1)}
+.val{font-family:var(--display);font-variation-settings:'wdth' 85;font-weight:600;font-size:15.5px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.moe{font-family:var(--sans);font-weight:400;font-size:12.5px;color:var(--fg2)}
+.row.nodata .val{color:var(--fg2);font-weight:400}
 @media (max-width:640px){
   .cats{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:thin;padding-bottom:6px}
-  .cat{white-space:nowrap;flex:0 0 auto}
-  .toolrow input[type=search]{min-width:120px}
-  .row{grid-template-columns:44px 1fr;grid-template-rows:auto auto;row-gap:2px;padding:7px 4px 7px 0}
-  .rank{font-size:24px;grid-row:span 2}
+  button.cat{white-space:nowrap;flex:0 0 auto}
+  .row{grid-template-columns:44px 1fr;grid-template-rows:auto auto;row-gap:3px;padding:8px 4px 8px 0}
+  .rank{font-size:22px;grid-row:span 2}
   .barwrap{grid-column:2}
-  .bar{height:15px}
-  .val{font-size:14px}
-  .nm{font-size:15px}
+  .bar{height:12px}
+  .nm{font-size:15.5px}
 }
 
-/* detail drawer */
-#drawer{
-  position:fixed;inset:auto 0 0 0;max-height:82vh;overflow-y:auto;z-index:60;
-  background:var(--paper);border-top:4px solid var(--ink);box-shadow:0 -12px 40px rgba(24,19,16,.35);
-  transform:translateY(102%);transition:transform .35s cubic-bezier(.22,.9,.3,1);
-}
-#drawer.open{transform:translateY(0)}
-.dwrap{max-width:1060px;margin:0 auto;padding:20px 20px 40px}
-.dhead{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;border-bottom:2px solid var(--ink);padding-bottom:10px;margin-bottom:14px}
-.dhead h2{font-family:"Alfa Slab One",serif;font-size:clamp(22px,4vw,34px);line-height:1.05}
-.dhead .bo{font-size:12px}
-.dmap{flex:0 0 auto;width:170px;max-width:34vw}
+/* side panels: one neighborhood, or a comparison */
+#drawer,#cmppanel{position:fixed;top:0;right:0;bottom:0;width:min(760px,100%);overflow-y:auto;z-index:60;
+  background:var(--bg);border-left:1px solid var(--line);transform:translateX(102%);transition:transform .3s cubic-bezier(.22,.9,.3,1)}
+#cmppanel{width:min(1000px,100%)}
+#drawer.open,#cmppanel.open{transform:none}
+.dwrap{padding:20px 24px 50px}
+.dhead,.cmp-head{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;flex-wrap:wrap;
+  padding-bottom:12px;margin-bottom:12px;border-bottom:1.5px solid var(--fg)}
+.dhead h2,.cmp-head h2{font-size:1.7rem;margin:0 0 4px}
+.dhead .bo{font-size:14px}
+.dbtns{display:flex;gap:6px;flex-wrap:wrap}
+.dmap{width:150px;max-width:34vw;margin:0}
 .dmap svg{display:block;width:100%;height:auto}
-.dmap .base{fill:#e6dcc4;stroke:#c9bda3;stroke-width:1}
-.dmap .park{fill:#dcd6bd;stroke:none}
-.dmap .sel{stroke:#181310;stroke-width:2.5}
-.dmap figcaption{font-family:"Archivo",sans-serif;font-stretch:80%;font-size:11px;color:var(--ink2);text-align:center;margin-top:3px}
-.dsort{display:flex;gap:5px;margin:0 0 6px}
-.dsort button{
-  font-family:"Archivo",sans-serif;font-weight:800;font-stretch:75%;font-size:12px;letter-spacing:.04em;text-transform:uppercase;
-  border:1.5px solid var(--ink);background:var(--paper);color:var(--ink);padding:4px 10px;border-radius:999px;cursor:pointer;
-}
-.dsort button.on{background:var(--ink);color:var(--paper)}
-/* what's-an-NTA popover */
-.whatbtn{
-  font:inherit;color:var(--ink);background:none;border:none;padding:0;cursor:pointer;
-  border-bottom:2px dotted var(--mn);font-weight:600;
-}
-.whatpop{
-  display:none;max-width:64ch;margin-top:12px;background:#fffdf6;border:2px solid var(--ink);border-radius:6px;
-  padding:14px 16px;font-size:15px;line-height:1.55;color:var(--ink2);box-shadow:4px 4px 0 var(--rule);
-}
-.whatpop.show{display:block}
-.whatpop b{color:var(--ink)}
-/* reverse-lookup dropdown */
-.lookup{position:relative;flex:1;max-width:280px;min-width:180px}
+.dmap .base{fill:#3a3f3a;stroke:var(--bg);stroke-width:1}
+.dmap .park{fill:#262a26;stroke:none}
+.dmap .sel{stroke:var(--fg);stroke-width:2}
+.dmap figcaption{font-size:12px;color:var(--fg2);text-align:center;margin-top:4px}
+.dintro{font-size:15px;color:var(--fg2);margin:0 0 10px;max-width:62ch}
+.dintro .k-hi{color:var(--sun);font-weight:700}
+.dintro .k-lo{color:var(--cyan);font-weight:700}
+.dsort{display:flex;gap:6px;margin:0 0 6px}
+.dgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:4px 28px}
+.dgroup{margin-top:16px}
+.dgroup h3{font-size:1.15rem;border-bottom:1.5px solid var(--fg);padding-bottom:4px;margin:0 0 2px}
+.dline{display:flex;justify-content:space-between;gap:10px;font-size:14.5px;padding:5px 0;border-bottom:1px solid var(--line2);cursor:pointer}
+.dline:hover{background:var(--bg2)}
+.dline .dv{font-weight:700;white-space:nowrap;font-variant-numeric:tabular-nums}
+.dline .dr{font-family:var(--display);font-variation-settings:'wdth' 75;font-weight:700;min-width:46px;text-align:right;margin-left:10px;color:var(--fg2);font-variant-numeric:tabular-nums}
+.dline .dr.hi{color:var(--sun)}
+.dline .dr.lo{color:var(--cyan)}
+/* neighborhood lookup */
+.lookup{position:relative;flex:1 1 200px;max-width:300px;min-width:170px}
 .lookup input{width:100%;max-width:none;min-width:0}
-.lk-list{
-  position:absolute;top:calc(100% + 4px);left:0;right:0;z-index:45;background:#fffdf6;border:2px solid var(--ink);
-  border-radius:4px;box-shadow:4px 4px 0 var(--rule);max-height:300px;overflow-y:auto;display:none;
-}
+.lk-list{position:absolute;top:calc(100% + 2px);left:0;right:0;z-index:45;background:var(--bg2);border:1px solid var(--fg);max-height:300px;overflow-y:auto;display:none}
 .lk-list.show{display:block}
-.lk{
-  display:flex;justify-content:space-between;align-items:center;gap:8px;width:100%;text-align:left;
-  font-family:"Archivo",sans-serif;font-stretch:85%;font-size:13.5px;padding:7px 10px;
-  background:none;border:none;border-bottom:1px solid var(--rule);cursor:pointer;color:var(--ink);
-}
-.lk:hover,.lk.hot{background:var(--paper2)}
-.lk .lkb{font-size:10.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--ink2);display:inline-flex;align-items:center;gap:4px}
-.lk .lkb i{width:8px;height:8px;border-radius:50%;display:inline-block}
-.dclose{font-family:"Archivo",sans-serif;font-weight:900;font-size:15px;border:2px solid var(--ink);background:var(--paper);border-radius:4px;padding:5px 11px;cursor:pointer}
-.dclose:hover{background:var(--ink);color:var(--paper)}
-.dgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:4px 26px}
-.dgroup{margin-top:10px}
-.dgroup h3{font-family:"Archivo",sans-serif;font-weight:900;font-stretch:70%;text-transform:uppercase;letter-spacing:.1em;font-size:13px;border-bottom:2px solid var(--ink);padding-bottom:3px;margin-bottom:4px}
-.dline{display:flex;justify-content:space-between;gap:8px;font-size:13.5px;padding:2.5px 0;border-bottom:1px dotted var(--rule);font-family:"Archivo",sans-serif;font-stretch:85%;cursor:pointer}
-.dline:hover{background:var(--paper2)}
-.dline .dv{font-weight:800;white-space:nowrap;font-variant-numeric:tabular-nums}
-.dline .dr{
-  font-weight:900;font-stretch:70%;min-width:44px;text-align:center;border-radius:3px;padding:0 4px;margin-left:6px;
-  background:var(--ink);color:var(--paper);font-size:12px;line-height:19px;align-self:center;
-}
-.dline .dr.hi{background:var(--mn)} .dline .dr.lo{background:var(--bk)}
-
-/* compare panel */
-#cmppanel{
-  position:fixed;inset:auto 0 0 0;max-height:88vh;overflow-y:auto;z-index:60;
-  background:var(--paper);border-top:4px solid var(--ink);box-shadow:0 -12px 40px rgba(24,19,16,.35);
-  transform:translateY(102%);transition:transform .35s cubic-bezier(.22,.9,.3,1);
-}
-#cmppanel.open{transform:translateY(0)}
-.cmp-head{display:flex;justify-content:space-between;align-items:center;gap:12px;border-bottom:2px solid var(--ink);padding-bottom:10px;margin-bottom:12px;flex-wrap:wrap}
-.cmp-head h2{font-family:"Alfa Slab One",serif;font-size:clamp(20px,3.4vw,30px)}
-.cmp-slots{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
-.cmp-chip{
-  display:inline-flex;align-items:center;gap:7px;font-family:"Archivo",sans-serif;font-weight:800;font-stretch:80%;font-size:13.5px;
-  border:2px solid var(--ink);border-radius:999px;padding:5px 12px;background:#fffdf6;cursor:pointer;
-}
-.cmp-chip i{width:11px;height:11px;border-radius:50%;display:inline-block}
-.cmp-chip:hover{background:var(--paper2)}
+.lk{display:flex;justify-content:space-between;align-items:center;gap:8px;width:100%;text-align:left;font-size:14px;padding:8px 11px;
+  background:none;border:0;border-bottom:1px solid var(--line2);cursor:pointer;color:var(--fg)}
+.lk:hover,.lk.hot{background:var(--bg)}
+.lk .lkb{font-size:12.5px;color:var(--fg2);display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.lk .lkb i{width:8px;height:8px;display:inline-block}
+/* compare */
+.cmp-slots{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.cmp-chip{display:inline-flex;align-items:center;gap:7px;font-size:14px;font-weight:600;border:1px solid var(--line);padding:6px 10px;background:transparent;color:var(--fg);cursor:pointer}
+.cmp-chip i{width:10px;height:10px;display:inline-block}
+.cmp-chip:hover{border-color:var(--fg)}
 .cmp-add{position:relative;min-width:200px}
-.cmp-add input{
-  font-family:"Archivo",sans-serif;font-size:14px;padding:7px 10px;border:2px solid var(--ink);background:#fffdf6;border-radius:999px;width:220px;
-}
-.cmp-topics{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px}
-.cmp-topics button{
-  font-family:"Archivo",sans-serif;font-weight:800;font-stretch:75%;font-size:12px;letter-spacing:.05em;text-transform:uppercase;
-  border:1.5px solid var(--ink);background:var(--paper);color:var(--ink);padding:4px 11px;border-radius:999px;cursor:pointer;
-}
-.cmp-topics button.on{background:var(--ink);color:var(--paper)}
+.cmp-add input{font-size:14px;padding:7px 10px;width:230px}
+.cmp-topics{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
 .cmp-scroll{overflow-x:auto}
-table.cmp{border-collapse:collapse;width:100%;font-family:"Archivo",sans-serif;font-stretch:82%}
-table.cmp th,table.cmp td{padding:6px 10px;border-bottom:1px solid var(--rule);text-align:right;white-space:nowrap}
+table.cmp{border-collapse:collapse;width:100%;font-size:14px}
+table.cmp th,table.cmp td{padding:7px 10px;border-bottom:1px solid var(--line2);text-align:right;white-space:nowrap}
 table.cmp th:first-child,table.cmp td:first-child{text-align:left;padding-left:0}
-table.cmp thead th{
-  position:sticky;top:0;background:var(--paper);border-bottom:2px solid var(--ink);
-  font-weight:900;font-stretch:72%;font-size:13.5px;vertical-align:bottom;
-}
-table.cmp thead th .thb{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--ink2)}
-table.cmp thead th .thb i{width:8px;height:8px;border-radius:50%;display:inline-block}
-table.cmp td.cat{font-weight:700;font-size:13px;cursor:pointer;max-width:260px;white-space:normal}
-table.cmp td.cat:hover{color:var(--mn)}
-table.cmp td .v{font-weight:800;font-size:13.5px;font-variant-numeric:tabular-nums}
-table.cmp td .r{color:var(--ink2);font-size:11.5px;margin-left:5px}
-table.cmp td.lead .v{background:#ffd166;box-shadow:2px 0 0 #ffd166,-2px 0 0 #ffd166;border-radius:2px}
-table.cmp td.nod{color:var(--ink2);font-style:italic;font-weight:400}
-.cmp-empty{font-style:italic;color:var(--ink2);padding:20px 0;font-size:15px}
+table.cmp thead th{position:sticky;top:0;background:var(--bg);border-bottom:1.5px solid var(--fg);font-family:var(--display);
+  font-variation-settings:'wdth' 85;font-weight:700;font-size:14.5px;vertical-align:bottom}
+table.cmp thead th .thb{font-family:var(--sans);font-weight:400;font-size:12.5px;color:var(--fg2);display:inline-flex;align-items:center;gap:5px}
+table.cmp thead th .thb i{width:8px;height:8px;display:inline-block}
+table.cmp td.cat{font-weight:600;cursor:pointer;max-width:260px;white-space:normal}
+table.cmp td.cat:hover{color:var(--sun)}
+table.cmp td .v{font-weight:700;font-variant-numeric:tabular-nums}
+table.cmp td .r{color:var(--fg2);font-size:12.5px;margin-left:6px}
+table.cmp td.lead .v{background:var(--sun);color:#111311;padding:1px 4px}
+table.cmp td.nod{color:var(--fg2)}
+.cmp-empty{color:var(--fg2);padding:20px 0;font-size:15px}
 /* footer */
-footer{border-top:4px solid var(--ink);background:var(--paper2)}
-.fwrap{max-width:1060px;margin:0 auto;padding:26px 20px 40px;font-size:14.5px;color:var(--ink2)}
-.fwrap a{color:var(--ink);font-weight:600}
-.fwrap p{margin:6px 0}
-.aibtn{
-  font-family:"Archivo",sans-serif;font-weight:800;font-size:13px;letter-spacing:.03em;
-  background:var(--maroon);color:#fff;border:none;border-radius:4px;padding:8px 14px;cursor:pointer;margin-top:10px;
-}
-.aipop{
-  display:none;background:var(--navy);color:#eef2ff;border-radius:6px;padding:14px 16px;max-width:56ch;margin-top:10px;font-size:14px;line-height:1.5;
-}
-.aipop.show{display:block}
-.aipop a{color:#ffd166}
-#scrim{position:fixed;inset:0;background:rgba(24,19,16,.25);z-index:55;opacity:0;pointer-events:none;transition:opacity .3s}
+.foot p{margin:6px 0;max-width:80ch}
+.foot b{color:var(--fg)}
+.aibtn{font-size:var(--t-small);font-weight:600;background:none;border:1px solid var(--line);color:var(--fg);padding:7px 11px;cursor:pointer;margin-top:10px}
+.aibtn:hover{border-color:var(--fg)}
+.aipop a{color:var(--fg)}
+#scrim{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:55;opacity:0;pointer-events:none;transition:opacity .3s}
 #scrim.show{opacity:1;pointer-events:auto}
-.count-note{font-family:"Archivo",sans-serif;font-stretch:80%;font-size:13px;color:var(--ink2);margin:10px 0 2px}
 </style>
 </head>
 <body>
+<div class="sheet">
 
-<header>
-  <div class="mast">
-    <div class="kicker">
-      <span class="dots"><i style="background:var(--mn)"></i><i style="background:var(--bk)"></i><i style="background:var(--qn)"></i><i style="background:var(--bx)"></i><i style="background:var(--si)"></i></span>
-      New York City
-    </div>
-    <h1>Every neighborhood,<br><span class="accent">ranked</span></h1>
-    <p class="dek">All <b>197</b> of New York City's residential <button class="whatbtn" id="whatbtn">neighborhood tabulation areas</button>, sorted <b><span id="ncats">63</span> different ways</b> &mdash; population, money, housing, commutes, crime, noise, trees, rats and more. Pick a category and watch the board reshuffle, flip it first-to-last or last-to-first, or mix your own ranking from any categories. Every number comes from the Census Bureau, a city agency or the Metropolitan Transportation Authority. <a href="methodology.html" style="color:var(--ink)">Methodology&nbsp;&rarr;</a></p>
-    <div class="whatpop" id="whatpop"><b>What's a neighborhood tabulation area?</b> New York City has no official neighborhood borders, so the Department of City Planning draws <b>neighborhood tabulation areas (NTAs)</b> — 262 statistical areas built from whole 2020 census tracts, sized so census survey data stays reliable. This board ranks the 197 residential ones and leaves out parks, cemeteries, airports and Rikers Island. The names are City Planning's, and an NTA doesn't always match what locals call the place — some neighborhoods are split (Bedford-Stuyvesant East and West), others merged. Tap any neighborhood's row to see its boundary on a map, or read the <a href="methodology.html">methodology</a>.</div>
-  </div>
-  <div class="ticker" aria-hidden="true"><div class="ticker-track" id="ticker"></div></div>
+<div class="strip"><span>Census Bureau, City Planning, NYPD, 311, MTA and other city records</span><span>Survey years 2020-2024; city records 2025 to July 2026</span></div>
+<header class="head">
+  <h1>Every neighborhood, ranked</h1>
+  <p class="finding" id="finding">Median household income runs from $28,469 in Mott Haven-Port Morris to $200,000 or more in Upper East Side-Carnegie Hill and Tribeca-Civic Center.</p>
+  <p class="lede">All <b>197</b> of New York City's residential <button class="whatbtn" id="whatbtn">neighborhood tabulation areas</button>, sorted <b><span id="ncats">63</span> different ways</b> &mdash; population, money, housing, commutes, crime, noise, trees, rats and more. Pick a category and watch the board reshuffle, flip it first-to-last or last-to-first, or mix your own ranking from any categories. Every number comes from the Census Bureau, a city agency or the Metropolitan Transportation Authority. <a href="methodology.html">Methodology&nbsp;&rarr;</a></p>
+  <div class="whatpop" id="whatpop"><b>What's a neighborhood tabulation area?</b> New York City has no official neighborhood borders, so the Department of City Planning draws <b>neighborhood tabulation areas (NTAs)</b> — 262 statistical areas built from whole 2020 census tracts, sized so census survey data stays reliable. This board ranks the 197 residential ones and leaves out parks, cemeteries, airports and Rikers Island. The names are City Planning's, and an NTA doesn't always match what locals call the place — some neighborhoods are split (Bedford-Stuyvesant East and West), others merged. Tap any neighborhood's row to see its boundary on a map, or read the <a href="methodology.html">methodology</a>.</div>
 </header>
+
+<section class="fieldwrap" aria-label="Every neighborhood on the selected category">
+  <div class="fieldcap"><span><b id="ftitle"></b>, one dot per neighborhood</span><span id="fkeys"></span></div>
+  <div id="field"></div>
+  <div class="readout" id="fread">Point at a dot to see the neighborhood; click to open it.</div>
+</section>
+<div class="ticker" aria-hidden="true"><div class="ticker-track" id="ticker"></div></div>
 
 <div class="controls">
   <div class="controls-inner">
@@ -320,7 +227,7 @@ footer{border-top:4px solid var(--ink);background:var(--paper2)}
       <div class="boro-chips" id="boros" title="Filter boroughs"></div>
       <button class="dirbtn" id="dir" title="Flip the order of the board">&#8645; First &rarr; last</button>
       <button class="dirbtn" id="cmpbtn" title="Compare up to four neighborhoods">Compare</button>
-      <button class="dirbtn" id="copybtn" title="Copy a link that reproduces this view">&#10697; Copy link</button>
+      <button class="dirbtn" id="copybtn" title="Copy a link that reproduces this view">Copy link</button>
     </div>
   </div>
 </div>
@@ -344,15 +251,13 @@ footer{border-top:4px solid var(--ink);background:var(--paper2)}
         <span class="bo" id="dboro"></span>
       </div>
       <figure class="dmap" id="dmap" aria-label="Location map"></figure>
-      <span style="display:flex;gap:6px;flex:0 0 auto">
-        <button class="dclose" id="dcopy">&#10697; Copy link</button>
+      <span class="dbtns">
+        <button class="dclose" id="dcopy">Copy link</button>
         <button class="dclose" id="dcompare">+ Compare</button>
         <button class="dclose" id="dclose">Close &times;</button>
       </span>
     </div>
-    <p style="font-family:'Archivo',sans-serif;font-stretch:85%;font-size:13.5px;color:var(--ink2);margin-bottom:6px">
-      Where this neighborhood ranks in every category, out of 197. Tap any line to re-sort the big board by it.
-    </p>
+    <p class="dintro">Where this neighborhood ranks in every category, out of 197. Ranks in the <span class="k-hi">top 20</span> and <span class="k-lo">bottom 20</span> are marked. Tap any line to re-sort the big board by it.</p>
     <div class="dsort" id="dsort">
       <button data-s="group" class="on">By topic</button>
       <button data-s="rank">By rank</button>
@@ -365,8 +270,8 @@ footer{border-top:4px solid var(--ink);background:var(--paper2)}
   <div class="dwrap">
     <div class="cmp-head">
       <h2>Compare neighborhoods</h2>
-      <span style="display:flex;gap:6px">
-        <button class="dclose" id="cmpcopy">&#10697; Copy link</button>
+      <span class="dbtns">
+        <button class="dclose" id="cmpcopy">Copy link</button>
         <button class="dclose" id="cmpclose">Close &times;</button>
       </span>
     </div>
@@ -376,15 +281,14 @@ footer{border-top:4px solid var(--ink);background:var(--paper2)}
   </div>
 </aside>
 
-<footer>
-  <div class="fwrap">
-    <p><b style="color:var(--ink)">Sources:</b> United States Census Bureau, American Community Survey 2020-2024 five-year estimates, as compiled by the New York City Department of City Planning; NYC Open Data (New York Police Department complaints, 311 service requests, motor vehicle collisions, city marshal evictions, restaurant inspections, Parks Department street tree points); Metropolitan Transportation Authority subway stations. Boundaries: Department of City Planning 2020 neighborhood tabulation areas.</p>
+<footer class="foot">
+    <p><b>Sources:</b> United States Census Bureau, American Community Survey 2020-2024 five-year estimates, as compiled by the New York City Department of City Planning; NYC Open Data (New York Police Department complaints, 311 service requests, motor vehicle collisions, city marshal evictions, restaurant inspections, Parks Department street tree points); Metropolitan Transportation Authority subway stations. Boundaries: Department of City Planning 2020 neighborhood tabulation areas.</p>
     <p>Survey figures show a &plusmn; margin of error where the Census Bureau publishes one. Administrative counts (crime, 311, collisions, evictions) are exact counts of reported events, converted to rates using ACS population. Full definitions, time windows and caveats: <a href="methodology.html">methodology</a>.</p>
     <p>Built <span id="builtdate"></span> by Josh Greenman. Code and data pipeline on <a href="https://github.com/joshgreenman1973/nyc-nta-rankings">GitHub</a>.</p>
     <button class="aibtn" id="aibtn">About AI and this page</button>
     <div class="aipop" id="aipop">This project was built with the help of artificial intelligence (Claude). All numbers come directly from the government sources listed above and the calculation steps are documented in the <a href="methodology.html">methodology</a>, but AI-assisted work can contain errors. If a number looks wrong, please check the source data before relying on it.</div>
-  </div>
 </footer>
+</div>
 
 <script>
 /* ================= metric configuration ================= */
@@ -522,7 +426,7 @@ fetch("rankings.json").then(r=>r.json()).then(d=>{
     const codes=h.slice(4).split("~").filter(c=>areas.some(a=>a.code===c)).slice(0,4);
     if(codes.length) pendingCmp=codes;
   }
-  buildControls(); buildTicker(); buildRows();
+  buildControls(); buildTicker(); buildRows(); buildFinding(); buildFieldKeys();
   if(rev){desc=false;document.getElementById("dir").innerHTML="&#8645; Last &rarr; first";}
   if(pendingRatio){setRatio(pendingRatio[0],pendingRatio[1],false);buildCats();}
   else if(pendingBlend){setBlend(pendingBlend,false);buildCats();}
@@ -808,7 +712,6 @@ function buildCats(){
   list.forEach(m=>{
     const b=document.createElement("button");
     b.className="cat"+(m[0]===cur?" on":""); b.textContent=m[2]; b.dataset.id=m[0]; b.dataset.tip=m[0];
-    b.style.setProperty("--gcolor",GROUPS.find(g=>g[0]===m[1])[2]);
     b.onclick=()=>selectMetric(m[0]);
     c.appendChild(b);
   });
@@ -836,7 +739,7 @@ function buildTicker(){
   let chunk=0;
   const CH=8;
   const show=()=>{
-    const bits=items.slice(chunk*CH,chunk*CH+CH).join("&#9670;")+"&#9670;";
+    const bits=items.slice(chunk*CH,chunk*CH+CH).join("");
     el.innerHTML=bits+bits;
     chunk=(chunk+1)%Math.ceil(items.length/CH);
   };
@@ -866,6 +769,7 @@ function apply(animate){
   document.getElementById("btitle").textContent=S.label;
   document.getElementById("bsrc").textContent=S.src;
   document.getElementById("bnote").textContent=S.note;
+  renderField(S);
 
   const board=document.getElementById("board");
   const first={};
@@ -919,6 +823,78 @@ function apply(animate){
     }));
   }
 }
+
+/* ================= opening: finding + dot field ================= */
+function buildFinding(){
+  const id="median_hh_income", cap=TOPCODE[id];
+  const vs=areas.filter(a=>a.values[id]?.v!=null).sort((a,b)=>a.values[id].v-b.values[id].v);
+  if(!vs.length) return;
+  const lo=vs[0], top=vs.filter(a=>a.values[id].v>=cap);
+  const hiTxt=top.length
+    ?`$${cap.toLocaleString("en-US")} or more in ${top.map(a=>a.name).join(" and ")}`
+    :`${fmtV(id,vs[vs.length-1].values[id].v)} in ${vs[vs.length-1].name}`;
+  document.getElementById("finding").textContent=
+    `Median household income runs from ${fmtV(id,lo.values[id].v)} in ${lo.name} to ${hiTxt}.`;
+}
+const FIELD_ORDER=["Manhattan","Bronx","Brooklyn","Queens","Staten Island"];
+function buildFieldKeys(){
+  document.getElementById("fkeys").innerHTML=FIELD_ORDER.map(b=>
+    `<span class="key"><i style="background:${BOROS[b][1]}"></i>${b}</span>`).join("");
+}
+let lastSpec=null;
+function renderField(S){
+  lastSpec=S;
+  const host=document.getElementById("field");
+  const W=Math.max(280,host.clientWidth||900);
+  const narrow=W<560;
+  const L=narrow?22:104, R=12, laneH=narrow?26:30, top=8, H=top+laneH*FIELD_ORDER.length+26;
+  const pts=areas.map(a=>({a,v:S.val(a)})).filter(p=>p.v!=null);
+  document.getElementById("ftitle").textContent=S.label;
+  if(!pts.length){host.innerHTML="";return;}
+  let lo=Math.min(...pts.map(p=>p.v)), hi=Math.max(...pts.map(p=>p.v));
+  if(hi===lo){hi=lo+1;}
+  const x=v=>L+(v-lo)/(hi-lo)*(W-L-R);
+  const sorted=pts.map(p=>p.v).sort((p,q)=>p-q);
+  const med=sorted[Math.floor((sorted.length-1)/2)];
+  const r=narrow?3.6:4.6;
+  let svg=`<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="${S.label}: each neighborhood as a dot, grouped by borough">`;
+  FIELD_ORDER.forEach((b,i)=>{
+    const y=top+laneH*i+laneH/2;
+    svg+=`<line class="lane" x1="${L}" x2="${W-R}" y1="${y}" y2="${y}"/>`;
+    svg+=`<text x="0" y="${y+4}">${narrow?BOROS[b][2]:b}</text>`;
+  });
+  const mx=x(med);
+  svg+=`<line class="med" x1="${mx}" x2="${mx}" y1="${top}" y2="${top+laneH*FIELD_ORDER.length}"/>`;
+  const axY=top+laneH*FIELD_ORDER.length+17;
+  svg+=`<text x="${L}" y="${axY}">${S.fmt(lo)}</text>`;
+  svg+=`<text x="${W-R}" y="${axY}" text-anchor="end">${S.fmt(hi)}</text>`;
+  if(mx-L>90&&W-R-mx>90) svg+=`<text x="${mx}" y="${axY}" text-anchor="middle">median ${S.fmt(med)}</text>`;
+  pts.forEach(({a,v})=>{
+    const i=FIELD_ORDER.indexOf(a.boro);
+    /* deterministic vertical jitter so stacked values stay visible */
+    let h=0; for(const ch of a.code) h=(h*31+ch.charCodeAt(0))%997;
+    const jy=((h%100)/100-.5)*(laneH-2*r-4);
+    const y=top+laneH*i+laneH/2+jy;
+    const on=boroFilter.has(a.boro)&&(!query||a.name.toLowerCase().includes(query));
+    svg+=`<circle class="dot${on?"":" dim"}" data-c="${a.code}" cx="${x(v).toFixed(1)}" cy="${y.toFixed(1)}" r="${r}" fill="${BOROS[a.boro][1]}"/>`;
+  });
+  host.innerHTML=svg+"</svg>";
+}
+(function wireField(){
+  const host=document.getElementById("field"), out=document.getElementById("fread");
+  const blank=out.textContent;
+  host.addEventListener("pointerover",e=>{
+    const d=e.target.closest(".dot"); if(!d||!lastSpec) return;
+    host.querySelectorAll(".dot.hot").forEach(x=>x.classList.remove("hot"));
+    d.classList.add("hot");
+    const a=areas.find(x=>x.code===d.dataset.c);
+    const rk=lastSpec.ranks.map[a.code];
+    out.innerHTML=`<b>${a.name}</b>, ${a.boro}: ${lastSpec.fmt(lastSpec.val(a))}, rank ${rk} of ${lastSpec.ranks.n}`;
+  });
+  host.addEventListener("pointerleave",()=>{host.querySelectorAll(".dot.hot").forEach(x=>x.classList.remove("hot"));out.textContent=blank;});
+  host.addEventListener("click",e=>{const d=e.target.closest(".dot"); if(d) openDrawer(d.dataset.c);});
+  let t; window.addEventListener("resize",()=>{clearTimeout(t);t=setTimeout(()=>{if(lastSpec) renderField(lastSpec);},120);});
+})();
 
 /* ================= compare ================= */
 let cmp=[], cmpTopic="headline", cmpPrevHash="";
@@ -1056,7 +1032,7 @@ function drawerLine(a,id,label){
   const vm=a.values[id]||{v:null};
   const r=ranks[id].map[a.code];
   const line=document.createElement("div"); line.className="dline"; line.dataset.tip=id;
-  const rankHtml=vm.v==null?`<span class="dr" style="background:var(--rule);color:var(--ink2)">—</span>`
+  const rankHtml=vm.v==null?`<span class="dr">—</span>`
     :`<span class="dr ${r<=20?"hi":r>ranks[id].n-20?"lo":""}">#${r}</span>`;
   line.innerHTML=`<span>${label}</span><span style="display:flex;align-items:center"><span class="dv">${fmtV(id,vm.v)}</span>${rankHtml}</span>`;
   line.onclick=()=>{closeDrawer();selectMetric(id);window.scrollTo({top:0,behavior:"smooth"});};
@@ -1087,7 +1063,7 @@ function openDrawer(code){
   drawerCode=code;
   const [,color]=BOROS[a.boro];
   document.getElementById("dname").textContent=a.name;
-  document.getElementById("dboro").innerHTML=`<i style="background:${color};width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:5px"></i>${a.boro} · ${a.code}`;
+  document.getElementById("dboro").innerHTML=`<i style="background:${color};width:10px;height:10px;display:inline-block;margin-right:5px"></i>${a.boro} · ${a.code}`;
   fillDrawer(code);
   renderLocator(code,color);
   if(!location.hash.startsWith("#hood=")) prevHash=location.hash;

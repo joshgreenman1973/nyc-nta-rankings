@@ -6,30 +6,32 @@
 <title>Methodology | Every neighborhood, ranked</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Archivo:wdth,wght@62..125,400..900&family=Spectral:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Karla:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="house.css">
 <style>
-:root{--paper:#f5efe0;--ink:#181310;--ink2:#4a4238;--rule:#c9bda3;--mn:#e02d3c}
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--paper);color:var(--ink);font-family:"Spectral",Georgia,serif;line-height:1.6}
-.wrap{max-width:760px;margin:0 auto;padding:40px 20px 80px}
-h1{font-family:"Alfa Slab One",serif;font-weight:400;font-size:clamp(30px,5vw,46px);line-height:1.05;margin-bottom:8px}
-h2{font-family:"Archivo",sans-serif;font-weight:900;font-stretch:72%;text-transform:uppercase;letter-spacing:.08em;font-size:16px;border-bottom:2px solid var(--ink);padding-bottom:4px;margin:34px 0 10px}
-p,li{font-size:16px;margin:8px 0;color:var(--ink2)}
-b{color:var(--ink)}
-a{color:var(--mn);font-weight:600}
-ul{padding-left:22px}
-.back{font-family:"Archivo",sans-serif;font-weight:800;font-size:14px;text-transform:uppercase;letter-spacing:.06em;text-decoration:none;color:var(--ink)}
-code{font-size:14px;background:#efe6d0;padding:1px 5px;border-radius:3px}
-table{border-collapse:collapse;width:100%;margin:10px 0;font-size:14.5px;font-family:"Archivo",sans-serif;font-stretch:85%}
-th,td{border:1px solid var(--rule);padding:6px 8px;text-align:left;vertical-align:top}
-th{background:#efe6d0;font-weight:800}
+:root{--accent:var(--sun)}
+.wrap{max-width:860px;padding:22px clamp(16px,4vw,48px) 80px}
+.back{font-size:var(--t-small);color:var(--fg2);text-decoration:none}
+.back:hover{color:var(--fg)}
+h1{margin:26px 0 10px}
+h2{margin:38px 0 8px;padding-bottom:5px;border-bottom:1.5px solid var(--fg)}
+p,li{color:var(--fg2);margin:8px 0;max-width:72ch}
+p b,li b{color:var(--fg)}
+.intro{font-family:var(--display);font-variation-settings:'wdth' 88;font-size:var(--t-find);line-height:1.3;color:var(--fg);max-width:44ch}
+ul{padding-left:20px}
+code{font-size:14px;background:var(--bg2);padding:1px 5px}
+table{border-collapse:collapse;width:100%;margin:12px 0;font-size:14.5px}
+th{font-size:var(--t-small);font-weight:700;color:var(--fg2);text-align:left;padding:8px 10px 8px 0;border-bottom:1.5px solid var(--fg);vertical-align:bottom}
+td{padding:8px 10px 8px 0;border-bottom:1px solid var(--line2);vertical-align:top;color:var(--fg2)}
+td:first-child{color:var(--fg);font-weight:600}
+.tscroll{overflow-x:auto}
 </style>
 </head>
 <body>
-<div class="wrap">
+<div class="sheet wrap">
 <a class="back" href="index.html">&larr; Back to the board</a>
 <h1>Methodology</h1>
-<p><i>Every number on the board traces to a public government dataset. This page documents what each category measures, where it comes from, how it was computed and what to watch out for.</i></p>
+<p class="intro">Every number on the board traces to a public government dataset. This page documents what each category measures, where it comes from, how it was computed and what to watch out for.</p>
 
 <h2>Geography</h2>
 <p>The units are the Department of City Planning's <b>2020 neighborhood tabulation areas (NTAs)</b> &mdash; 262 areas built from census tracts. The board ranks the <b>197 residential NTAs</b> (City Planning type 0) and excludes parks, cemeteries, airports and Rikers Island, which have few or no residents. Boundaries come from the <a href="https://data.cityofnewyork.us/City-Government/2020-Neighborhood-Tabulation-Areas-NTAs-/9nt8-h7nd">2020 NTA file on NYC Open Data</a>, which is clipped to the shoreline; land areas are computed from those boundaries (square feet &divide; 27,878,400).</p>
@@ -45,7 +47,7 @@ th{background:#efe6d0;font-weight:800}
 
 <h2>Administrative counts and rates</h2>
 <p>Event data was downloaded from NYC Open Data and the state open data portal, geocoded to NTAs by point-in-polygon assignment against the 2020 boundaries (99%+ of records matched in every dataset), then converted to rates using ACS denominators.</p>
-<table>
+<div class="tscroll"><table>
 <tr><th>Category</th><th>Dataset</th><th>Window</th><th>Notes</th></tr>
 <tr><td>Felony complaints; violent felonies</td><td><a href="https://data.cityofnewyork.us/Public-Safety/NYPD-Complaint-Data-Historic/qgea-i56i">NYPD complaint data (historic)</a></td><td>Calendar 2025, by report date (RPT_DT)</td><td>Violent = murder and non-negligent manslaughter, rape, robbery, felony assault. Complaints are counted where the crime occurred; job centers like Midtown rank high relative to their resident population.</td></tr>
 <tr><td>311 requests; noise; rodent; illegal parking</td><td><a href="https://data.cityofnewyork.us/Social-Services/311-Service-Requests-from-2010-to-Present/erm2-nwe9">311 service requests</a></td><td>Aug. 1, 2025-July 31, 2026</td><td>Noise = every complaint type beginning with "Noise." 311 measures reporting, not conditions; a few prolific callers can move a small neighborhood's rate.</td></tr>
@@ -54,7 +56,7 @@ th{background:#efe6d0;font-weight:800}
 <tr><td>Restaurants</td><td><a href="https://data.cityofnewyork.us/Health/DOHMH-New-York-City-Restaurant-Inspection-Results/43nn-pn8j">Restaurant inspection results</a></td><td>Current active file</td><td>Unique establishments (by CAMIS id) in the Health Department's inspection file.</td></tr>
 <tr><td>Parks-managed trees</td><td><a href="https://data.cityofnewyork.us/Environment-Historic-/Forestry-Tree-Points/hn5i-inap">Parks Department forestry tree points</a></td><td>Current</td><td>Standing live trees only: points with structure "Full" (which excludes the roughly 174,000 "Retired" records for removed trees, and stumps) and condition other than "Dead." Covers street trees plus park trees the agency actively manages; natural forest isn't inventoried tree by tree. 888,653 trees citywide.</td></tr>
 <tr><td>Subway stations</td><td><a href="https://data.ny.gov/Transportation/MTA-Subway-Stations/39hk-dx4f">MTA subway stations</a></td><td>Current</td><td>Stations (not complexes) whose coordinates fall inside the boundary — Times Square-42nd Street counts as five stations — including the 21 Staten Island Railway stations. 496 systemwide. Stations just outside a neighborhood's edge don't count toward it.</td></tr>
-</table>
+</table></div>
 
 <h2>Make-your-own combinations</h2>
 <p>The "Mix your own" tab builds two kinds of user-defined rankings, computed in the browser from the same category values shown on the board:</p>
