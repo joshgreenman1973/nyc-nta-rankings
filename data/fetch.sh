@@ -28,9 +28,23 @@ P3=$!
 # condition != 'Dead' drops standing dead trees.
 fetch trees hn5i-inap "geometry" "tpstructure = 'Full' AND tpcondition != 'Dead'" "" 20000000 &
 P4=$!
+# Restaurants: one row per establishment (CAMIS) in the Health Department's active file.
+fetch restaurants 43nn-pn8j "camis,latitude,longitude" "" "camis,latitude,longitude" 500000 &
+P5=$!
 FAILED=0
-for p in $P1 $P2 $P3 $P4; do wait $p || FAILED=1; done
+for p in $P1 $P2 $P3 $P4 $P5; do wait $p || FAILED=1; done
 [ "$FAILED" = 1 ] && { echo "A FETCH FAILED"; exit 1; }
+
+# Subway stations live on the state portal, not NYC's.
+echo "[$(date +%H:%M:%S)] start subway_stations"
+curl -sG --retry 3 -o subway_stations.csv "https://data.ny.gov/resource/39hk-dx4f.csv" \
+  --data-urlencode '$select=station_id,stop_name,gtfs_latitude,gtfs_longitude,daytime_routes' \
+  --data-urlencode '$limit=5000' || { echo "FAIL curl subway"; exit 1; }
+[ "$(wc -l < subway_stations.csv)" -gt 400 ] || { echo "FAIL subway too small"; exit 1; }
+# Jobs by workplace block, Census LEHD LODES 8 (2023, all jobs) for the residents+workers base.
+curl -sf --retry 3 -o ny_wac_2023.csv.gz "https://lehd.ces.census.gov/data/lodes/LODES8/ny/wac/ny_wac_S000_JT00_2023.csv.gz" \
+  || { echo "FAIL curl lodes"; exit 1; }
+[ "$(stat -f%z ny_wac_2023.csv.gz)" -gt 1000000 ] || { echo "FAIL lodes too small"; exit 1; }
 
 # 311 is the monster (~3.9M rows) — run last, alone.
 fetch t311 erm2-nwe9 "latitude,longitude,complaint_type" "created_date >= '2025-08-01T00:00:00' AND created_date < '2026-08-01T00:00:00'" "" 100000000

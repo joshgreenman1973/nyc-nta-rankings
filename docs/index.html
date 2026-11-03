@@ -88,8 +88,10 @@ button.cat.on,.bmode button.on,.dsort button.on,.cmp-topics button.on{background
 .gobtn{font-size:var(--t-small);font-weight:700;background:var(--sun);color:#111311;border:1px solid var(--sun);padding:8px 13px;cursor:pointer}
 .gobtn:disabled{opacity:.35;cursor:default}
 .blendchips{display:flex;gap:5px;flex-wrap:wrap}
-.blendchips .bc{font-size:13px;font-weight:600;background:var(--bg2);border:1px solid var(--line);color:var(--fg);padding:5px 8px;cursor:pointer}
-.blendchips .bc:hover{border-color:var(--sun)}
+.blendchips .bc{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;background:var(--bg2);border:1px solid var(--line);color:var(--fg);padding:4px 6px 4px 9px}
+.blendchips .bc button{font:inherit;font-weight:600;background:none;border:0;color:var(--fg2);cursor:pointer;padding:1px 3px}
+.blendchips .bc .bdir{border:1px solid var(--line);color:var(--sun)}
+.blendchips .bc button:hover{color:var(--fg)}
 .presets{display:flex;gap:6px;flex-wrap:wrap;border-top:1px solid var(--line2);padding-top:10px}
 @media (max-width:640px){.builder select{max-width:100%}}
 
@@ -99,7 +101,33 @@ main{padding:24px var(--gut) 60px}
 .board-title{font-family:var(--display);font-variation-settings:'wdth' 88;font-weight:700;font-size:1.6rem;line-height:1.12}
 .board-src{font-size:var(--t-small);color:var(--fg2)}
 .board-note{color:var(--fg2);font-size:15px;max-width:72ch;margin:6px 0 0}
-.count-note{font-size:var(--t-small);color:var(--fg2);margin:14px 0 6px}
+.boardbar{display:flex;justify-content:space-between;align-items:center;gap:8px 14px;flex-wrap:wrap;margin:14px 0 8px}
+.count-note{font-size:var(--t-small);color:var(--fg2)}
+.views{display:flex;gap:4px}
+.views button,.opts button{font-size:13px;font-weight:600;padding:5px 10px;border:1px solid var(--line);background:transparent;color:var(--fg2);cursor:pointer}
+.views button:hover,.opts button:hover{border-color:var(--fg);color:var(--fg)}
+.views button.on,.opts button.on{background:var(--fg);border-color:var(--fg);color:var(--bg)}
+.opts{display:flex;flex-wrap:wrap;gap:8px 22px;align-items:center;margin:10px 0 0;font-size:var(--t-small);color:var(--fg2)}
+.opts:empty{display:none}
+.opts .og{display:inline-flex;gap:4px;align-items:center;flex-wrap:wrap}
+.opts .og>span{margin-right:4px}
+.row.few .bar,.row.shaky .bar{opacity:.35}
+.row.few .val,.row.shaky .val{color:var(--fg2)}
+.moe .flag{color:var(--orange)}
+#mapview{display:none}
+#mapview.show{display:block}
+#mapsvg svg{display:block;width:100%;max-width:860px;height:auto}
+#mapsvg path{stroke:#111311;stroke-width:.5}
+#mapsvg path.nta{cursor:pointer}
+#mapsvg path.nta:hover,#mapsvg path.hot{stroke:var(--fg);stroke-width:1.6}
+#mapsvg path.dim{opacity:.15}
+.mapkey{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:var(--t-small);color:var(--fg2);margin:0 0 10px}
+.mapkey i{width:16px;height:11px;display:inline-block;margin-right:6px;vertical-align:-1px}
+.dsim{font-size:14.5px;color:var(--fg2);margin:0 0 12px;max-width:62ch}
+.dsim button{font:inherit;color:var(--fg);background:none;border:0;padding:0;cursor:pointer;text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px}
+.dsim button:hover{text-decoration-color:var(--fg)}
+.dline .rr{font-family:var(--sans);font-weight:400;font-size:12px;color:var(--fg2);margin-left:8px;white-space:nowrap}
+.dline.shaky .dv{color:var(--fg2);font-weight:400}
 #board{position:relative;border-top:1.5px solid var(--fg)}
 .row{display:grid;grid-template-columns:56px minmax(150px,270px) 1fr;gap:12px;align-items:center;
   padding:6px 8px 6px 0;border:0;border-bottom:1px solid var(--line2);cursor:pointer;background:transparent;
@@ -123,6 +151,8 @@ main{padding:24px var(--gut) 60px}
   .rank{font-size:22px;grid-row:span 2}
   .barwrap{grid-column:2}
   .bar{height:12px}
+  .barwrap{flex-wrap:wrap;row-gap:3px}
+  .val{white-space:normal;min-width:0}
   .nm{font-size:15.5px}
 }
 
@@ -238,7 +268,12 @@ table.cmp td.nod{color:var(--fg2)}
     <div class="board-src" id="bsrc"></div>
   </div>
   <div class="board-note" id="bnote"></div>
-  <div class="count-note" id="cnote"></div>
+  <div class="opts" id="opts"></div>
+  <div class="boardbar">
+    <div class="count-note" id="cnote"></div>
+    <div class="views" id="views"><button data-v="list" class="on">Ranked list</button><button data-v="map">Map</button></div>
+  </div>
+  <div id="mapview"><div class="mapkey" id="mapkey"></div><div id="mapsvg"></div><div class="readout" id="mapread">Point at a neighborhood to see its value; click to open it.</div></div>
   <div id="board" role="list"></div>
 </main>
 
@@ -257,7 +292,8 @@ table.cmp td.nod{color:var(--fg2)}
         <button class="dclose" id="dclose">Close &times;</button>
       </span>
     </div>
-    <p class="dintro">Where this neighborhood ranks in every category, out of 197. Ranks in the <span class="k-hi">top 20</span> and <span class="k-lo">bottom 20</span> are marked. Tap any line to re-sort the big board by it.</p>
+    <p class="dsim" id="dsim"></p>
+    <p class="dintro">Where this neighborhood ranks in every category, out of 197. Ranks in the <span class="k-hi">top 20</span> and <span class="k-lo">bottom 20</span> are marked. The small grey range is how far the rank could move within the survey's margin of error; faded values have wide margins. Tap any line to re-sort the big board by it.<span id="dmode"></span></p>
     <div class="dsort" id="dsort">
       <button data-s="group" class="on">By topic</button>
       <button data-s="rank">By rank</button>
@@ -282,8 +318,8 @@ table.cmp td.nod{color:var(--fg2)}
 </aside>
 
 <footer class="foot">
-    <p><b>Sources:</b> United States Census Bureau, American Community Survey 2020-2024 five-year estimates, as compiled by the New York City Department of City Planning; NYC Open Data (New York Police Department complaints, 311 service requests, motor vehicle collisions, city marshal evictions, restaurant inspections, Parks Department street tree points); Metropolitan Transportation Authority subway stations. Boundaries: Department of City Planning 2020 neighborhood tabulation areas.</p>
-    <p>Survey figures show a &plusmn; margin of error where the Census Bureau publishes one. Administrative counts (crime, 311, collisions, evictions) are exact counts of reported events, converted to rates using ACS population. Full definitions, time windows and caveats: <a href="methodology.html">methodology</a>.</p>
+    <p><b>Sources:</b> United States Census Bureau, American Community Survey 2020-2024 five-year estimates, as compiled by the New York City Department of City Planning; NYC Open Data (New York Police Department complaints, 311 service requests, motor vehicle collisions, city marshal evictions, restaurant inspections, Parks Department forestry tree points); Metropolitan Transportation Authority subway stations; Census Bureau Longitudinal Employer-Household Dynamics workplace data (jobs by location, 2023). Boundaries: Department of City Planning 2020 neighborhood tabulation areas.</p>
+    <p>Survey figures show a &plusmn; margin of error where the Census Bureau publishes one. Administrative counts (crime, 311, collisions, evictions) are exact counts of reported events, converted to rates using ACS population, or population plus jobs if you choose. Full definitions, time windows and caveats: <a href="methodology.html">methodology</a>.</p>
     <p>Built <span id="builtdate"></span> by Josh Greenman. Code and data pipeline on <a href="https://github.com/joshgreenman1973/nyc-nta-rankings">GitHub</a>.</p>
     <button class="aibtn" id="aibtn">About AI and this page</button>
     <div class="aipop" id="aipop">This project was built with the help of artificial intelligence (Claude). All numbers come directly from the government sources listed above and the calculation steps are documented in the <a href="methodology.html">methodology</a>, but AI-assisted work can contain errors. If a number looks wrong, please check the source data before relying on it.</div>
@@ -342,11 +378,11 @@ const M = [
  ["pct_internet","money","Households with internet","pct",ACS,"Households with an internet subscription of any kind, including cellular-only data plans."],
 
  ["median_rent","homes","Median gross rent","usd",ACS,"What the middle renting household pays, counting rent plus utilities. Reflects what current tenants actually pay — including long-held and regulated leases — not what a new apartment asks. Caps at $3,500 because of the data's top bracket."],
- ["median_home_value","homes","Median home value","usd",ACS,"Owners' own estimate of what their home would sell for; half say more, half less. Not a record of actual sale prices. Caps at $2 million."],
+ ["median_home_value","homes","Median home value","usd",ACS,"Owners' own estimate of what their home would sell for; half say more, half less. Not a record of actual sale prices. Caps at $2 million. Co-op owners estimate the value of their shares, which in limited-equity co-ops such as Co-op City sit far below market prices."],
  ["pct_renters","homes","Renter households","pct",ACS,"Renter-occupied share of occupied homes. The remainder are owner-occupied; vacant units aren't in the base."],
  ["pct_rent_burdened","homes","Rent-burdened (30%+ of income)","pct",ACS,"Renter households paying 30% or more of income on gross rent, among those paying cash rent. Includes the severely burdened."],
  ["pct_severe_rent_burden","homes","Severely rent-burdened (50%+)","pct",ACS,"Renter households paying 50% or more of income on gross rent — a subset of the rent-burdened group."],
- ["eviction_rate","homes","Evictions per 1,000 renter households","dec","City marshals, 2025","Residential evictions executed by city marshals in 2025, per 1,000 renter households. Most displacement happens earlier — tenants who move after a court filing or a rent hike never appear here."],
+ ["eviction_rate","homes","Evictions per 1,000 renter households","dec","City marshals, 2025","Residential evictions executed by city marshals in 2025, per 1,000 renter households. Most displacement happens earlier — tenants who move after a court filing or a rent hike never appear here. About 6% of the year's evictions have no location and can't be placed. The count behind each rate is shown: where renters are few, a handful of evictions moves the rate a lot."],
  ["pct_prewar","homes","Pre-war housing (built before 1939)","pct",ACS,"Homes in buildings built before 1939, the census's oldest category."],
  ["pct_built_2010","homes","Housing built 2010 or later","pct",ACS,"Homes in buildings built in 2010 or later — a measure of recent construction, not of quality."],
  ["pct_big_buildings","homes","Units in 20+ unit buildings","pct",ACS,"Homes in buildings with 20 or more units."],
@@ -370,12 +406,24 @@ const M = [
  ["felony_rate","streets","Felony complaints per 1,000 residents","dec","NYPD, 2025","Felonies reported to the NYPD in 2025, counted where the crime occurred, per 1,000 residents. Complaints, not arrests or convictions. Job and entertainment centers rank high because victims there mostly live elsewhere."],
  ["violent_rate","streets","Violent felonies per 1,000 residents","dec","NYPD, 2025","2025 complaints for murder, rape, robbery or felony assault, per 1,000 residents, counted where the crime occurred. Complaints, not convictions; other serious crimes like burglary are in the broader felony measure."],
  ["complaints_rate","streets","311 requests per 1,000 residents","int","311, Aug. 2025-July 2026","Every 311 service request over 12 months — noise, heat, potholes, parking and more — per 1,000 residents. Measures what residents report, which reflects reporting habits as much as conditions."],
- ["noise_rate","streets","Noise complaints per 1,000 residents","dec","311, Aug. 2025-July 2026","All 311 complaint types beginning with 'Noise' over 12 months, per 1,000 residents. A handful of repeat callers can dominate a neighborhood's total — reports, not decibels."],
- ["rodent_rate","streets","Rodent complaints per 1,000 residents","dec","311, Aug. 2025-July 2026","311 rodent complaints (sightings and conditions) over 12 months, per 1,000 residents. Reports, not a rat census — attentive blocks can outscore infested ones."],
- ["parking_rate","streets","Illegal parking complaints per 1,000 residents","dec","311, Aug. 2025-July 2026","311 illegal-parking complaints over 12 months, per 1,000 residents. Reflects both parking behavior and neighbors' willingness to report it."],
+ ["noise_rate","streets","Noise complaints per 1,000 residents","dec","311, Aug. 2025-July 2026","All 311 complaint types beginning with 'Noise' over 12 months, per 1,000 residents. Reports, not decibels, and one address can supply most of a neighborhood's total: the board flags any location with a quarter or more of it, and 'Each address once' counts locations instead."],
+ ["rodent_rate","streets","Rodent complaints per 1,000 residents","dec","311, Aug. 2025-July 2026","311 rodent complaints (sightings and conditions) over 12 months, per 1,000 residents. Reports, not a rat census — attentive blocks can outscore infested ones. The board flags any single address with a quarter or more of a neighborhood's total."],
+ ["parking_rate","streets","Illegal parking complaints per 1,000 residents","dec","311, Aug. 2025-July 2026","311 illegal-parking complaints over 12 months, per 1,000 residents. Reflects both parking behavior and neighbors' willingness to report it. The board flags any single address with a quarter or more of a neighborhood's total."],
 ];
 
 const BOROS = {Manhattan:["mn","var(--mn)","M"],Brooklyn:["bk","var(--bk)","B"],Queens:["qn","var(--qn)","Q"],Bronx:["bx","var(--bx)","X"],"Staten Island":["si","var(--si)","S"]};
+
+/* rates that divide by residents, and can divide by residents + jobs instead */
+const RATE_IDS=new Set(["felony_rate","violent_rate","collision_rate","injury_rate","complaints_rate","noise_rate","rodent_rate","parking_rate","restaurant_rate"]);
+/* 311 rates that can count each address once */
+const PLACE_IDS=new Set(["complaints_rate","noise_rate","rodent_rate","parking_rate"]);
+/* what the count behind each rate is called; the few-events flag skips restaurants (not random events) */
+const NOUN={felony_rate:["felony complaint","felony complaints"],violent_rate:["violent felony","violent felonies"],
+  collision_rate:["crash","crashes"],injury_rate:["person hurt","people hurt"],complaints_rate:["request","requests"],
+  noise_rate:["complaint","complaints"],rodent_rate:["complaint","complaints"],parking_rate:["complaint","complaints"],
+  restaurant_rate:["restaurant","restaurants"],eviction_rate:["eviction","evictions"]};
+const FEW=25;
+let rateBase="res", countMode="all", view="list", RNG={}, areaBy={};
 
 /* ================= state ================= */
 let DATA=null, areas=[], ranks={}, cur="population", desc=true, boroFilter=new Set(Object.keys(BOROS)), query="";
@@ -405,21 +453,26 @@ const fmtMoe=(id,m)=>{
 };
 
 /* ================= boot ================= */
-fetch("rankings.json").then(r=>r.json()).then(d=>{
+fetch("rankings.json",{cache:"no-cache"}).then(r=>r.json()).then(d=>{
   DATA=d; areas=d.areas;
   document.getElementById("builtdate").textContent=new Date(d.built+"T12:00:00").toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"}).replace(/^(\w{3}) /,"$1. ");
   const missing=M.filter(m=>!(m[0] in areas[0].values));
   if(missing.length) console.warn("config metrics missing from data:",missing.map(m=>m[0]));
   document.getElementById("ncats").textContent=M.length;
-  computeRanks();
-  /* restore a shared link: #m=<id>, #ratio=<a>~<b>, #blend=<a>~..., #hood=<code>, #cmp=<codes>; ";last" = reversed order */
+  areaBy=Object.fromEntries(areas.map(a=>[a.code,a]));
+  /* restore a shared link: #m=<id>, #ratio=<a>~<b>, #blend=<a>~-<b>..., #hood=<code>, #cmp=<codes>;
+     flags after ";": last = reversed order, day = residents + workers, places = each address once, map = map view */
   let h=decodeURIComponent(location.hash.slice(1));
-  let rev=false;
-  if(h.endsWith(";last")){rev=true;h=h.slice(0,-5);}
+  const flags=new Set(h.split(";").slice(1)); h=h.split(";")[0];
+  const rev=flags.has("last");
+  if(flags.has("day")) rateBase="day";
+  if(flags.has("places")) countMode="places";
+  if(flags.has("map")) view="map";
+  applyModes(); computeRanks(); computeRanges();
   let pendingRatio=null, pendingBlend=null;
   if(h.startsWith("m=")&&byId[h.slice(2)]){cur=h.slice(2);curGroup=byId[cur][1];}
   else if(h.startsWith("ratio=")){const [a,b]=h.slice(6).split("~");if(byId[a]&&byId[b]){pendingRatio=[a,b];curGroup="combo";}}
-  else if(h.startsWith("blend=")){const ids=h.slice(6).split("~").filter(x=>byId[x]);if(ids.length>=2){pendingBlend=ids;curGroup="combo";}}
+  else if(h.startsWith("blend=")){const ids=h.slice(6).split("~").filter(x=>byId[x.replace(/^-/,"")]);if(ids.length>=2){pendingBlend=ids;curGroup="combo";}}
   let pendingHood=null, pendingCmp=null;
   if(h.startsWith("hood=")&&areas.some(a=>a.code===h.slice(5))) pendingHood=h.slice(5);
   if(h.startsWith("cmp=")){
@@ -448,6 +501,75 @@ function computeRanks(){
   }
 }
 
+/* swap rate values for the chosen base (residents / residents + jobs) and count (every complaint / each address once) */
+function applyModes(){
+  for(const a of areas){
+    const pop=a.values.population?.v;
+    const den=rateBase==="day"?pop+(a.jobs||0):pop;
+    for(const id of RATE_IDS){
+      const vm=a.values[id]; if(!vm) continue;
+      if(vm.v0===undefined) vm.v0=vm.v;
+      const places=countMode==="places"&&PLACE_IDS.has(id);
+      const num=places?vm.l:vm.n;
+      vm.cnt=num;
+      if(rateBase==="res"&&!places){vm.v=vm.v0;continue;}
+      if(!den||num==null){vm.v=null;continue;}
+      const x=num/den*1000;
+      vm.v=id==="complaints_rate"?Math.round(x):Math.round(x*10)/10;
+    }
+  }
+}
+function labelFor(id){
+  let l=byId[id][2];
+  if(countMode==="places"&&PLACE_IDS.has(id))
+    l=l.replace(/^311 requests/,"Addresses with 311 requests")
+       .replace(/^(Noise|Rodent|Illegal parking) complaints/,(m0,w)=>`Addresses with ${w.toLowerCase()} complaints`);
+  if(rateBase==="day"&&RATE_IDS.has(id)) l=l.replace("per 1,000 residents","per 1,000 residents and workers");
+  return l;
+}
+/* survey estimates: coefficient of variation over 30% = wide margin */
+function isShaky(vm){return !!vm&&vm.m!=null&&vm.v>0&&(vm.m/1.645)/vm.v>0.3;}
+/* the ranks a neighborhood could hold within margins of error: best = 1 + neighborhoods
+   clearly above it (90% intervals don't overlap), worst = n - neighborhoods clearly below */
+function computeRanges(){
+  RNG={};
+  for(const [id] of M){
+    if(RATE_IDS.has(id)) continue;
+    const withM=areas.filter(a=>a.values[id]?.v!=null&&a.values[id].m!=null);
+    if(withM.length<10) continue;
+    const all=areas.filter(a=>a.values[id]?.v!=null).map(a=>[a.values[id].v,a.values[id].m||0]);
+    const r={};
+    for(const a of withM){
+      const v=a.values[id].v, m=a.values[id].m;
+      let above=0, below=0;
+      for(const [bv,bm] of all){ if(bv-bm>v+m) above++; else if(bv+bm<v-m) below++; }
+      r[a.code]=[above+1, ranks[id].n-below];
+    }
+    RNG[id]=r;
+  }
+}
+function countInfo(id,vm){
+  /* the raw count behind a rate, as words, plus flags */
+  if(!vm||!NOUN[id]) return null;
+  const places=countMode==="places"&&PLACE_IDS.has(id);
+  const c=vm.cnt??vm.n; if(c==null) return null;
+  const noun=places?(c===1?"address":"addresses"):(c===1?NOUN[id][0]:NOUN[id][1]);
+  const few=id!=="restaurant_rate"&&c<FEW;
+  let txt="from "+(few?"only ":"")+c.toLocaleString("en-US")+" "+noun;
+  if(PLACE_IDS.has(id)&&!places&&vm.n>=FEW&&vm.t/vm.n>=0.25)
+    txt+=`, <span class="flag">${Math.round(vm.t/vm.n*100)}% from one address</span>`;
+  return {few,txt};
+}
+function setMode(kind,val){
+  if(kind==="base") rateBase=val; else countMode=val;
+  applyModes(); computeRanks();
+  if(custom?.type==="blend") setBlend(custom.ids,false);
+  else if(custom?.type==="ratio") setRatio(custom.a,custom.b,false);
+  makeTickerItems(); syncViewHash(); apply(true);
+  if(drawerCode) fillDrawer(drawerCode);
+  if(document.getElementById("cmppanel").classList.contains("open")) renderCmp();
+}
+
 /* ================= make-your-own combinations ================= */
 function makeRanks(vmap, firstIsHigh){
   const ents=Object.entries(vmap).filter(([,v])=>v!=null)
@@ -465,7 +587,11 @@ function smart(v){
 }
 function getSpec(){
   if(custom) return custom;
-  const [id,,label,,src,note]=byId[cur];
+  const [id,,,,src,baseNote]=byId[cur];
+  const label=labelFor(id);
+  let note=baseNote;
+  if(rateBase==="day"&&RATE_IDS.has(id)) note+=" Divided here by residents plus the jobs located in the neighborhood (Census Bureau workplace data, 2023), so job centers aren't measured against their small resident populations.";
+  if(countMode==="places"&&PLACE_IDS.has(id)) note+=" Counted here by address: any number of complaints from one location counts once.";
   return {type:"metric",label,src,note,
     val:a=>a.values[id]?.v??null,
     moeStr:a=>{const m=a.values[id]?.m;return m==null?"":fmtMoe(id,m);},
@@ -481,28 +607,39 @@ function setRatio(aId,bId,animate=true){
     vmap[ar.code]=(va==null||vb==null||vb===0)?null:va/vb;
   });
   custom={type:"ratio",a:aId,b:bId,
-    label:`${A[2]} ÷ ${B[2]}`,
+    label:`${labelFor(aId)} ÷ ${labelFor(bId)}`,
     src:"your combination",
-    note:`Each neighborhood's "${A[2].toLowerCase()}" divided by its "${B[2].toLowerCase()}." Sources: ${A[4]===B[4]?A[4]:A[4]+"; "+B[4]}.`,
+    note:`Each neighborhood's "${labelFor(aId).toLowerCase()}" divided by its "${labelFor(bId).toLowerCase()}." Sources: ${A[4]===B[4]?A[4]:A[4]+"; "+B[4]}.`,
     val:ar=>vmap[ar.code], moeStr:()=>"", fmt:smart,
     ranks:makeRanks(vmap,true), invert:false};
   syncViewHash();
   document.querySelectorAll(".cat").forEach(x=>x.classList.remove("on"));
   apply(animate);
 }
+/* blend entries are metric ids; a leading "-" means the lowest value ranks first */
+const bid=x=>x.replace(/^-/,"");
 function setBlend(ids,animate=true){
-  ids=ids.filter(id=>byId[id]);
+  ids=ids.filter(x=>byId[bid(x)]);
   if(ids.length<2) return;
+  const rk={};
+  ids.forEach(x=>{
+    const id=bid(x);
+    if(x[0]==="-"){
+      const vm={}; areas.forEach(a=>vm[a.code]=a.values[id]?.v??null);
+      rk[x]=makeRanks(vm,false).map;
+    } else rk[x]=ranks[id].map;
+  });
   const vmap={};
   areas.forEach(ar=>{
     let s=0, ok=true;
-    for(const id of ids){const r=ranks[id].map[ar.code]; if(r==null){ok=false;break;} s+=r;}
+    for(const x of ids){const r=rk[x][ar.code]; if(r==null){ok=false;break;} s+=r;}
     vmap[ar.code]=ok?Math.round(s/ids.length*10)/10:null;
   });
+  const anyLow=ids.some(x=>x[0]==="-");
   custom={type:"blend",ids:[...ids],
-    label:"Blend: "+ids.map(id=>byId[id][2]).join(" + "),
+    label:"Blend: "+ids.map(x=>labelFor(bid(x))+(x[0]==="-"?" (lowest first)":"")).join(" + "),
     src:"your combination",
-    note:`Average of each neighborhood's rank across these ${ids.length} categories (rank 1 = highest value in a category). Lowest average leads.`,
+    note:`Average of each neighborhood's rank across these ${ids.length} categories. Rank 1 in a category goes to its highest value${anyLow?", or its lowest where marked \"lowest first\"":""}. Lowest average leads.`,
     val:ar=>vmap[ar.code], moeStr:()=>"",
     fmt:v=>"avg rank "+v.toFixed(1),
     ranks:makeRanks(vmap,false), invert:true};
@@ -516,6 +653,10 @@ const PRESETS=[
   ["tree_density","density"],
   ["noise_rate","complaints_rate"],
   ["subway_stations","land_area"],
+];
+const BLEND_PRESETS=[
+  ["quiet, leafy, low crime",["-noise_rate","tree_density","-felony_rate"]],
+  ["lower rent, shorter commute",["-median_rent","-mean_commute"]],
 ];
 function metricSelect(id){
   const s=document.createElement("select"); s.id=id;
@@ -558,15 +699,17 @@ function renderBuilder(c){
   if(custom?.type==="blend") blendPicks=[...custom.ids];
   const renderChips=()=>{
     chips.innerHTML="";
-    blendPicks.forEach(id=>{
-      const b=document.createElement("button"); b.className="bc";
-      b.innerHTML=byId[id][2]+" &times;"; b.title="Remove";
-      b.onclick=()=>{blendPicks=blendPicks.filter(x=>x!==id);renderChips();};
-      chips.appendChild(b);
+    blendPicks.forEach((x,i)=>{
+      const id=bid(x), low=x[0]==="-";
+      const c=document.createElement("span"); c.className="bc";
+      c.innerHTML=`<span>${labelFor(id)}</span><button class="bdir" title="Switch which end ranks first">${low?"lowest first":"highest first"}</button><button class="bx" title="Remove">&times;</button>`;
+      c.querySelector(".bdir").onclick=()=>{blendPicks[i]=low?id:"-"+id;renderChips();};
+      c.querySelector(".bx").onclick=()=>{blendPicks.splice(i,1);renderChips();};
+      chips.appendChild(c);
     });
     goB.disabled=blendPicks.length<2;
   };
-  add.onclick=()=>{if(!blendPicks.includes(selC.value)&&blendPicks.length<6){blendPicks.push(selC.value);renderChips();}};
+  add.onclick=()=>{if(!blendPicks.some(x=>bid(x)===selC.value)&&blendPicks.length<6){blendPicks.push(selC.value);renderChips();}};
   goB.onclick=()=>setBlend(blendPicks);
   bp.append(selC,add,chips,goB);
   wrap.appendChild(bp);
@@ -577,6 +720,12 @@ function renderBuilder(c){
     const btn=document.createElement("button"); btn.className="cat";
     btn.textContent=byId[a][2]+" ÷ "+byId[b][2];
     btn.onclick=()=>setRatio(a,b);
+    pr.appendChild(btn);
+  });
+  BLEND_PRESETS.forEach(([name,ids])=>{
+    const btn=document.createElement("button"); btn.className="cat";
+    btn.textContent="Blend: "+name; btn.title=ids.map(x=>byId[bid(x)][2]+(x[0]==="-"?" (lowest first)":"")).join(" + ");
+    btn.onclick=()=>{blendPicks=[...ids];setBlend(ids);buildCats();};
     pr.appendChild(btn);
   });
   wrap.appendChild(pr);
@@ -596,7 +745,9 @@ function renderBuilder(c){
 }
 
 /* ================= permalinks ================= */
-function dirSuffix(){return desc?"":";last";}
+function dirSuffix(){
+  return (desc?"":";last")+(rateBase==="day"?";day":"")+(countMode==="places"?";places":"")+(view==="map"?";map":"");
+}
 function syncViewHash(){
   if(location.hash.startsWith("#hood=")||location.hash.startsWith("#cmp=")) return;
   let base;
@@ -701,6 +852,17 @@ function buildControls(){
   document.getElementById("scrim").onclick=()=>{closeDrawer();closeCmp();};
   document.getElementById("aibtn").onclick=()=>document.getElementById("aipop").classList.toggle("show");
   document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeDrawer();closeCmp();}});
+  document.getElementById("opts").addEventListener("click",e=>{
+    const b=e.target.closest("button[data-o]"); if(!b) return;
+    setMode(b.dataset.k,b.dataset.o);
+  });
+  const vw=document.getElementById("views");
+  const setView=v=>{
+    view=v; vw.querySelectorAll("button").forEach(x=>x.classList.toggle("on",x.dataset.v===v));
+    syncViewHash(); apply(false);
+  };
+  vw.querySelectorAll("button").forEach(b=>b.onclick=()=>setView(b.dataset.v));
+  vw.querySelectorAll("button").forEach(x=>x.classList.toggle("on",x.dataset.v===view));
   document.getElementById("cmpbtn").onclick=openCmp;
   document.getElementById("cmpclose").onclick=closeCmp;
   document.getElementById("dcompare").onclick=()=>{if(drawerCode)addCmp(drawerCode);};
@@ -727,21 +889,25 @@ function selectMetric(id){
 }
 
 /* ================= ticker ================= */
+let tickerItems=[];
+function makeTickerItems(){
+  tickerItems=M.map(([id])=>{
+    const leader=areas.filter(a=>a.values[id]?.v!=null).sort((a,b)=>b.values[id].v-a.values[id].v)[0];
+    if(!leader) return "";
+    return `<span><b>${labelFor(id)}:</b> ${leader.name} (${fmtV(id,leader.values[id].v)})</span>`;
+  }).filter(Boolean);
+}
 function buildTicker(){
   /* chunked marquee: one giant animated strip can exceed GPU texture
      limits and blank the whole page, so cycle 8 leaders at a time */
-  const items=M.map(([id,,label])=>{
-    const leader=areas.filter(a=>a.values[id]?.v!=null).sort((a,b)=>b.values[id].v-a.values[id].v)[0];
-    if(!leader) return "";
-    return `<span><b>${label}:</b> ${leader.name} (${fmtV(id,leader.values[id].v)})</span>`;
-  }).filter(Boolean);
+  makeTickerItems();
   const el=document.getElementById("ticker");
   let chunk=0;
   const CH=8;
   const show=()=>{
-    const bits=items.slice(chunk*CH,chunk*CH+CH).join("");
+    const bits=tickerItems.slice(chunk*CH,chunk*CH+CH).join("");
     el.innerHTML=bits+bits;
-    chunk=(chunk+1)%Math.ceil(items.length/CH);
+    chunk=(chunk+1)%Math.ceil(tickerItems.length/CH);
   };
   show();
   el.addEventListener("animationiteration",show);
@@ -770,6 +936,19 @@ function apply(animate){
   document.getElementById("bsrc").textContent=S.src;
   document.getElementById("bnote").textContent=S.note;
   renderField(S);
+  /* options for the current category */
+  let oh="";
+  if(!custom&&RATE_IDS.has(cur)) oh+=`<span class="og"><span>Divide by</span>`+
+    `<button data-k="base" data-o="res" class="${rateBase==="res"?"on":""}">Residents</button>`+
+    `<button data-k="base" data-o="day" class="${rateBase==="day"?"on":""}">Residents and workers</button></span>`;
+  if(!custom&&PLACE_IDS.has(cur)) oh+=`<span class="og"><span>Count</span>`+
+    `<button data-k="count" data-o="all" class="${countMode==="all"?"on":""}">Every complaint</button>`+
+    `<button data-k="count" data-o="places" class="${countMode==="places"?"on":""}">Each address once</button></span>`;
+  document.getElementById("opts").innerHTML=oh;
+  const mapOn=view==="map";
+  document.getElementById("mapview").classList.toggle("show",mapOn);
+  document.getElementById("board").style.display=mapOn?"none":"";
+  if(mapOn) renderMap(S);
 
   const board=document.getElementById("board");
   const first={};
@@ -782,9 +961,13 @@ function apply(animate){
   const ordered=[...has,...nots];
   const max=Math.max(...has.map(a=>Math.abs(S.val(a))),1e-9);
 
+  let nFew=0, nShaky=0;
+  if(!custom) has.forEach(a=>{const vm=a.values[cur]; if(countInfo(cur,vm)?.few) nFew++; if(isShaky(vm)) nShaky++;});
   document.getElementById("cnote").textContent=
     (visible.length<areas.length?`${visible.length} of 197 shown`:`197 neighborhoods`)+
-    (nots.length?` · ${nots.length} without data in this category`:"");
+    (nots.length?` · ${nots.length} without data in this category`:"")+
+    (nFew?` · ${nFew} faded: fewer than ${FEW} events, so the rate is unsteady`:"")+
+    (nShaky?` · ${nShaky} faded: wide margin of error`:"");
 
   const shown=new Set(ordered.map(a=>a.code));
   for(const c in rowEls) rowEls[c].style.display=shown.has(c)?"":"none";
@@ -800,7 +983,14 @@ function apply(animate){
     const bar=el.querySelector(".bar");
     const w=v==null?0:(S.invert?(S.ranks.n+1-v)/S.ranks.n:Math.abs(v)/max);
     bar.style.width=(w*100).toFixed(2)+"%";
-    const ms=v==null?"":S.moeStr(a);
+    const vm=custom?null:a.values[cur];
+    const ci=v==null?null:countInfo(custom?null:cur,vm);
+    const shaky=v!=null&&isShaky(vm);
+    el.classList.toggle("few",!!ci?.few);
+    el.classList.toggle("shaky",shaky);
+    let ms=v==null?"":S.moeStr(a);
+    if(shaky) ms+=", wide margin";
+    if(ci) ms=(ms?ms+" · ":"")+ci.txt;
     el.querySelector(".val").innerHTML=v==null?"no data":S.fmt(v)+(ms?` <span class="moe">${ms}</span>`:"");
   });
 
@@ -880,6 +1070,57 @@ function renderField(S){
   });
   host.innerHTML=svg+"</svg>";
 }
+function hoverText(a,S){
+  const v=S.val(a);
+  if(v==null) return `<b>${a.name}</b>, ${a.boro}: no data`;
+  const rk=S.ranks.map[a.code];
+  const rg=!custom?RNG[cur]?.[a.code]:null;
+  const range=rg&&rg[0]!==rg[1]?` (within the margin of error, anywhere from ${rg[0]} to ${rg[1]})`:"";
+  const ci=!custom?countInfo(cur,a.values[cur]):null;
+  return `<b>${a.name}</b>, ${a.boro}: ${S.fmt(v)}${ci?" ("+ci.txt+")":""}, rank ${rk} of ${S.ranks.n}${range}`;
+}
+/* choropleth of the current category, shaded by fifths of the ranking */
+let mapToken=0;
+async function renderMap(S){
+  const tok=++mapToken;
+  const Sh=await ensureShapes();
+  if(tok!==mapToken) return;
+  const host=document.getElementById("mapsvg");
+  if(!Sh){host.innerHTML=`<p class="empty">The map boundaries didn't load.</p>`;return;}
+  const n=S.ranks.n;
+  const fifth=r=>Math.min(4,Math.floor((r-1)/n*5));
+  const SH=[100,72,50,34,21];
+  const shade=k=>`color-mix(in srgb, var(--sun) ${SH[k]}%, #1b1e1b)`;
+  const groups=[[],[],[],[],[]];
+  let paths="";
+  for(const [c,o] of Object.entries(Sh.shapes)){
+    const d=o.r.map(ringPath).join("");
+    if(o.t!=="0"){paths+=`<path d="${d}" style="fill:#161816"/>`;continue;}
+    const a=areaBy[c]; const v=a?S.val(a):null;
+    if(v==null){paths+=`<path class="nta" data-c="${c}" d="${d}" style="fill:#2c302c"/>`;continue;}
+    const k=fifth(S.ranks.map[c]); groups[k].push(v);
+    const on=boroFilter.has(a.boro)&&(!query||a.name.toLowerCase().includes(query));
+    paths+=`<path class="nta${on?"":" dim"}" data-c="${c}" d="${d}" style="fill:${shade(k)}"/>`;
+  }
+  host.innerHTML=`<svg viewBox="0 0 ${Sh.w} ${Sh.h}" role="img" aria-label="Map of ${S.label}, shaded by fifths of the ranking">${paths}</svg>`;
+  const key=groups.map((g,k)=>{
+    if(!g.length) return "";
+    const hi=Math.max(...g), lo=Math.min(...g);
+    const txt=hi===lo?S.fmt(hi):(S.invert?`${S.fmt(lo)} to ${S.fmt(hi)}`:`${S.fmt(hi)} to ${S.fmt(lo)}`);
+    return `<span><i style="background:${shade(k)}"></i>${["Top","Second","Middle","Fourth","Bottom"][k]} fifth: ${txt}</span>`;
+  }).join("");
+  document.getElementById("mapkey").innerHTML=key+`<span><i style="background:#2c302c"></i>No data</span>`;
+}
+(function wireMap(){
+  const host=document.getElementById("mapsvg"), out=document.getElementById("mapread");
+  const blank=out.textContent;
+  host.addEventListener("pointerover",e=>{
+    const p=e.target.closest("path.nta"); if(!p||!lastSpec) return;
+    out.innerHTML=hoverText(areaBy[p.dataset.c],lastSpec);
+  });
+  host.addEventListener("pointerleave",()=>{out.textContent=blank;});
+  host.addEventListener("click",e=>{const p=e.target.closest("path.nta"); if(p) openDrawer(p.dataset.c);});
+})();
 (function wireField(){
   const host=document.getElementById("field"), out=document.getElementById("fread");
   const blank=out.textContent;
@@ -888,8 +1129,7 @@ function renderField(S){
     host.querySelectorAll(".dot.hot").forEach(x=>x.classList.remove("hot"));
     d.classList.add("hot");
     const a=areas.find(x=>x.code===d.dataset.c);
-    const rk=lastSpec.ranks.map[a.code];
-    out.innerHTML=`<b>${a.name}</b>, ${a.boro}: ${lastSpec.fmt(lastSpec.val(a))}, rank ${rk} of ${lastSpec.ranks.n}`;
+    out.innerHTML=hoverText(a,lastSpec);
   });
   host.addEventListener("pointerleave",()=>{host.querySelectorAll(".dot.hot").forEach(x=>x.classList.remove("hot"));out.textContent=blank;});
   host.addEventListener("click",e=>{const d=e.target.closest(".dot"); if(d) openDrawer(d.dataset.c);});
@@ -983,7 +1223,7 @@ function renderCmp(){
   tbl.appendChild(thead);
   const tb=document.createElement("tbody");
   cmpIds().forEach(id=>{
-    const label=byId[id][2];
+    const label=labelFor(id);
     const tr=document.createElement("tr");
     const cells=sel.map(a=>({v:a.values[id]?.v,r:ranks[id].map[a.code]}));
     const ranked=cells.filter(c=>c.v!=null);
@@ -1034,12 +1274,39 @@ function drawerLine(a,id,label){
   const line=document.createElement("div"); line.className="dline"; line.dataset.tip=id;
   const rankHtml=vm.v==null?`<span class="dr">—</span>`
     :`<span class="dr ${r<=20?"hi":r>ranks[id].n-20?"lo":""}">#${r}</span>`;
-  line.innerHTML=`<span>${label}</span><span style="display:flex;align-items:center"><span class="dv">${fmtV(id,vm.v)}</span>${rankHtml}</span>`;
+  const rg=RNG[id]?.[a.code];
+  const rr=vm.v!=null&&rg&&rg[0]!==rg[1]?`<span class="rr" title="Ranks this value could hold within the margin of error">${rg[0]}-${rg[1]}</span>`:"";
+  if(isShaky(vm)) line.classList.add("shaky");
+  line.innerHTML=`<span>${labelFor(id)}</span><span style="display:flex;align-items:baseline"><span class="dv">${fmtV(id,vm.v)}</span>${rr}${rankHtml}</span>`;
   line.onclick=()=>{closeDrawer();selectMetric(id);window.scrollTo({top:0,behavior:"smooth"});};
   return line;
 }
+/* most alike: smallest average gap in rank position across every category */
+function similar(code,k=5){
+  const ids=M.map(m=>m[0]).filter(id=>id!=="population"&&id!=="land_area");
+  const out=[];
+  for(const b of areas){
+    if(b.code===code) continue;
+    let s=0,c=0;
+    for(const id of ids){
+      const ra=ranks[id].map[code], rb=ranks[id].map[b.code];
+      if(ra==null||rb==null) continue;
+      s+=Math.abs(ra-rb)/ranks[id].n; c++;
+    }
+    if(c>=40) out.push([b,s/c]);
+  }
+  return out.sort((x,y)=>x[1]-y[1]).slice(0,k).map(x=>x[0]);
+}
 function fillDrawer(code){
   const a=areas.find(x=>x.code===code);
+  const sim=similar(code);
+  const ds=document.getElementById("dsim");
+  ds.innerHTML="Most alike across all categories: "+sim.map(b=>`<button data-c="${b.code}">${b.name}</button>`).join(", ")+".";
+  ds.querySelectorAll("button").forEach(b=>b.onclick=()=>openDrawer(b.dataset.c));
+  const modes=[];
+  if(rateBase==="day") modes.push("per-person rates divide by residents and workers");
+  if(countMode==="places") modes.push("311 rates count each address once");
+  document.getElementById("dmode").textContent=modes.length?` With your current settings, ${modes.join(" and ")}.`:"";
   const body=document.getElementById("dbody"); body.innerHTML="";
   if(dsortMode==="rank"){
     const wrap=document.createElement("div"); wrap.className="dgroup";

@@ -39,9 +39,10 @@ td:first-child{color:var(--fg);font-weight:600}
 <h2>Census categories</h2>
 <p>All demographic, economic, housing and commuting categories come from the <b>American Community Survey (ACS) 2020-2024 five-year estimates</b>, as tabulated at the NTA level by the Department of City Planning and published as four Excel workbooks (demographic, social, economic, housing) on <a href="https://www.nyc.gov/content/planning/pages/resources/datasets/american-community-survey">City Planning's ACS page</a>. Values were read directly from those files with no adjustment. Category definitions (universes such as "population 25 and older") are noted under the board title.</p>
 <ul>
-<li><b>Margins of error.</b> ACS figures are survey estimates. The board shows the Census Bureau's published 90% margin of error (&plusmn;) next to each estimate where one exists. Neighborhoods whose values sit within each other's margins are statistically indistinguishable; treat near ties as ties.</li>
+<li><b>Margins of error.</b> ACS figures are survey estimates. The board shows the Census Bureau's published 90% margin of error (&plusmn;) next to each estimate where one exists. Neighborhoods whose values sit within each other's margins are statistically indistinguishable; treat near ties as ties. Estimates whose margin is wide relative to the value (a coefficient of variation above 30%, the usual reliability cutoff) are faded and marked "wide margin." Child poverty, housing built since 2010 and veteran share are the categories most affected, each with 40 or more neighborhoods faded.</li>
+<li><b>Rank ranges.</b> A neighborhood's page shows, beside each survey rank, the range of ranks it could plausibly hold: the best rank counts only the neighborhoods whose whole 90% interval sits above its own, the worst only those whose whole interval sits below. It is a rough guide, not a formal test.</li>
 <li><b>Capped medians.</b> City Planning computes neighborhood medians from bracketed distributions whose top brackets are open-ended ($200,000-or-more income, $3,500-or-more rent, $2,000,000-or-more home value), so a median that falls in the top bracket is reported at the cap. Values at the cap display with a plus sign and tie for first.</li>
-<li><b>Suppression.</b> A handful of values are unpublished for small neighborhoods; those rows show "no data" and are not ranked in that category.</li>
+<li><b>Zero estimates.</b> When an estimate is exactly zero, City Planning's workbooks leave the percent blank. The board reads those blanks as 0%, so Hunts Point and Claremont Village rank last on Asian share rather than dropping out. One value is genuinely unpublished: Stuyvesant Town-Peter Cooper Village's median home value, since nearly every home there is rented. That row shows "no data" and isn't ranked.</li>
 <li><b>Derived categories.</b> "Share never married" = never-married men plus never-married women, divided by population 15 and older. "Single-family homes" = 1-unit detached share plus 1-unit attached share. Population density = ACS population &divide; land area.</li>
 </ul>
 
@@ -50,21 +51,34 @@ td:first-child{color:var(--fg);font-weight:600}
 <div class="tscroll"><table>
 <tr><th>Category</th><th>Dataset</th><th>Window</th><th>Notes</th></tr>
 <tr><td>Felony complaints; violent felonies</td><td><a href="https://data.cityofnewyork.us/Public-Safety/NYPD-Complaint-Data-Historic/qgea-i56i">NYPD complaint data (historic)</a></td><td>Calendar 2025, by report date (RPT_DT)</td><td>Violent = murder and non-negligent manslaughter, rape, robbery, felony assault. Complaints are counted where the crime occurred; job centers like Midtown rank high relative to their resident population.</td></tr>
-<tr><td>311 requests; noise; rodent; illegal parking</td><td><a href="https://data.cityofnewyork.us/Social-Services/311-Service-Requests-from-2010-to-Present/erm2-nwe9">311 service requests</a></td><td>Aug. 1, 2025-July 31, 2026</td><td>Noise = every complaint type beginning with "Noise." 311 measures reporting, not conditions; a few prolific callers can move a small neighborhood's rate.</td></tr>
+<tr><td>311 requests; noise; rodent; illegal parking</td><td><a href="https://data.cityofnewyork.us/Social-Services/311-Service-Requests-from-2010-to-Present/erm2-nwe9">311 service requests</a></td><td>Aug. 1, 2025-July 31, 2026</td><td>Noise = every complaint type beginning with "Noise." 311 measures reporting, not conditions. One address can supply most of a neighborhood's total: 92% of Wakefield-Woodlawn's 77,720 noise complaints came from a single building, and two buildings account for 79% of Highbridge's rodent complaints. The board flags any address with a quarter or more of a total and can count each address once instead (see below).</td></tr>
 <tr><td>Traffic crashes; crash injuries</td><td><a href="https://data.cityofnewyork.us/Public-Safety/Motor-Vehicle-Collisions-Crashes/h9gi-nx95">Motor vehicle collisions</a></td><td>Calendar 2025</td><td>Police-reported crashes only. Injuries include deaths. About 3% of crashes lack coordinates and are excluded.</td></tr>
-<tr><td>Evictions</td><td><a href="https://data.cityofnewyork.us/City-Government/Evictions/6z8x-wfk4">Evictions (Department of Investigation)</a></td><td>Executed in calendar 2025</td><td>Residential evictions executed by city marshals, per 1,000 renter-occupied units (ACS). Undercounts total displacement, which mostly happens before a marshal arrives.</td></tr>
+<tr><td>Evictions</td><td><a href="https://data.cityofnewyork.us/City-Government/Evictions/6z8x-wfk4">Evictions (Department of Investigation)</a></td><td>Executed in calendar 2025</td><td>Residential evictions executed by city marshals, per 1,000 renter-occupied units (ACS). Undercounts total displacement, which mostly happens before a marshal arrives. Of 17,791 residential evictions in 2025, 1,096 (6%) have no coordinates and are excluded.</td></tr>
 <tr><td>Restaurants</td><td><a href="https://data.cityofnewyork.us/Health/DOHMH-New-York-City-Restaurant-Inspection-Results/43nn-pn8j">Restaurant inspection results</a></td><td>Current active file</td><td>Unique establishments (by CAMIS id) in the Health Department's inspection file.</td></tr>
 <tr><td>Parks-managed trees</td><td><a href="https://data.cityofnewyork.us/Environment-Historic-/Forestry-Tree-Points/hn5i-inap">Parks Department forestry tree points</a></td><td>Current</td><td>Standing live trees only: points with structure "Full" (which excludes the roughly 174,000 "Retired" records for removed trees, and stumps) and condition other than "Dead." Covers street trees plus park trees the agency actively manages; natural forest isn't inventoried tree by tree. 888,653 trees citywide.</td></tr>
 <tr><td>Subway stations</td><td><a href="https://data.ny.gov/Transportation/MTA-Subway-Stations/39hk-dx4f">MTA subway stations</a></td><td>Current</td><td>Stations (not complexes) whose coordinates fall inside the boundary — Times Square-42nd Street counts as five stations — including the 21 Staten Island Railway stations. 496 systemwide. Stations just outside a neighborhood's edge don't count toward it.</td></tr>
 </table></div>
 
+<h2>Rate options</h2>
+<ul>
+<li><b>Residents and workers.</b> Every per-1,000-residents rate (crime, crashes, 311, restaurants) can instead divide by residents plus the jobs located in the neighborhood. Jobs come from the Census Bureau's <a href="https://lehd.ces.census.gov/data/">Longitudinal Employer-Household Dynamics</a> workplace file (LODES 8, 2023, all jobs), summed from census blocks to neighborhoods through City Planning's tract equivalency: 4,585,129 jobs citywide. Jobs are counted where the employer reports them, the file leaves out most self-employed people, and a worker with two jobs counts twice, so this is a rough daytime base, not a count of people present. It mainly changes job centers: on felonies, Midtown-Times Square falls from first to 184th of 197.</li>
+<li><b>Each address once.</b> For 311 categories, the board can count distinct locations with at least one complaint instead of complaints. Locations are complaint coordinates rounded to about a meter, which matches the city's geocoding of a single address. A big apartment building counts once however many households call from it.</li>
+<li><b>Small counts.</b> Each event-based rate shows the count behind it. Rates built on fewer than 25 events (evictions, violent felonies, rodent complaints in some neighborhoods) are faded: one or two events either way would move them noticeably. They stay ranked, because dropping them would remove most of the low end of the eviction and rodent lists.</li>
+</ul>
+
 <h2>Make-your-own combinations</h2>
 <p>The "Mix your own" tab builds two kinds of user-defined rankings, computed in the browser from the same category values shown on the board:</p>
 <ul>
 <li><b>Ratio.</b> One category's value divided by another's, for each neighborhood. A neighborhood shows "no data" if either component is unpublished or the denominator is zero. Ratios of top-coded medians (income, rent, home value) use the capped value, so extreme neighborhoods are conservative. Rank 1 is the highest ratio.</li>
-<li><b>Blend.</b> The average of a neighborhood's ranks across 2-6 chosen categories, weighted equally, where rank 1 in a category means the highest value. A neighborhood must have data in every chosen category to be ranked. Rank 1 is the lowest average.</li>
+<li><b>Blend.</b> The average of a neighborhood's ranks across 2-6 chosen categories, weighted equally, where rank 1 in a category means the highest value, unless you switch that category to "lowest first." A neighborhood must have data in every chosen category to be ranked. Rank 1 is the lowest average.</li>
 </ul>
 <p>Combinations are arithmetic on published figures, chosen by the reader; they are not editorial indexes, and margins of error are not propagated through them. Shareable links (the page address updates as you build) reproduce the same combination.</p>
+
+<h2>Map and similar neighborhoods</h2>
+<ul>
+<li><b>Map.</b> The map shades each neighborhood by which fifth of the ranking it falls in; the key gives each fifth's value range. Parks, cemeteries and airports are drawn dark and unranked.</li>
+<li><b>Most alike.</b> Each neighborhood's page lists the five neighborhoods whose ranks are closest across all categories except population and land area: the average gap in rank position, as a share of the number ranked. It describes resemblance on these measures only.</li>
+</ul>
 
 <h2>Ranking rules</h2>
 <ul>
@@ -76,14 +90,14 @@ td:first-child{color:var(--fg);font-weight:600}
 
 <h2>Limitations</h2>
 <ul>
-<li>Per-resident rates use nighttime (residential) population. Neighborhoods with huge daytime populations &mdash; Midtown, the Financial District &mdash; will look extreme on anything divided by residents.</li>
+<li>Per-resident rates use nighttime (residential) population by default. Neighborhoods with huge daytime populations &mdash; Midtown, the Financial District &mdash; look extreme on anything divided by residents; the residents-and-workers option softens that but doesn't count visitors or tourists.</li>
 <li>ACS five-year estimates average 2020-2024; fast-changing neighborhoods lag reality. The 2020-2024 release (published December 2025) is the newest neighborhood-level data the Census Bureau produces. Fresher population figures exist only citywide: the bureau's Vintage 2025 estimates put New York City at about 8.58 million as of July 1, 2025 — roughly 1.2% above the five-year ACS total of 8.48 million, which centers on 2022, near the pandemic population trough. The 197 neighborhoods here sum to 8,475,754; the small gap to the citywide ACS total is people living in excluded park, airport and institutional areas.</li>
 <li>311 and crime complaints measure what gets reported, which varies with reporting habits, not only conditions.</li>
 <li>The eviction, restaurant and tree files are administrative and inherit their agencies' lags and gaps.</li>
 </ul>
 
 <h2>Reproducibility</h2>
-<p>The full pipeline &mdash; fetch scripts, point-in-polygon aggregation and the build step that produces <code>rankings.json</code> &mdash; is in the <a href="https://github.com/joshgreenman1973/nyc-nta-rankings">GitHub repository</a>. Data was pulled Aug. 2, 2026. This project was built with the help of artificial intelligence (Claude); if a number looks wrong, check it against the source datasets linked above.</p>
+<p>The full pipeline &mdash; fetch scripts, point-in-polygon aggregation and the build step that produces <code>rankings.json</code> &mdash; is in the <a href="https://github.com/joshgreenman1973/nyc-nta-rankings">GitHub repository</a>. Data was pulled Aug. 2, 2026; the jobs file was added Nov. 3, 2026. This project was built with the help of artificial intelligence (Claude); if a number looks wrong, check it against the source datasets linked above.</p>
 
 <p style="margin-top:30px"><a class="back" href="index.html">&larr; Back to the board</a></p>
 </div>

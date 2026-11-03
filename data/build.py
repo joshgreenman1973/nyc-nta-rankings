@@ -4,13 +4,27 @@
 Only residential NTAs (ntatype 0) are ranked. Rates are per 1,000 residents
 (evictions: per 1,000 renter-occupied units; trees: per square mile).
 """
-import json, sys, datetime
+import json, sys, datetime, csv, gzip
 
 SQFT_PER_SQMI = 27878400.0
 
 acs = json.load(open("acs.json"))
 pts = json.load(open("points.json"))["counts"]
 gj = json.load(open("raw/nta2020.geojson"))
+
+# Jobs located in each NTA (Census LEHD LODES 8 workplace file, 2023, all jobs),
+# for the optional "residents and workers" rate base. Blocks join to NTAs
+# through City Planning's 2020 tract-to-NTA equivalency.
+t2n = {r["geoid"]: r["ntacode"] for r in csv.DictReader(open("raw/tract_nta.csv"))}
+JOBS = {}
+for r in csv.DictReader(gzip.open("raw/ny_wac_2023.csv.gz", "rt")):
+    g = r["w_geocode"]
+    if g[:5] not in ("36005", "36047", "36061", "36081", "36085"):
+        continue
+    c = t2n.get(g[:11])
+    assert c, f"block {g} has no NTA"
+    JOBS[c] = JOBS.get(c, 0) + int(r["C000"])
+assert sum(JOBS.values()) > 4_000_000, "jobs file looks short"
 
 areas = []
 for f in gj["features"]:
@@ -32,6 +46,9 @@ for f in gj["features"]:
     def rate(metric, num_key, den, per=1000.0, nd=1):
         n = c.get(num_key, 0)
         vals[metric] = {"v": round(n / den * per, nd) if den else None, "m": None, "n": n}
+        if num_key + "_locs" in c or num_key in ("complaints_311", "noise", "rodent", "illegal_parking"):
+            vals[metric]["l"] = c.get(num_key + "_locs", 0)   # distinct locations
+            vals[metric]["t"] = c.get(num_key + "_top", 0)    # complaints at the busiest one
     if pop and pop > 0:
         rate("felony_rate", "felonies", pop)
         rate("violent_rate", "violent_felonies", pop)
@@ -62,7 +79,8 @@ for f in gj["features"]:
         if vm.get("m") is not None:
             vm["m"] = round(vm["m"], 1) if vm["m"] < 100 else round(vm["m"])
 
-    areas.append({"code": code, "name": p["ntaname"], "boro": p["boroname"], "values": vals})
+    areas.append({"code": code, "name": p["ntaname"], "boro": p["boroname"],
+                  "jobs": JOBS.get(code, 0), "values": vals})
 
 assert len(areas) == 197, f"expected 197 residential NTAs, got {len(areas)}"
 
@@ -72,4 +90,4 @@ out = {
 }
 json.dump(out, open("../docs/rankings.json", "w"), separators=(",", ":"))
 n_metrics = len(areas[0]["values"])
-print(f"wrote ../site/rankings.json: {len(areas)} areas x {n_metrics} metrics", file=sys.stderr)
+print(f"wrote ../docs/rankings.json: {len(areas)} areas x {n_metrics} metrics", file=sys.stderr)

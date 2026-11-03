@@ -108,6 +108,10 @@ for code in sorted(codes):
         assert vcol in idx, f"missing column {vcol} in {wbname}"
         v = num(row[idx[vcol]])
         m = num(row[idx[mcol]]) if mcol in idx else None
+        # City Planning leaves the percent (and its MOE) blank when the estimate
+        # is exactly zero. That is a real 0%, not a missing value.
+        if v is None and use == "P" and num(row[idx[stem + "E"]]) == 0:
+            v = 0.0
         rec[mid] = {"v": v, "m": m}
     # computed: % never married (both sexes, pop 15+)
     idx, data = books["Soc"]
@@ -124,6 +128,8 @@ for code in sorted(codes):
     row = data[code]
     def h(c): return num(row[idx[c]])
     d, a = h("HU1uDP"), h("HU1uAP")
+    if d is None and h("HU1uDE") == 0: d = 0.0   # blank percent = zero estimate
+    if a is None and h("HU1uAE") == 0: a = 0.0
     rec["pct_single_family"] = {"v": round(d + a, 1) if None not in (d, a) else None, "m": None}
     out[code] = rec
 

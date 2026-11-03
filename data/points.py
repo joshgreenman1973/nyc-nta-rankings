@@ -23,13 +23,26 @@ print(f"{len(polys)} NTA polygons", file=sys.stderr)
 counts = {c: {} for c in codes}
 meta = {}
 
+# 311 metrics also get a count of distinct locations and the size of the
+# single busiest location, so one prolific caller can't decide a ranking.
+PLACE_METRICS = {"complaints_311", "noise", "rodent", "illegal_parking"}
+
 def assign(lons, lats, weights, metric):
     """Add weighted counts of points to containing NTAs."""
     pts = shapely.points(np.asarray(lons), np.asarray(lats))
     res = tree.query(pts, predicate="intersects")  # [[pt_idx],[poly_idx]]
+    places = {} if metric in PLACE_METRICS else None
     for pi, gi in zip(res[0], res[1]):
         c = codes[gi]
         counts[c][metric] = counts[c].get(metric, 0) + weights[pi]
+        if places is not None:
+            key = (round(lats[pi], 5), round(lons[pi], 5))  # ~1 m: one geocoded address
+            pc = places.setdefault(c, {})
+            pc[key] = pc.get(key, 0) + 1
+    if places is not None:
+        for c, pc in places.items():
+            counts[c][metric + "_locs"] = len(pc)
+            counts[c][metric + "_top"] = max(pc.values())
     matched = len(set(res[0]))
     return matched
 
