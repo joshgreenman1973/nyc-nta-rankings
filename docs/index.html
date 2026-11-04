@@ -241,6 +241,8 @@ table.cmp td .v{font-weight:700;font-variant-numeric:tabular-nums}
 table.cmp td .r{color:var(--fg2);font-size:12.5px;margin-left:6px}
 table.cmp td.lead .v{background:var(--sun);color:#111311;padding:1px 4px}
 table.cmp td.nod{color:var(--fg2)}
+table.cmp td .cm{display:block;color:var(--fg2);font-size:11.5px;font-weight:400}
+table.cmp td.unc .v{color:var(--fg2);font-weight:400}
 .cmp-empty{color:var(--fg2);padding:20px 0;font-size:15px}
 /* footer */
 .foot p{margin:6px 0;max-width:80ch}
@@ -260,7 +262,7 @@ table.cmp td.nod{color:var(--fg2)}
   <h1>Every neighborhood, ranked</h1>
   <p class="finding" id="finding">Median household income runs from $28,469 in Mott Haven-Port Morris to $200,000 or more in Upper East Side-Carnegie Hill and Tribeca-Civic Center.</p>
   <p class="lede">All <b>197</b> of New York City's residential <button class="whatbtn" id="whatbtn">neighborhood tabulation areas</button>, sorted <b><span id="ncats">63</span> different ways</b> &mdash; population, money, housing, commutes, crime, noise, trees, rats and more. Pick a category and watch the board reshuffle, flip it first-to-last or last-to-first, or mix your own ranking from any categories. Every number comes from the Census Bureau, a city agency or the Metropolitan Transportation Authority. <a href="methodology.html">Methodology&nbsp;&rarr;</a></p>
-  <div class="whatpop" id="whatpop"><button class="dclose whatclose" id="whatclose" aria-label="Close this note">Close &times;</button><b>What's a neighborhood tabulation area?</b> New York City has no official neighborhood borders, so the Department of City Planning draws <b>neighborhood tabulation areas (NTAs)</b> — 262 statistical areas built from whole 2020 census tracts, sized so census survey data stays reliable. This board ranks the 197 residential ones and leaves out parks, cemeteries, airports and Rikers Island. NTAs are counting units, not neighborhoods in the everyday sense. Where one neighborhood ends and the next begins is hotly disputed, as The New York Times found when it <a href="https://www.nytimes.com/interactive/2023/upshot/extremely-detailed-nyc-neighborhood-map.html">asked tens of thousands of New Yorkers to draw their own</a>. City Planning's lines and names often won't match what residents call the place: some neighborhoods are split (Bedford-Stuyvesant East and West), others are merged, and a block you'd call one neighborhood may be counted in another. Point at or tap the map to find any area, and open a ranked one for its full profile. More in the <a href="methodology.html">methodology</a>.
+  <div class="whatpop" id="whatpop"><button class="dclose whatclose" id="whatclose" aria-label="Close this note">Close &times;</button><b>What's a neighborhood tabulation area?</b> New York City has no official neighborhood borders, so the Department of City Planning draws <b>neighborhood tabulation areas (NTAs)</b> — 262 statistical areas built from whole 2020 census tracts, sized so census survey data stays reliable. This board ranks the 197 residential ones and leaves out parks, cemeteries, airports, Rikers Island and eight special-purpose areas. NTAs are counting units, not neighborhoods in the everyday sense. Where one neighborhood ends and the next begins is hotly disputed, as The New York Times found when it <a href="https://www.nytimes.com/interactive/2023/upshot/extremely-detailed-nyc-neighborhood-map.html">asked tens of thousands of New Yorkers to draw their own</a>. City Planning's lines and names often won't match what residents call the place: some neighborhoods are split (Bedford-Stuyvesant East and West), others are merged, and a block you'd call one neighborhood may be counted in another. Point at or tap the map to find any area, and open a ranked one for its full profile. More in the <a href="methodology.html">methodology</a>.
     <div class="whatmap" id="whatmap"><div class="readout" id="whatread">Loading the map&hellip;</div></div>
     <div class="whatfoot"><button class="dclose" id="whatclose2">Close the map &times;</button></div></div>
 </header>
@@ -344,7 +346,7 @@ table.cmp td.nod{color:var(--fg2)}
 
 <footer class="foot">
     <p><b>Sources:</b> United States Census Bureau, American Community Survey 2020-2024 five-year estimates, as compiled by the New York City Department of City Planning; NYC Open Data (New York Police Department complaints, 311 service requests, motor vehicle collisions, city marshal evictions, restaurant inspections, Parks Department forestry tree points); Metropolitan Transportation Authority subway stations; Census Bureau Longitudinal Employer-Household Dynamics workplace data (jobs by location, 2023). Boundaries: Department of City Planning 2020 neighborhood tabulation areas.</p>
-    <p>Survey figures show a &plusmn; margin of error where the Census Bureau publishes one. Administrative counts (crime, 311, collisions, evictions) are exact counts of reported events, converted to rates using ACS population, or population plus jobs if you choose. Full definitions, time windows and caveats: <a href="methodology.html">methodology</a>.</p>
+    <p>Survey figures show a &plusmn; margin of error where the Census Bureau publishes one. Administrative counts (crime, 311, collisions, evictions) include every record in each file rather than a sample, but they miss unreported events and records without a usable location, and the populations they're divided by are survey estimates; you can also divide by a commuter-adjusted population. Full definitions, time windows and caveats: <a href="methodology.html">methodology</a>.</p>
     <p>Built <span id="builtdate"></span> by Josh Greenman. Code and data pipeline on <a href="https://github.com/joshgreenman1973/nyc-nta-rankings">GitHub</a>.</p>
     <button class="aibtn" id="aibtn">About AI and this page</button>
     <div class="aipop" id="aipop">This project was built with the help of artificial intelligence (Claude). All numbers come directly from the government sources listed above and the calculation steps are documented in the <a href="methodology.html">methodology</a>, but AI-assisted work can contain errors. If a number looks wrong, please check the source data before relying on it.</div>
@@ -367,8 +369,8 @@ const TOPCODE = {median_hh_income:200000, median_rent:3500, median_home_value:20
 const ACS = "Census ACS 2020-2024";
 const M = [
  // id, group, label, fmt, source, note (definition shown under the board title and in hover tips)
- ["population","people","Population","int",ACS,"Total residents, 2020-2024 average — the newest neighborhood-level census data. Counts where people live: a business district's workers and a park's visitors don't count. The city's July 2025 total, available only citywide, is about 1.2% higher."],
- ["density","people","Residents per square mile","int",ACS,"Population density: ACS population divided by land area. Nighttime residential density — not daytime crowding, which no census measure captures."],
+ ["population","people","Population","int",ACS,"Total residents, from survey responses collected 2020-2024 — the newest census data for these areas. Counts where people live: a business district's workers and a park's visitors don't count. Newer annual estimates exist for the city and its boroughs but not for these areas."],
+ ["density","people","Residents per square mile","int",ACS,"ACS population divided by land area: where people live, not how crowded a place is during the working day. The margin shown is the population's margin scaled by the same land area."],
  ["land_area","people","Land area","mi2","City Planning","Square miles inside the City Planning boundary, clipped to the shoreline. Big parks, airports and cemeteries are separate areas and don't count toward any neighborhood here."],
  ["median_age","people","Median age","dec",ACS,"Half of residents are older, half younger. A survey estimate, not a count."],
  ["pct_under18","people","Share under 18","pct",ACS,"Residents younger than 18 as a share of all residents."],
@@ -377,7 +379,7 @@ const M = [
  ["pct_white_nh","people","Share white (non-Hispanic)","pct",ACS,"Residents identifying as white alone and not Hispanic. Self-reported; people choosing two or more races aren't in any single-race group."],
  ["pct_black_nh","people","Share Black (non-Hispanic)","pct",ACS,"Residents identifying as Black or African American alone and not Hispanic. Self-reported; people choosing two or more races aren't in any single-race group."],
  ["pct_asian_nh","people","Share Asian (non-Hispanic)","pct",ACS,"Residents identifying as Asian alone and not Hispanic. Self-reported; people choosing two or more races aren't in any single-race group."],
- ["pct_foreign_born","people","Share foreign-born","pct",ACS,"Residents born outside the United States and its territories, regardless of citizenship or legal status. People born in Puerto Rico are U.S.-born, not foreign-born."],
+ ["pct_foreign_born","people","Share foreign-born","pct",ACS,"Residents who were not U.S. citizens at birth, whatever their citizenship or legal status now; naturalized citizens count. People born abroad to American parents, and people born in Puerto Rico or another U.S. territory, were citizens at birth and count as native-born."],
  ["pct_lang_not_english","people","Speak a language other than English at home","pct",ACS,"Residents 5 and older who speak a language other than English at home. Says nothing about English ability — most also speak English."],
  ["pct_limited_english","people","Limited English proficiency","pct",ACS,"Residents 5 and older who told the census they speak English less than 'very well.' Self-assessed."],
  ["avg_hh_size","people","Average household size","dec",ACS,"People per occupied home. Excludes group quarters such as dorms, shelters and nursing homes."],
@@ -386,29 +388,29 @@ const M = [
  ["pct_disability","people","Share with a disability","pct",ACS,"Civilian noninstitutionalized residents reporting at least one of six census disability types: hearing, vision, cognitive, ambulatory, self-care or independent living."],
  ["pct_same_house","people","Lived in same home a year ago","pct",ACS,"Residents 1 and older living in the same home as a year earlier. Higher means less turnover; it says nothing about owning vs. renting."],
 
- ["median_hh_income","money","Median household income","usd",ACS,"Half of households earn more, half less. Households, not individuals. Computed from income brackets whose top bracket is $200,000-or-more, so the median caps there. The federal definition of income — before taxes, excluding capital-gains-style windfalls."],
- ["per_capita_income","money","Per capita income","usd",ACS,"Total income divided by every resident, including children. A few very high earners can pull it far above what a typical resident makes — compare with median household income."],
- ["pct_hh_200k","money","Households earning $200,000+","pct",ACS,"Households with pre-tax income of $200,000 or more in the past 12 months."],
+ ["median_hh_income","money","Median household income","usd",ACS,"Half of households earn more, half less. Households, not individuals. Computed from income brackets whose top bracket is $200,000-or-more, so the median caps there. Total money income from all sources — wages, self-employment, Social Security, retirement, public assistance and more — before taxes, excluding capital gains, in 2024 inflation-adjusted dollars."],
+ ["per_capita_income","money","Per capita income","usd",ACS,"Total money income divided by every resident, including children, in 2024 inflation-adjusted dollars. A few very high earners can pull it far above what a typical resident makes — compare with median household income."],
+ ["pct_hh_200k","money","Households earning $200,000+","pct",ACS,"Households with pre-tax money income of $200,000 or more in the past 12 months, in 2024 inflation-adjusted dollars."],
  ["pct_poverty","money","Share below poverty line","pct",ACS,"Residents below the federal poverty threshold, which is the same nationwide — it does not adjust for New York City's cost of living, so local hardship is understated."],
  ["pct_child_poverty","money","Children below poverty line","pct",ACS,"Residents under 18 below the federal poverty threshold (same nationwide standard, no local cost-of-living adjustment)."],
  ["pct_snap","money","Households receiving SNAP","pct",ACS,"Households that received Supplemental Nutrition Assistance Program (food stamp) benefits at any point in the past 12 months."],
  ["unemployment","money","Unemployment rate","pct",ACS,"Unemployed share of the civilian labor force — people without a job who are looking for one. People not seeking work (retirees, students, discouraged workers) count in neither the numerator nor the denominator."],
  ["labor_force","money","Labor force participation","pct",ACS,"Residents 16 and older who are working or looking for work. Retirees, full-time students and caregivers outside the workforce lower it — it is not an employment rate."],
- ["pct_bachelors","money","Bachelor's degree or higher","pct",ACS,"Residents 25 and older holding at least a bachelor's degree. Younger residents and students don't count in this measure."],
+ ["pct_bachelors","money","Bachelor's degree or higher","pct",ACS,"Residents 25 and older holding at least a bachelor's degree. Residents under 25 aren't in the base; students 25 and older are."],
  ["pct_grad_degree","money","Graduate or professional degree","pct",ACS,"Residents 25 and older holding a master's, professional or doctoral degree."],
  ["pct_no_hs","money","No high school diploma","pct",ACS,"Residents 25 and older without a high school diploma or equivalency."],
  ["pct_govt_workers","money","Government workers","pct",ACS,"Federal, state or local government employees as a share of employed civilian residents — where government workers live, not where government jobs are."],
  ["pct_self_employed","money","Self-employed","pct",ACS,"Residents working in their own unincorporated business, as a share of employed civilians. People whose own business is incorporated count as private employees instead."],
  ["pct_uninsured","money","No health insurance","pct",ACS,"Civilian noninstitutionalized residents with no health coverage of any kind — public or private."],
- ["pct_internet","money","Households with internet","pct",ACS,"Households with an internet subscription of any kind, including cellular-only data plans."],
+ ["pct_internet","money","Households with broadband internet","pct",ACS,"Households with a broadband internet subscription: cable, fiber, DSL, satellite or a cellular data plan, which on its own qualifies. Dial-up alone doesn't count, and neither does internet access without a subscription."],
 
- ["median_rent","homes","Median gross rent","usd",ACS,"What the middle renting household pays, counting rent plus utilities. Reflects what current tenants actually pay — including long-held and regulated leases — not what a new apartment asks. Caps at $3,500 because of the data's top bracket."],
- ["median_home_value","homes","Median home value","usd",ACS,"Owners' own estimate of what their home would sell for; half say more, half less. Not a record of actual sale prices. Caps at $2 million. Co-op owners estimate the value of their shares, which in limited-equity co-ops such as Co-op City sit far below market prices."],
+ ["median_rent","homes","Median gross rent","usd",ACS,"What the middle renter household paying cash rent pays, counting rent plus utilities, in 2024 inflation-adjusted dollars. Households paying no cash rent aren't in the base. Reflects what current tenants actually pay — including long-held and regulated leases — not what a new apartment asks. Caps at $3,500 because of the data's top bracket."],
+ ["median_home_value","homes","Median home value","usd",ACS,"Owners' own estimate of what their home would sell for, in 2024 inflation-adjusted dollars; half say more, half less. Not a record of actual sale prices. Caps at $2 million. Co-op owners estimate the value of their shares, which in limited-equity co-ops such as Co-op City sit far below market prices."],
  ["pct_renters","homes","Renter households","pct",ACS,"Renter-occupied share of occupied homes. The remainder are owner-occupied; vacant units aren't in the base."],
- ["pct_rent_burdened","homes","Rent-burdened (30%+ of income)","pct",ACS,"Renter households paying 30% or more of income on gross rent, among those paying cash rent. Includes the severely burdened."],
- ["pct_severe_rent_burden","homes","Severely rent-burdened (50%+)","pct",ACS,"Renter households paying 50% or more of income on gross rent — a subset of the rent-burdened group."],
- ["eviction_rate","homes","Evictions per 1,000 renter households","dec","City marshals, 2025","Residential evictions executed by city marshals in 2025, per 1,000 renter households. Most displacement happens earlier — tenants who move after a court filing or a rent hike never appear here. About 6% of the year's evictions have no location and can't be placed. The count behind each rate is shown: where renters are few, a handful of evictions moves the rate a lot."],
- ["pct_prewar","homes","Pre-war housing (built before 1939)","pct",ACS,"Homes in buildings built before 1939, the census's oldest category."],
+ ["pct_rent_burdened","homes","Rent-burdened (30%+ of income)","pct",ACS,"Renter households paying 30% or more of household income on gross rent. The base leaves out renters whose share can't be computed: those paying no cash rent and those with zero or negative income. Includes the severely burdened."],
+ ["pct_severe_rent_burden","homes","Severely rent-burdened (50%+)","pct",ACS,"Renter households paying 50% or more of household income on gross rent — a subset of the rent-burdened group, with the same base (renters whose share can be computed)."],
+ ["eviction_rate","homes","Evictions per 1,000 renter households","dec","City marshals, 2025","Residential evictions executed by city marshals in 2025, per 1,000 renter households. Only marshal executions count: tenants who leave after a court filing, a buyout or a rent increase never appear here, so this is not a measure of all displacement. About 6% of the year's evictions have no location and can't be placed. The count behind each rate is shown: where renters are few, a handful of evictions moves the rate a lot."],
+ ["pct_prewar","homes","Housing built 1939 or earlier","pct",ACS,"Homes in buildings built in 1939 or earlier, the census's oldest category."],
  ["pct_built_2010","homes","Housing built 2010 or later","pct",ACS,"Homes in buildings built in 2010 or later — a measure of recent construction, not of quality."],
  ["pct_big_buildings","homes","Units in 20+ unit buildings","pct",ACS,"Homes in buildings with 20 or more units."],
  ["pct_single_family","homes","Single-family homes","pct",ACS,"Homes that are one-unit houses, whether detached or attached rowhouses, as a share of all units."],
@@ -417,28 +419,28 @@ const M = [
  ["pct_vacant","homes","Vacant housing units","pct",ACS,"Units vacant when surveyed — for sale or rent, awaiting occupancy, seasonal or otherwise empty. Not a measure of abandonment or 'warehousing.'"],
 
  ["mean_commute","moving","Mean commute time","min",ACS,"Average one-way travel time to work for commuting workers 16 and older. People who work from home are excluded entirely."],
- ["pct_transit","moving","Commute by public transit","pct",ACS,"Workers whose main commute is subway, bus, rail or ferry. Each worker counts once, by their primary mode."],
- ["pct_walk_work","moving","Walk to work","pct",ACS,"Workers whose main commute is walking all the way."],
- ["pct_drive_alone","moving","Drive alone to work","pct",ACS,"Workers who drive to work alone (carpooling counted separately)."],
- ["pct_wfh","moving","Work from home","pct",ACS,"Workers who worked from home most of the reference week — no commute at all."],
+ ["pct_transit","moving","Commute by public transit","pct",ACS,"Workers 16 and older whose main commute is subway, bus, rail or ferry. Each worker counts once, by their primary mode; people who work from home are in the base."],
+ ["pct_walk_work","moving","Walk to work","pct",ACS,"Workers 16 and older whose main commute is walking all the way. People who work from home are in the base."],
+ ["pct_drive_alone","moving","Drive alone to work","pct",ACS,"Workers 16 and older who drive to work alone (carpooling counted separately). People who work from home are in the base."],
+ ["pct_wfh","moving","Work from home","pct",ACS,"Workers 16 and older who worked from home most of the reference week, as a share of all workers 16 and older."],
  ["pct_no_vehicle","moving","Households with no vehicle","pct",ACS,"Households with no cars, vans or trucks available to them."],
- ["subway_stations","moving","Subway stations","int","MTA","Stations whose coordinates fall inside the boundary, as the MTA counts them — Times Square-42nd Street is five stations, not one — including the 21 Staten Island Railway stations. A station just across a boundary street counts for the neighbor."],
- ["collision_rate","moving","Traffic crashes per 1,000 residents","dec","Police-reported, 2025","Police-reported motor vehicle crashes in 2025, counted where they happened, per 1,000 residents. Busy through-routes raise a neighborhood's rate; unreported fender-benders don't appear."],
- ["injury_rate","moving","People hurt in crashes per 1,000 residents","dec","Police-reported, 2025","People injured or killed in reported 2025 crashes — drivers, passengers, cyclists and pedestrians alike — per 1,000 residents, counted where the crash occurred."],
+ ["subway_stations","moving","Subway stations","int","MTA, file of Nov. 4, 2026","Stations whose coordinates fall inside the boundary, each counted once by MTA station ID. Three stations appear twice in the MTA file under two stop codes (145 St, W 4 St-Wash Sq, Queensboro Plaza) and count once. Stations, not complexes: Times Square-42nd Street is five stations. Includes the 21 Staten Island Railway stations. A station just across a boundary street counts for the neighbor."],
+ ["collision_rate","moving","Traffic crashes per 1,000 residents","dec","Police-reported, 2025","Police-reported motor vehicle crashes in 2025, placed by their reported coordinates, per 1,000 residents. Busy through-routes raise a neighborhood's rate; unreported fender-benders don't appear."],
+ ["injury_rate","moving","People hurt in crashes per 1,000 residents","dec","Police-reported, 2025","People injured or killed in reported 2025 crashes — drivers, passengers, cyclists and pedestrians alike — per 1,000 residents, placed by the crash's reported coordinates."],
 
- ["restaurant_rate","streets","Restaurants per 1,000 residents","dec","Health Dept. inspections","Food establishments in the Health Department's active inspection file, per 1,000 residents. Job centers score high because the denominator is residents, not visitors. Includes some recently closed spots the file hasn't purged."],
- ["tree_density","streets","Parks-managed trees per square mile","int","Parks Dept., current","Standing live trees the Parks Department manages — street trees plus maintained park trees — per square mile. Natural woodland isn't inventoried tree by tree, so forested edges undercount."],
- ["felony_rate","streets","Felony complaints per 1,000 residents","dec","NYPD, 2025","Felonies reported to the NYPD in 2025, counted where the crime occurred, per 1,000 residents. Complaints, not arrests or convictions. Job and entertainment centers rank high because victims there mostly live elsewhere."],
- ["violent_rate","streets","Violent felonies per 1,000 residents","dec","NYPD, 2025","2025 complaints for murder, rape, robbery or felony assault, per 1,000 residents, counted where the crime occurred. Complaints, not convictions; other serious crimes like burglary are in the broader felony measure."],
+ ["restaurant_rate","streets","Restaurants per 1,000 residents","dec","Health Dept., file of Nov. 4, 2026","Food establishments the Health Department has inspected at least once, per 1,000 residents; permit applicants not yet inspected are left out. Job centers score high because the denominator is residents, not visitors. The file can lag closures, so some recently closed places remain."],
+ ["tree_density","streets","Parks-managed trees per square mile","int","Parks Dept., file of Nov. 4, 2026","Standing live trees the Parks Department manages — street trees plus maintained park trees — per square mile. Natural woodland isn't inventoried tree by tree, so forested edges undercount."],
+ ["felony_rate","streets","Felony complaints per 1,000 residents","dec","NYPD, 2025","Felonies reported to the NYPD in 2025, per 1,000 residents, placed by the coordinates NYPD publishes. NYPD records every rape and sex-crime complaint, and many offenses it couldn't geocode, at the precinct station house, so felonies at station-house points are left out: those points don't say where a crime happened. Complaints, not arrests or convictions. Job and entertainment centers rank high partly because workers and visitors are there but aren't counted as residents."],
+ ["violent_rate","streets","Murder, robbery and felony assault per 1,000 residents","dec","NYPD, 2025","2025 complaints for murder and non-negligent manslaughter, robbery or felony assault, per 1,000 residents, placed by NYPD's published coordinates, leaving out station-house points. Rape isn't included: NYPD publishes no incident location for it. Complaints, not convictions; other serious crimes like burglary are in the broader felony measure."],
  ["complaints_rate","streets","311 requests per 1,000 residents","int","311, Aug. 2025-July 2026","Every 311 service request over 12 months — noise, heat, potholes, parking and more — per 1,000 residents. Measures what residents report, which reflects reporting habits as much as conditions."],
- ["noise_rate","streets","Noise complaints per 1,000 residents","dec","311, Aug. 2025-July 2026","All 311 complaint types beginning with 'Noise' over 12 months, per 1,000 residents. Reports, not decibels, and one address can supply most of a neighborhood's total: the board flags any location with a quarter or more of it, and 'Each address once' counts locations instead."],
- ["rodent_rate","streets","Rodent complaints per 1,000 residents","dec","311, Aug. 2025-July 2026","311 rodent complaints (sightings and conditions) over 12 months, per 1,000 residents. Reports, not a rat census — attentive blocks can outscore infested ones. The board flags any single address with a quarter or more of a neighborhood's total."],
- ["parking_rate","streets","Illegal parking complaints per 1,000 residents","dec","311, Aug. 2025-July 2026","311 illegal-parking complaints over 12 months, per 1,000 residents. Reflects both parking behavior and neighbors' willingness to report it. The board flags any single address with a quarter or more of a neighborhood's total."],
+ ["noise_rate","streets","Noise complaints per 1,000 residents","dec","311, Aug. 2025-July 2026","All 311 complaint types beginning with 'Noise' over 12 months, per 1,000 residents. Reports, not decibels, and one recorded location can supply most of a neighborhood's total: the board flags any location with a quarter or more of it, and 'Each location once' counts locations instead. A location is a geocoded point, not a verified building or caller."],
+ ["rodent_rate","streets","Rodent complaints per 1,000 residents","dec","311, Aug. 2025-July 2026","311 rodent complaints (sightings and conditions) over 12 months, per 1,000 residents. Reports, not a rat census — attentive blocks can outscore infested ones. The board flags any single recorded location with a quarter or more of a neighborhood's total."],
+ ["parking_rate","streets","Illegal parking complaints per 1,000 residents","dec","311, Aug. 2025-July 2026","311 illegal-parking complaints over 12 months, per 1,000 residents. Reflects both parking behavior and neighbors' willingness to report it. The board flags any single recorded location with a quarter or more of a neighborhood's total."],
 ];
 
 const BOROS = {Manhattan:["mn","var(--mn)","M"],Brooklyn:["bk","var(--bk)","B"],Queens:["qn","var(--qn)","Q"],Bronx:["bx","var(--bx)","X"],"Staten Island":["si","var(--si)","S"]};
 
-/* rates that divide by residents, and can divide by residents + jobs instead */
+/* rates that divide by residents, and can divide by a commuter-adjusted population instead */
 const RATE_IDS=new Set(["felony_rate","violent_rate","collision_rate","injury_rate","complaints_rate","noise_rate","rodent_rate","parking_rate","restaurant_rate"]);
 /* 311 rates that can count each address once */
 const PLACE_IDS=new Set(["complaints_rate","noise_rate","rodent_rate","parking_rate"]);
@@ -486,7 +488,8 @@ fetch("rankings.json",{cache:"no-cache"}).then(r=>r.json()).then(d=>{
   document.getElementById("ncats").textContent=M.length;
   areaBy=Object.fromEntries(areas.map(a=>[a.code,a]));
   /* restore a shared link: #m=<id>, #ratio=<a>~<b>, #blend=<a>~-<b>..., #hood=<code>, #cmp=<codes>;
-     flags after ";": last = reversed order, day = residents + workers, places = each address once, map = map view */
+     flags after ";": last = reversed order, day = commuter-adjusted base, places = each location once, map = map view.
+     #hood and #cmp links carry the day/places flags too, so a shared profile shows the same numbers */
   let h=decodeURIComponent(location.hash.slice(1));
   const flags=new Set(h.split(";").slice(1)); h=h.split(";")[0];
   const rev=flags.has("last");
@@ -526,11 +529,15 @@ function computeRanks(){
   }
 }
 
-/* swap rate values for the chosen base (residents / residents + jobs) and count (every complaint / each address once) */
+/* commuter-adjusted population, the Census Bureau's formula with LODES jobs:
+   residents + jobs located here - jobs held by people who live here */
+const dayPop=a=>{const p=a.values.population?.v; return p==null?null:p+(a.jobs||0)-(a.rjobs||0);};
+/* swap rate values for the chosen base (residents / commuter-adjusted) and count (every complaint / each location once).
+   Values stay unrounded for ranking; fmtV rounds only for display. */
 function applyModes(){
   for(const a of areas){
     const pop=a.values.population?.v;
-    const den=rateBase==="day"?pop+(a.jobs||0):pop;
+    const den=rateBase==="day"?dayPop(a):pop;
     for(const id of RATE_IDS){
       const vm=a.values[id]; if(!vm) continue;
       if(vm.v0===undefined) vm.v0=vm.v;
@@ -538,36 +545,52 @@ function applyModes(){
       const num=places?vm.l:vm.n;
       vm.cnt=num;
       if(rateBase==="res"&&!places){vm.v=vm.v0;continue;}
-      if(!den||num==null){vm.v=null;continue;}
-      const x=num/den*1000;
-      vm.v=id==="complaints_rate"?Math.round(x):Math.round(x*10)/10;
+      if(!(den>0)||num==null){vm.v=null;continue;}
+      vm.v=num/den*1000;
     }
   }
 }
 function labelFor(id){
   let l=byId[id][2];
   if(countMode==="places"&&PLACE_IDS.has(id))
-    l=l.replace(/^311 requests/,"Addresses with 311 requests")
-       .replace(/^(Noise|Rodent|Illegal parking) complaints/,(m0,w)=>`Addresses with ${w.toLowerCase()} complaints`);
-  if(rateBase==="day"&&RATE_IDS.has(id)) l=l.replace("per 1,000 residents","per 1,000 residents and workers");
+    l=l.replace(/^311 requests/,"Locations with 311 requests")
+       .replace(/^(Noise|Rodent|Illegal parking) complaints/,(m0,w)=>`Locations with ${w.toLowerCase()} complaints`);
+  if(rateBase==="day"&&RATE_IDS.has(id)) l=l.replace("per 1,000 residents","per 1,000 commuter-adjusted population");
   return l;
 }
-/* survey estimates: coefficient of variation over 30% = wide margin */
-function isShaky(vm){return !!vm&&vm.m!=null&&vm.v>0&&(vm.m/1.645)/vm.v>0.3;}
+/* survey uncertainty, for categories from the ACS:
+   "wide"  = coefficient of variation over 30% (this board's chosen cutoff, not a guarantee either way)
+   "zero"  = an estimated zero, which City Planning publishes without a margin; the true share may be above zero
+   "nomoe" = any other estimate published without a margin */
+const isACS=id=>byId[id]?.[4]===ACS;
+function uncert(id,vm){
+  if(!vm||vm.v==null||!isACS(id)) return null;
+  if(vm.m==null) return vm.v===0?"zero":"nomoe";
+  if(vm.v>0&&(vm.m/1.645)/vm.v>0.3) return "wide";
+  return null;
+}
+const UNC_TXT={wide:"wide margin",zero:"estimated zero, no margin published",nomoe:"no margin published"};
+/* 90% interval for an estimate; open-ended above when the median sits at its cap,
+   null when no margin is published (so it can't count as clearly above or below anything) */
+function interval(id,vm){
+  if(!vm||vm.v==null||vm.m==null) return null;
+  return [vm.v-vm.m, TOPCODE[id]&&vm.v>=TOPCODE[id]?Infinity:vm.v+vm.m];
+}
 /* the ranks a neighborhood could hold within margins of error: best = 1 + neighborhoods
-   clearly above it (90% intervals don't overlap), worst = n - neighborhoods clearly below */
+   whose whole interval sits above its own, worst = n - those whose whole interval sits below.
+   A rough guide, not a confidence interval for the rank. */
 function computeRanges(){
   RNG={};
   for(const [id] of M){
-    if(RATE_IDS.has(id)) continue;
-    const withM=areas.filter(a=>a.values[id]?.v!=null&&a.values[id].m!=null);
+    if(!isACS(id)) continue;
+    const withM=areas.filter(a=>interval(id,a.values[id]));
     if(withM.length<10) continue;
-    const all=areas.filter(a=>a.values[id]?.v!=null).map(a=>[a.values[id].v,a.values[id].m||0]);
+    const all=withM.map(a=>interval(id,a.values[id]));
     const r={};
     for(const a of withM){
-      const v=a.values[id].v, m=a.values[id].m;
+      const [lo,hi]=interval(id,a.values[id]);
       let above=0, below=0;
-      for(const [bv,bm] of all){ if(bv-bm>v+m) above++; else if(bv+bm<v-m) below++; }
+      for(const [blo,bhi] of all){ if(blo>hi) above++; else if(bhi<lo) below++; }
       r[a.code]=[above+1, ranks[id].n-below];
     }
     RNG[id]=r;
@@ -578,11 +601,11 @@ function countInfo(id,vm){
   if(!vm||!NOUN[id]) return null;
   const places=countMode==="places"&&PLACE_IDS.has(id);
   const c=vm.cnt??vm.n; if(c==null) return null;
-  const noun=places?(c===1?"address":"addresses"):(c===1?NOUN[id][0]:NOUN[id][1]);
+  const noun=places?(c===1?"location":"locations"):(c===1?NOUN[id][0]:NOUN[id][1]);
   const few=id!=="restaurant_rate"&&c<FEW;
   let txt="from "+(few?"only ":"")+c.toLocaleString("en-US")+" "+noun;
   if(PLACE_IDS.has(id)&&!places&&vm.n>=FEW&&vm.t/vm.n>=0.25)
-    txt+=`, <span class="flag">${Math.round(vm.t/vm.n*100)}% from one address</span>`;
+    txt+=`, <span class="flag">${Math.round(vm.t/vm.n*100)}% at one recorded location</span>`;
   return {few,txt};
 }
 function setMode(kind,val){
@@ -591,8 +614,8 @@ function setMode(kind,val){
   if(custom?.type==="blend") setBlend(custom.ids,false);
   else if(custom?.type==="ratio") setRatio(custom.a,custom.b,false);
   makeTickerItems(); syncViewHash(); apply(true);
-  if(drawerCode) fillDrawer(drawerCode);
-  if(document.getElementById("cmppanel").classList.contains("open")) renderCmp();
+  if(drawerCode){fillDrawer(drawerCode);history.replaceState(null,"","#hood="+drawerCode+modeFlags());}
+  if(document.getElementById("cmppanel").classList.contains("open")){renderCmp();if(cmp.length)cmpHash();}
 }
 
 /* ================= make-your-own combinations ================= */
@@ -615,8 +638,9 @@ function getSpec(){
   const [id,,,,src,baseNote]=byId[cur];
   const label=labelFor(id);
   let note=baseNote;
-  if(rateBase==="day"&&RATE_IDS.has(id)) note+=" Divided here by residents plus the jobs located in the neighborhood (Census Bureau workplace data, 2023), so job centers aren't measured against their small resident populations.";
-  if(countMode==="places"&&PLACE_IDS.has(id)) note+=" Counted here by address: any number of complaints from one location counts once.";
+  if(rateBase==="day"&&RATE_IDS.has(id)) note+=" Divided here by a commuter-adjusted population: residents, plus jobs located in the neighborhood, minus jobs held by its residents (Census Bureau LODES, 2023). It's an alternative base for comparing job centers with residential areas, not a count of everyone present: visitors, tourists and students aren't in it, and jobs are counted rather than people.";
+  if(countMode==="places"&&PLACE_IDS.has(id)) note+=" Counted here by recorded location: any number of complaints at one geocoded point counts once.";
+  if(RATE_IDS.has(id)||id==="eviction_rate") note+=" No margin of error is shown. The count is every record in the file, but the population it's divided by is a survey estimate (a typical neighborhood's is good to about ±6%), and that uncertainty isn't carried into the rate.";
   return {type:"metric",label,src,note,
     val:a=>a.values[id]?.v??null,
     moeStr:a=>{const m=a.values[id]?.m;return m==null?"":fmtMoe(id,m);},
@@ -626,16 +650,24 @@ function getSpec(){
 function setRatio(aId,bId,animate=true){
   const A=byId[aId], B=byId[bId];
   if(!A||!B||aId===bId) return;
+  /* monthly rent over annual income: annualize the rent and show a percentage */
+  const rentInc=aId==="median_rent"&&bId==="median_hh_income";
   const vmap={};
   areas.forEach(ar=>{
     const va=ar.values[aId]?.v, vb=ar.values[bId]?.v;
-    vmap[ar.code]=(va==null||vb==null||vb===0)?null:va/vb;
+    vmap[ar.code]=(va==null||vb==null||vb===0)?null:(rentInc?va*12/vb*100:va/vb);
   });
+  const capped=ar=>(TOPCODE[aId]&&ar.values[aId]?.v>=TOPCODE[aId])||(TOPCODE[bId]&&ar.values[bId]?.v>=TOPCODE[bId]);
+  const anyCap=TOPCODE[aId]||TOPCODE[bId];
   custom={type:"ratio",a:aId,b:bId,
-    label:`${labelFor(aId)} ÷ ${labelFor(bId)}`,
+    label:rentInc?"Median gross rent, times 12, as a share of median household income":`${labelFor(aId)} ÷ ${labelFor(bId)}`,
     src:"your combination",
-    note:`Each neighborhood's "${labelFor(aId).toLowerCase()}" divided by its "${labelFor(bId).toLowerCase()}." Sources: ${A[4]===B[4]?A[4]:A[4]+"; "+B[4]}.`,
-    val:ar=>vmap[ar.code], moeStr:()=>"", fmt:smart,
+    note:(rentInc
+      ?`A year of median rent as a percentage of median household income. It's a ratio of two medians — renters' rent over all households' income — not the typical renter's burden, which the rent-burden categories measure.`
+      :`Each neighborhood's "${labelFor(aId).toLowerCase()}" divided by its "${labelFor(bId).toLowerCase()}."`)
+      +(anyCap?" Where a median sits at its cap, the true value is higher, so the ratio may be off in either direction; those rows are marked.":"")
+      +` Margins of error aren't carried through. Sources: ${A[4]===B[4]?A[4]:A[4]+"; "+B[4]}.`,
+    val:ar=>vmap[ar.code], moeStr:ar=>capped(ar)?"uses a capped median":"", fmt:rentInc?(v=>(Math.round(v*10)/10)+"%"):smart,
     ranks:makeRanks(vmap,true), invert:false};
   syncViewHash();
   document.querySelectorAll(".cat").forEach(x=>x.classList.remove("on"));
@@ -770,8 +802,9 @@ function renderBuilder(c){
 }
 
 /* ================= permalinks ================= */
+function modeFlags(){return (rateBase==="day"?";day":"")+(countMode==="places"?";places":"");}
 function dirSuffix(){
-  return (desc?"":";last")+(rateBase==="day"?";day":"")+(countMode==="places"?";places":"")+(view==="map"?";map":"");
+  return (desc?"":";last")+modeFlags()+(view==="map"?";map":"");
 }
 function syncViewHash(){
   if(location.hash.startsWith("#hood=")||location.hash.startsWith("#cmp=")) return;
@@ -974,10 +1007,10 @@ function apply(animate){
   let oh="";
   if(!custom&&RATE_IDS.has(cur)) oh+=`<span class="og"><span>Divide by</span>`+
     `<button data-k="base" data-o="res" class="${rateBase==="res"?"on":""}">Residents</button>`+
-    `<button data-k="base" data-o="day" class="${rateBase==="day"?"on":""}">Residents and workers</button></span>`;
+    `<button data-k="base" data-o="day" class="${rateBase==="day"?"on":""}">Commuter-adjusted</button></span>`;
   if(!custom&&PLACE_IDS.has(cur)) oh+=`<span class="og"><span>Count</span>`+
     `<button data-k="count" data-o="all" class="${countMode==="all"?"on":""}">Every complaint</button>`+
-    `<button data-k="count" data-o="places" class="${countMode==="places"?"on":""}">Each address once</button></span>`;
+    `<button data-k="count" data-o="places" class="${countMode==="places"?"on":""}">Each location once</button></span>`;
   document.getElementById("opts").innerHTML=oh;
   const mapOn=view==="map";
   document.getElementById("mapview").classList.toggle("show",mapOn);
@@ -995,13 +1028,15 @@ function apply(animate){
   const ordered=[...has,...nots];
   const max=Math.max(...has.map(a=>Math.abs(S.val(a))),1e-9);
 
-  let nFew=0, nShaky=0;
-  if(!custom) has.forEach(a=>{const vm=a.values[cur]; if(countInfo(cur,vm)?.few) nFew++; if(isShaky(vm)) nShaky++;});
+  let nFew=0; const nU={wide:0,zero:0,nomoe:0};
+  if(!custom) has.forEach(a=>{const vm=a.values[cur]; if(countInfo(cur,vm)?.few) nFew++; const u=uncert(cur,vm); if(u) nU[u]++;});
   document.getElementById("cnote").textContent=
     (visible.length<areas.length?`${visible.length} of 197 shown`:`197 neighborhoods`)+
     (nots.length?` · ${nots.length} without data in this category`:"")+
     (nFew?` · ${nFew} faded: fewer than ${FEW} events, so the rate is unsteady`:"")+
-    (nShaky?` · ${nShaky} faded: wide margin of error`:"");
+    (nU.wide?` · ${nU.wide} faded: wide margin of error`:"")+
+    (nU.zero?` · ${nU.zero} faded: estimated zero, with no margin published, so the true value may be above zero`:"")+
+    (nU.nomoe?` · ${nU.nomoe} faded: no margin of error published`:"");
 
   const shown=new Set(ordered.map(a=>a.code));
   for(const c in rowEls) rowEls[c].style.display=shown.has(c)?"":"none";
@@ -1019,11 +1054,11 @@ function apply(animate){
     bar.style.width=(w*100).toFixed(2)+"%";
     const vm=custom?null:a.values[cur];
     const ci=v==null?null:countInfo(custom?null:cur,vm);
-    const shaky=v!=null&&isShaky(vm);
+    const unc=v==null||custom?null:uncert(cur,vm);
     el.classList.toggle("few",!!ci?.few);
-    el.classList.toggle("shaky",shaky);
+    el.classList.toggle("shaky",!!unc);
     let ms=v==null?"":S.moeStr(a);
-    if(shaky) ms+=", wide margin";
+    if(unc) ms+=(ms?", ":"")+UNC_TXT[unc];
     if(ci) ms=(ms?ms+" · ":"")+ci.txt;
     el.querySelector(".val").innerHTML=v==null?"no data":S.fmt(v)+(ms?` <span class="moe">${ms}</span>`:"");
   });
@@ -1109,7 +1144,7 @@ function hoverText(a,S){
   if(v==null) return `<b>${a.name}</b>, ${a.boro}: no data`;
   const rk=S.ranks.map[a.code];
   const rg=!custom?RNG[cur]?.[a.code]:null;
-  const range=rg&&rg[0]!==rg[1]?` (within the margin of error, anywhere from ${rg[0]} to ${rg[1]})`:"";
+  const range=rg&&rg[0]!==rg[1]?` (rough range given margins of error: ${rg[0]} to ${rg[1]})`:"";
   const ci=!custom?countInfo(cur,a.values[cur]):null;
   return `<b>${a.name}</b>, ${a.boro}: ${S.fmt(v)}${ci?" ("+ci.txt+")":""}, rank ${rk} of ${S.ranks.n}${range}`;
 }
@@ -1183,7 +1218,7 @@ function cmpIds(){
   return M.filter(m=>m[1]===cmpTopic).map(m=>m[0]);
 }
 function cmpHash(){
-  history.replaceState(null,"",cmp.length?"#cmp="+cmp.join("~"):(cmpPrevHash||location.pathname));
+  history.replaceState(null,"",cmp.length?"#cmp="+cmp.join("~")+modeFlags():(cmpPrevHash||location.pathname));
 }
 function openCmp(){
   closeDrawer();
@@ -1247,7 +1282,7 @@ function renderCmp(){
   /* table */
   const body=document.getElementById("cmpbody"); body.innerHTML="";
   if(!cmp.length){
-    body.innerHTML=`<div class="cmp-empty">Add up to four neighborhoods to compare them side by side. Every category shows the value and the neighborhood's rank out of 197; the leader among your picks is highlighted.</div>`;
+    body.innerHTML=`<div class="cmp-empty">Add up to four neighborhoods to compare them side by side. Every category shows the value and the neighborhood's rank out of 197. The leader among your picks is highlighted only where its margin of error doesn't overlap the others'.</div>`;
     return;
   }
   const sel=cmp.map(code=>areas.find(x=>x.code===code));
@@ -1270,13 +1305,22 @@ function renderCmp(){
   cmpIds().forEach(id=>{
     const label=labelFor(id);
     const tr=document.createElement("tr");
-    const cells=sel.map(a=>({v:a.values[id]?.v,r:ranks[id].map[a.code]}));
+    const cells=sel.map(a=>{const vm=a.values[id];return {vm,v:vm?.v,r:ranks[id].map[a.code],u:uncert(id,vm)};});
     const ranked=cells.filter(c=>c.v!=null);
-    const leadR=ranked.length>1?Math.min(...ranked.map(c=>c.r)):null;
+    let leadR=ranked.length>1?Math.min(...ranked.map(c=>c.r)):null;
+    /* survey categories: no highlight unless the leader is clear of every other pick's interval */
+    if(leadR!=null&&isACS(id)){
+      const L=ranked.filter(c=>c.r===leadR);
+      const li=L.length===1?interval(id,L[0].vm):null;
+      const clear=li&&ranked.filter(c=>c.r!==leadR).every(c=>{const o=interval(id,c.vm);return o&&o[1]<li[0];});
+      if(!clear) leadR=null;
+    }
     tr.innerHTML=`<td class="cat" data-tip="${id}">${label}</td>`+cells.map(c=>{
       if(c.v==null) return `<td class="nod">no data</td>`;
-      const lead=leadR!=null&&c.r===leadR?" lead":"";
-      return `<td class="${lead.trim()}"><span class="v">${fmtV(id,c.v)}</span><span class="r">#${c.r}</span></td>`;
+      const cls=[leadR!=null&&c.r===leadR?"lead":"",c.u?"unc":""].filter(Boolean).join(" ");
+      const moe=c.vm.m!=null?`<span class="cm">${fmtMoe(id,c.vm.m)}</span>`:"";
+      const u=c.u?`<span class="cm">${UNC_TXT[c.u]}</span>`:"";
+      return `<td class="${cls}"><span class="v">${fmtV(id,c.v)}</span>${moe}${u}<span class="r">#${c.r}</span></td>`;
     }).join("");
     tr.querySelector(".cat").onclick=()=>{closeCmp();selectMetric(id);window.scrollTo({top:0,behavior:"smooth"});};
     tb.appendChild(tr);
@@ -1370,7 +1414,7 @@ async function renderWhatMap(){
   for(const [c,o] of Object.entries(S.shapes)) paths+=`<path data-c="${c}"${o.t!=="0"?' class="np"':""} d="${D[c]}"/>`;
   paths+=`<path class="ring" d=""/>`;   // outline drawn on top; the shapes themselves never move, so clicks land
   host.insertAdjacentHTML("afterbegin",`<svg viewBox="0 0 ${S.w} ${S.h}" role="img" aria-label="Map of all 262 neighborhood tabulation areas">${paths}</svg>
-    <div class="whatkey"><span><i style="background:#2c302c"></i>Ranked: 197 residential areas</span><span><i style="background:#191b19;border-color:#4d524d"></i>Not ranked: 65 parks, cemeteries, airports and other areas</span></div>`);
+    <div class="whatkey"><span><i style="background:#2c302c"></i>Ranked: 197 residential areas</span><span><i style="background:#191b19;border-color:#4d524d"></i>Not ranked: 65 parks, cemeteries, airports, Rikers and special-purpose areas</span></div>`);
   const blank="Point at an area to see its name.";
   out.textContent=blank;
   const svg=host.querySelector("svg");
@@ -1403,8 +1447,9 @@ function drawerLine(a,id,label){
   const rankHtml=vm.v==null?`<span class="dr">—</span>`
     :`<span class="dr ${r<=20?"hi":r>ranks[id].n-20?"lo":""}">#${r}</span>`;
   const rg=RNG[id]?.[a.code];
-  const rr=vm.v!=null&&rg&&rg[0]!==rg[1]?`<span class="rr" title="Ranks this value could hold within the margin of error">${rg[0]}-${rg[1]}</span>`:"";
-  if(isShaky(vm)) line.classList.add("shaky");
+  const rr=vm.v!=null&&rg&&rg[0]!==rg[1]?`<span class="rr" title="Rough range of ranks given margins of error; not a confidence interval">${rg[0]}-${rg[1]}</span>`:"";
+  const u=uncert(id,vm);
+  if(u){line.classList.add("shaky");line.title=UNC_TXT[u];}
   line.innerHTML=`<span>${labelFor(id)}</span><span style="display:flex;align-items:baseline"><span class="dv">${fmtV(id,vm.v)}</span>${rr}${rankHtml}</span>`;
   line.onclick=()=>{closeDrawer();selectMetric(id);window.scrollTo({top:0,behavior:"smooth"});};
   return line;
@@ -1432,8 +1477,8 @@ function fillDrawer(code){
   ds.innerHTML="Most alike across all categories: "+sim.map(b=>`<button data-c="${b.code}">${b.name}</button>`).join(", ")+".";
   ds.querySelectorAll("button").forEach(b=>b.onclick=()=>openDrawer(b.dataset.c));
   const modes=[];
-  if(rateBase==="day") modes.push("per-person rates divide by residents and workers");
-  if(countMode==="places") modes.push("311 rates count each address once");
+  if(rateBase==="day") modes.push("per-person rates divide by a commuter-adjusted population");
+  if(countMode==="places") modes.push("311 rates count each recorded location once");
   document.getElementById("dmode").textContent=modes.length?` With your current settings, ${modes.join(" and ")}.`:"";
   const body=document.getElementById("dbody"); body.innerHTML="";
   if(dsortMode==="rank"){
@@ -1462,7 +1507,7 @@ function openDrawer(code){
   fillDrawer(code);
   renderLocator(code);
   if(!location.hash.startsWith("#hood=")) prevHash=location.hash;
-  history.replaceState(null,"","#hood="+code);
+  history.replaceState(null,"","#hood="+code+modeFlags());
   document.getElementById("drawer").classList.add("open");
   document.getElementById("scrim").classList.add("show");
 }

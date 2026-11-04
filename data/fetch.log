@@ -9,3 +9,24 @@
 [14:52:25] start t311
 [14:54:13] done t311: 231595907 bytes,  3917407 lines
 ALL FETCHES OK
+=== fetch run 2026-11-04T19:24:37Z
+[14:24:37] start nypd2025
+[14:24:37] start collisions2025
+[14:24:37] start evictions2025
+[14:24:37] start trees
+[14:24:37] start restaurants
+[14:24:37] start tract_nta
+[14:24:42] done restaurants: 1292761 bytes,    27446 lines
+[14:24:42] done tract_nta: 53539 bytes,     2328 lines
+[14:24:46] done evictions2025: 793511 bytes,    17792 lines
+[14:24:53] done collisions2025: 5663376 bytes,    85560 lines
+[14:26:06] done trees: 49793857 bytes,   886106 lines
+[14:26:52] done nypd2025: 44685076 bytes,   579562 lines
+[14:26:52] start subway_stations
+[14:26:56] done subway_stations:      497 lines
+[14:26:58] done lodes wac
+[14:27:01] done lodes rac
+[14:27:01] start t311
+[14:34:25] done t311: 274763631 bytes,  3918073 lines
+ALL FETCHES OK
+[14:35:44] refetched evictions2025 with executed_date:    17792 lines

@@ -1,0 +1,137 @@
+{
+ "nypd2025.csv": {
+  "source": "NYPD complaint data historic",
+  "url": "https://data.cityofnewyork.us/d/qgea-i56i",
+  "scope": "report date in calendar 2025",
+  "downloaded_utc": "2026-11-04T19:26Z",
+  "bytes": 44685076,
+  "rows": 579561,
+  "sha256": "f3eabd13967eab2e49824aac381fe38686b9369c4b5eb9f5aa79a8760d77c4af"
+ },
+ "collisions2025.csv": {
+  "source": "Motor vehicle collisions - crashes",
+  "url": "https://data.cityofnewyork.us/d/h9gi-nx95",
+  "scope": "crash date in calendar 2025",
+  "downloaded_utc": "2026-11-04T19:24Z",
+  "bytes": 5663376,
+  "rows": 85559,
+  "sha256": "cf04b422ab0c90fbab7958218f7d99d6b23c09bfd23261e08770e15dff3f1e41"
+ },
+ "evictions2025.csv": {
+  "source": "Evictions",
+  "url": "https://data.cityofnewyork.us/d/6z8x-wfk4",
+  "scope": "residential, executed in calendar 2025",
+  "downloaded_utc": "2026-11-04T19:35Z",
+  "bytes": 1360272,
+  "rows": 17791,
+  "sha256": "d0d85168539686a450e248d7dc374165330c692069f41c01340408de340de176"
+ },
+ "restaurants.csv": {
+  "source": "DOHMH restaurant inspection results",
+  "url": "https://data.cityofnewyork.us/d/43nn-pn8j",
+  "scope": "establishments with at least one inspection",
+  "downloaded_utc": "2026-11-04T19:24Z",
+  "bytes": 1292761,
+  "rows": 27445,
+  "sha256": "5a799ebecbdf92e4f6ab2e8841357f3861f69f36bf811f0550a34a6bf02210fd"
+ },
+ "trees.csv": {
+  "source": "Forestry tree points",
+  "url": "https://data.cityofnewyork.us/d/hn5i-inap",
+  "scope": "structure Full, condition not Dead",
+  "downloaded_utc": "2026-11-04T19:26Z",
+  "bytes": 49793857,
+  "rows": 886105,
+  "sha256": "f9e2750ffafb4ac2d9d884ad9dd72981e3bc0ed45588cbaf605cbecdc04e7455"
+ },
+ "t311.csv": {
+  "source": "311 service requests",
+  "url": "https://data.cityofnewyork.us/d/erm2-nwe9",
+  "scope": "created Aug. 1, 2025-July 31, 2026",
+  "downloaded_utc": "2026-11-04T19:34Z",
+  "bytes": 274763631,
+  "rows": 3918072,
+  "sha256": "f8eb8cb034cb4b374ebd40fcce42fdbf7b07e39bb508199c4a6a3776e5ba1f63"
+ },
+ "subway_stations.csv": {
+  "source": "MTA subway stations",
+  "url": "https://data.ny.gov/d/39hk-dx4f",
+  "scope": "all rows (one per GTFS stop)",
+  "downloaded_utc": "2026-11-04T19:26Z",
+  "bytes": 27989,
+  "rows": 496,
+  "sha256": "e9ee90391b9c8e8d624ee0801f3161850de4dc9b7c11d38252533c8b1739ef31"
+ },
+ "tract_nta.csv": {
+  "source": "2020 census tract to NTA equivalency",
+  "url": "https://data.cityofnewyork.us/d/hm78-6dwm",
+  "scope": "all rows",
+  "downloaded_utc": "2026-11-04T19:24Z",
+  "bytes": 53539,
+  "rows": 2327,
+  "sha256": "7583d9189a4d0bc4335ca18bcd016f7380551ab796a7f484e5ad655ab81b0d20"
+ },
+ "nta2020.geojson": {
+  "source": "2020 neighborhood tabulation areas",
+  "url": "https://data.cityofnewyork.us/d/9nt8-h7nd",
+  "scope": "clipped to shoreline",
+  "downloaded_utc": "2026-08-02T18:47Z",
+  "bytes": 4589227,
+  "rows": null,
+  "sha256": "2fe410297b44465403601400d32103ca0ac9dbef73aa9f9edf24d57f655e34ee"
+ },
+ "ny_wac_2023.csv.gz": {
+  "source": "LEHD LODES 8 workplace area characteristics, NY, 2023, all jobs",
+  "url": "https://lehd.ces.census.gov/data/lodes/LODES8/ny/wac/",
+  "scope": "all rows",
+  "downloaded_utc": "2026-11-04T19:26Z",
+  "bytes": 2759201,
+  "rows": 108030,
+  "sha256": "0274b2c3eabac9272c83674666e63d28690619a8111faf08531ecc54226d08c0"
+ },
+ "ny_rac_2023.csv.gz": {
+  "source": "LEHD LODES 8 residence area characteristics, NY, 2023, all jobs",
+  "url": "https://lehd.ces.census.gov/data/lodes/LODES8/ny/rac/",
+  "scope": "all rows",
+  "downloaded_utc": "2026-11-04T19:27Z",
+  "bytes": 6261727,
+  "rows": 223405,
+  "sha256": "c5963453bcff37f5a4872be7c73fc986bda1a2b193bfbe7a2c371fab09f416d1"
+ },
+ "Dem_nta.xlsx": {
+  "source": "City Planning ACS 2020-2024 NTA demographic profile",
+  "url": "https://www.nyc.gov/content/planning/pages/resources/datasets/american-community-survey",
+  "scope": "workbook",
+  "downloaded_utc": "2026-08-02T18:47Z",
+  "bytes": 802138,
+  "rows": null,
+  "sha256": "ac4c15fe9acfe14524e4573b46e17560ddd210a411885c620f53153fc00ce112"
+ },
+ "Soc_nta.xlsx": {
+  "source": "City Planning ACS 2020-2024 NTA social profile",
+  "url": "same",
+  "scope": "workbook",
+  "downloaded_utc": "2026-08-02T18:47Z",
+  "bytes": 3316837,
+  "rows": null,
+  "sha256": "7b3485cbe358f804bc0f7345dbb14a1439744646a0ec21d2839699e326a903e1"
+ },
+ "Econ_nta.xlsx": {
+  "source": "City Planning ACS 2020-2024 NTA economic profile",
+  "url": "same",
+  "scope": "workbook",
+  "downloaded_utc": "2026-08-02T18:47Z",
+  "bytes": 1841929,
+  "rows": null,
+  "sha256": "37b294ce4cc0317df41873e7972baf18d6542552be88c2f40652437fb916ef49"
+ },
+ "Hous_nta.xlsx": {
+  "source": "City Planning ACS 2020-2024 NTA housing profile",
+  "url": "same",
+  "scope": "workbook",
+  "downloaded_utc": "2026-08-02T18:47Z",
+  "bytes": 838723,
+  "rows": null,
+  "sha256": "93912541c9f8200e46b1633091f6ef96c465b86bcad38ddae0bc6674684ec5fd"
+ }
+}

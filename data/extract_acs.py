@@ -120,7 +120,17 @@ for code in sorted(codes):
     nm, m15, f15 = g("MS_MNvMrdE"), g("MS_M15plE"), g("MS_F15plE")
     fnm = g("MS_FNvMrdE")
     if None not in (nm, fnm, m15, f15) and (m15 + f15) > 0:
-        rec["pct_never_married"] = {"v": round((nm + fnm) / (m15 + f15) * 100, 1), "m": None}
+        tot, den = nm + fnm, m15 + f15
+        p = tot / den
+        # Census Bureau formula for the margin of a derived proportion (ACS handbook, ch. 8):
+        # sqrt(MOE_num^2 - p^2 * MOE_den^2) / den, switching to + if the radicand is negative.
+        mn = [g("MS_MNvMrdM"), g("MS_FNvMrdM")]; md = [g("MS_M15plM"), g("MS_F15plM")]
+        moe = None
+        if None not in mn + md:
+            a2 = mn[0]**2 + mn[1]**2; b2 = md[0]**2 + md[1]**2
+            rad = a2 - p * p * b2
+            moe = round(((rad if rad > 0 else a2 + p * p * b2) ** 0.5) / den * 100, 1)
+        rec["pct_never_married"] = {"v": round(p * 100, 1), "m": moe}
     else:
         rec["pct_never_married"] = {"v": None, "m": None}
     # computed: % single-family (1-unit detached + attached share of units)
@@ -130,7 +140,10 @@ for code in sorted(codes):
     d, a = h("HU1uDP"), h("HU1uAP")
     if d is None and h("HU1uDE") == 0: d = 0.0   # blank percent = zero estimate
     if a is None and h("HU1uAE") == 0: a = 0.0
-    rec["pct_single_family"] = {"v": round(d + a, 1) if None not in (d, a) else None, "m": None}
+    zd, za = h("HU1uDZ"), h("HU1uAZ")
+    # margin of a sum of two shares: root of the summed squares; unknown if either is unpublished
+    sm = round((zd**2 + za**2) ** 0.5, 1) if None not in (zd, za) else None
+    rec["pct_single_family"] = {"v": round(d + a, 1) if None not in (d, a) else None, "m": sm}
     out[code] = rec
 
 json.dump(out, open("acs.json", "w"))

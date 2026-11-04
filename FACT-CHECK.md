@@ -1,5 +1,21 @@
 # Fact-check report: Every neighborhood, ranked
 
+## Nov. 4, 2026 review and corrections
+
+An outside review of the Aug. 3 fact-check found real errors that check missed or endorsed. All are corrected in the Nov. 4 build; every city file was re-downloaded that day with record IDs.
+
+**What the Aug. 3 check got wrong**
+- It endorsed "496 subway stations." The MTA file has 496 rows but 493 stations: 145 St, W 4 St-Wash Sq and Queensboro Plaza each have two stop codes at one location. Counts now use distinct station IDs (Hamilton Heights-Sugar Hill 4 to 3, West Village 4 to 3, Long Island City-Hunters Point 8 to 7).
+- It verified that the four violent offense types summed correctly but not where they were placed. NYPD puts every rape and sex-crime complaint, and many un-geocodable offenses, at the precinct station house. In 2025 all 2,948 rape and sex-crime felonies sit on 78 points, one per precinct. The 4,020 felonies at those points are now excluded; the violent category is murder, robbery and felony assault.
+- "99%+ of records matched" was conditional on usable coordinates. Shares of everything downloaded are lower (evictions 93.8%, crashes 96.9%, 311 98.0%); the methodology now tabulates downloaded, usable and ranked counts per source.
+- "Exact match" tests of extraction showed faithful copying of City Planning's workbooks, not independent verification of the estimates.
+
+**Other corrections:** "built before 1939" relabeled "built 1939 or earlier" (the variable includes 1939); internet relabeled broadband subscription; foreign-born defined by citizenship at birth; rent-burden base explained (excludes non-computable ratios); ACS release date corrected to Jan. 29, 2026; "residents plus jobs" replaced by a commuter-adjusted base (residents + jobs located here - jobs held by residents, LODES 2023); missing margins no longer treated as zero in rank ranges, estimated zeros and unpublished margins flagged; margins added for density, never married and single-family; event rates ranked unrounded; share links keep rate options; restaurants limited to inspected establishments with unique CAMIS asserted; 311 "addresses" renamed recorded locations; unsupported causal wording removed; source manifest with checksums, dependency file and tract-equivalency fetch added.
+
+---
+
+## Original report, Aug. 3, 2026 (kept for the record; see corrections above)
+
 Conducted Aug. 3, 2026, against primary sources. All fixes described below are applied in this commit.
 
 **Overall assessment:** The core data pipeline verified cleanly against independent recomputation — every population figure matched exactly and two independent point-in-polygon implementations agreed to the row. Three real issues were found and fixed: an inflated tree count (removed trees were included), a mislabeled tree metric, and imprecise station/top-coding descriptions.
