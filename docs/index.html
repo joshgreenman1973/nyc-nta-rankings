@@ -22,6 +22,8 @@ html{scroll-behavior:smooth}
 .whatpop,.aipop{display:none;max-width:62ch;margin-top:14px;border-left:3px solid var(--sun);padding:4px 0 4px 14px;font-size:15px;line-height:1.55;color:var(--fg2)}
 .whatpop.show,.aipop.show{display:block}
 .whatpop b{color:var(--fg)}
+.whatclose{float:right;margin:0 0 8px 14px}
+.whatpop .whatfoot{margin-top:10px}
 
 /* opening chart: every neighborhood as a dot */
 .fieldwrap{padding:24px var(--gut) 4px}
@@ -179,8 +181,9 @@ main{padding:24px var(--gut) 60px}
 .whatmap svg{display:block;width:100%;height:auto;touch-action:manipulation}
 .whatmap path{fill:#2c302c;stroke:#b3b9b3;stroke-width:.9;vector-effect:non-scaling-stroke;cursor:pointer}
 .whatmap path.np{fill:#191b19;stroke:#5c615c}
-.whatmap path.hot{fill:var(--sun);stroke:var(--fg);stroke-width:2.2}
+.whatmap path.hot{fill:var(--sun)}
 .whatmap path.np.hot{fill:#6b706b}
+.whatmap path.ring{fill:none;stroke:var(--fg);stroke-width:2.2;pointer-events:none}
 .whatmap .readout{margin-top:6px;min-height:2.6em}
 .whatkey{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--fg2);margin-top:4px}
 .whatkey i{display:inline-block;width:10px;height:10px;margin-right:5px;vertical-align:-1px;border:1px solid #8c928c}
@@ -257,8 +260,9 @@ table.cmp td.nod{color:var(--fg2)}
   <h1>Every neighborhood, ranked</h1>
   <p class="finding" id="finding">Median household income runs from $28,469 in Mott Haven-Port Morris to $200,000 or more in Upper East Side-Carnegie Hill and Tribeca-Civic Center.</p>
   <p class="lede">All <b>197</b> of New York City's residential <button class="whatbtn" id="whatbtn">neighborhood tabulation areas</button>, sorted <b><span id="ncats">63</span> different ways</b> &mdash; population, money, housing, commutes, crime, noise, trees, rats and more. Pick a category and watch the board reshuffle, flip it first-to-last or last-to-first, or mix your own ranking from any categories. Every number comes from the Census Bureau, a city agency or the Metropolitan Transportation Authority. <a href="methodology.html">Methodology&nbsp;&rarr;</a></p>
-  <div class="whatpop" id="whatpop"><b>What's a neighborhood tabulation area?</b> New York City has no official neighborhood borders, so the Department of City Planning draws <b>neighborhood tabulation areas (NTAs)</b> — 262 statistical areas built from whole 2020 census tracts, sized so census survey data stays reliable. This board ranks the 197 residential ones and leaves out parks, cemeteries, airports and Rikers Island. NTAs are counting units, not neighborhoods in the everyday sense. Where one neighborhood ends and the next begins is hotly disputed, as The New York Times found when it <a href="https://www.nytimes.com/interactive/2023/upshot/extremely-detailed-nyc-neighborhood-map.html">asked tens of thousands of New Yorkers to draw their own</a>. City Planning's lines and names often won't match what residents call the place: some neighborhoods are split (Bedford-Stuyvesant East and West), others are merged, and a block you'd call one neighborhood may be counted in another. Point at or tap the map to find any area, and open a ranked one for its full profile. More in the <a href="methodology.html">methodology</a>.
-    <div class="whatmap" id="whatmap"><div class="readout" id="whatread">Loading the map&hellip;</div></div></div>
+  <div class="whatpop" id="whatpop"><button class="dclose whatclose" id="whatclose" aria-label="Close this note">Close &times;</button><b>What's a neighborhood tabulation area?</b> New York City has no official neighborhood borders, so the Department of City Planning draws <b>neighborhood tabulation areas (NTAs)</b> — 262 statistical areas built from whole 2020 census tracts, sized so census survey data stays reliable. This board ranks the 197 residential ones and leaves out parks, cemeteries, airports and Rikers Island. NTAs are counting units, not neighborhoods in the everyday sense. Where one neighborhood ends and the next begins is hotly disputed, as The New York Times found when it <a href="https://www.nytimes.com/interactive/2023/upshot/extremely-detailed-nyc-neighborhood-map.html">asked tens of thousands of New Yorkers to draw their own</a>. City Planning's lines and names often won't match what residents call the place: some neighborhoods are split (Bedford-Stuyvesant East and West), others are merged, and a block you'd call one neighborhood may be counted in another. Point at or tap the map to find any area, and open a ranked one for its full profile. More in the <a href="methodology.html">methodology</a>.
+    <div class="whatmap" id="whatmap"><div class="readout" id="whatread">Loading the map&hellip;</div></div>
+    <div class="whatfoot"><button class="dclose" id="whatclose2">Close the map &times;</button></div></div>
 </header>
 
 <section class="fieldwrap" aria-label="Every neighborhood on the selected category">
@@ -865,7 +869,14 @@ function buildControls(){
     if(e.key==="Escape"){lk.classList.remove("show");}
   });
   document.addEventListener("click",e=>{if(!e.target.closest(".lookup")) lk.classList.remove("show");});
-  document.getElementById("whatbtn").onclick=()=>{if(document.getElementById("whatpop").classList.toggle("show")) renderWhatMap();};
+  const whatPop=document.getElementById("whatpop"), whatBtn=document.getElementById("whatbtn");
+  const setWhat=on=>{whatPop.classList.toggle("show",on);whatBtn.setAttribute("aria-expanded",on);if(on)renderWhatMap();};
+  whatBtn.setAttribute("aria-expanded","false");
+  whatBtn.onclick=()=>setWhat(!whatPop.classList.contains("show"));
+  const closeWhat=()=>{setWhat(false);whatBtn.scrollIntoView({block:"nearest",behavior:"smooth"});whatBtn.focus({preventScroll:true});};
+  document.getElementById("whatclose").onclick=closeWhat;
+  document.getElementById("whatclose2").onclick=closeWhat;
+  document.addEventListener("keydown",e=>{if(e.key==="Escape"&&whatPop.classList.contains("show")&&!document.getElementById("drawer").classList.contains("open")) setWhat(false);});
   document.getElementById("dsort").querySelectorAll("button").forEach(b=>b.onclick=()=>{
     dsortMode=b.dataset.s;
     document.getElementById("dsort").querySelectorAll("button").forEach(x=>x.classList.toggle("on",x===b));
@@ -1357,6 +1368,7 @@ async function renderWhatMap(){
   const D=shapeIndex(S);
   let paths="";
   for(const [c,o] of Object.entries(S.shapes)) paths+=`<path data-c="${c}"${o.t!=="0"?' class="np"':""} d="${D[c]}"/>`;
+  paths+=`<path class="ring" d=""/>`;   // outline drawn on top; the shapes themselves never move, so clicks land
   host.insertAdjacentHTML("afterbegin",`<svg viewBox="0 0 ${S.w} ${S.h}" role="img" aria-label="Map of all 262 neighborhood tabulation areas">${paths}</svg>
     <div class="whatkey"><span><i style="background:#2c302c"></i>Ranked: 197 residential areas</span><span><i style="background:#191b19;border-color:#4d524d"></i>Not ranked: 65 parks, cemeteries, airports and other areas</span></div>`);
   const blank="Point at an area to see its name.";
@@ -1365,20 +1377,23 @@ async function renderWhatMap(){
   const KIND={"5":"Rikers Island jail","6":"special-purpose area","7":"cemetery","8":"airport","9":"park"};
   const PRE={MN:"Manhattan",BX:"Bronx",BK:"Brooklyn",QN:"Queens",SI:"Staten Island"};
   const show=p=>{
+    if(p&&p.dataset.c===whatHot) return;
     svg.querySelectorAll("path.hot").forEach(x=>x.classList.remove("hot"));
-    if(!p){whatHot=null;out.textContent=blank;return;}
-    p.classList.add("hot"); svg.appendChild(p);   // bring the outline to the front so it reads clearly
+    const ring=svg.querySelector("path.ring");
+    if(!p){whatHot=null;ring.setAttribute("d","");out.textContent=blank;return;}
+    p.classList.add("hot"); ring.setAttribute("d",p.getAttribute("d"));
     const c=p.dataset.c, o=S.shapes[c], a=areaBy[c];
     whatHot=c;
     out.innerHTML=a
       ? `<b>${a.name}</b>, ${a.boro} · ${c}. Ranked; ${matchMedia("(hover: hover)").matches?"click":"tap again"} to open its profile.`
       : `<b>${o.n||c}</b>, ${PRE[c.slice(0,2)]} · ${c}. Not ranked: ${KIND[o.t]||"non-residential area"}.`;
   };
-  svg.addEventListener("pointerover",e=>{if(e.pointerType==="mouse") show(e.target.closest("path"));});
+  svg.addEventListener("pointerover",e=>{if(e.pointerType==="mouse") show(e.target.closest("path[data-c]"));});
   svg.addEventListener("pointerleave",e=>{if(e.pointerType==="mouse") show(null);});
   svg.addEventListener("click",e=>{
-    const p=e.target.closest("path"); if(!p) return;
-    if(whatHot===p.dataset.c&&areaBy[p.dataset.c]) openDrawer(p.dataset.c); else show(p);
+    const p=e.target.closest("path[data-c]"); if(!p) return;
+    const fine=matchMedia("(hover: hover)").matches;
+    if((fine||whatHot===p.dataset.c)&&areaBy[p.dataset.c]) openDrawer(p.dataset.c); else show(p);
   });
 }
 function drawerLine(a,id,label){
