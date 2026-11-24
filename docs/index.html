@@ -7,7 +7,7 @@
 <meta name="description" content="All 197 of New York City's residential neighborhoods, ranked 63 different ways with verifiable government data.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&family=Karla:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Gloock&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="house.css">
 <style>
 /* page layer on top of house system v5 (house.css, vendored) */
@@ -100,7 +100,7 @@ button.cat.on,.bmode button.on,.dsort button.on,.cmp-topics button.on{background
 /* the board */
 main{padding:24px var(--gut) 60px}
 .board-head{display:flex;justify-content:space-between;align-items:baseline;gap:6px 16px;flex-wrap:wrap}
-.board-title{font-family:var(--display);font-variation-settings:'wdth' 88;font-weight:700;font-size:1.6rem;line-height:1.12}
+.board-title{font-family:var(--display);font-weight:700;font-size:1.6rem;line-height:1.12}
 .board-src{font-size:var(--t-small);color:var(--fg2)}
 .board-note{color:var(--fg2);font-size:15px;max-width:72ch;margin:6px 0 0}
 .boardbar{display:flex;justify-content:space-between;align-items:center;gap:8px 14px;flex-wrap:wrap;margin:14px 0 8px}
@@ -135,15 +135,15 @@ main{padding:24px var(--gut) 60px}
   padding:6px 8px 6px 0;border:0;border-bottom:1px solid var(--line2);cursor:pointer;background:transparent;
   width:100%;text-align:left;font:inherit;color:inherit}
 .row:hover{background:var(--bg2)}
-.rank{font-family:var(--display);font-variation-settings:'wdth' 70;font-weight:700;font-size:26px;line-height:1;text-align:right;font-variant-numeric:tabular-nums}
+.rank{font-family:var(--display);font-weight:700;font-size:26px;line-height:1;text-align:right;font-variant-numeric:tabular-nums}
 .row.nodata .rank{color:var(--line)}
 .who{min-width:0}
-.nm{font-family:var(--display);font-variation-settings:'wdth' 85;font-weight:600;font-size:16.5px;line-height:1.15;overflow-wrap:anywhere}
+.nm{font-family:var(--display);font-weight:600;font-size:16.5px;line-height:1.15;overflow-wrap:anywhere}
 .bo{font-size:13px;color:var(--fg2);display:inline-flex;align-items:center;gap:6px;margin-top:2px}
 .bo i{width:9px;height:9px;display:inline-block}
 .barwrap{display:flex;align-items:center;gap:10px;min-width:0}
 .bar{height:16px;min-width:2px;transition:width .6s cubic-bezier(.22,.9,.35,1)}
-.val{font-family:var(--display);font-variation-settings:'wdth' 85;font-weight:600;font-size:15.5px;white-space:nowrap;font-variant-numeric:tabular-nums}
+.val{font-family:var(--display);font-weight:600;font-size:15.5px;white-space:nowrap;font-variant-numeric:tabular-nums}
 .moe{font-family:var(--sans);font-weight:400;font-size:12.5px;color:var(--fg2)}
 .row.nodata .val{color:var(--fg2);font-weight:400}
 @media (max-width:640px){
@@ -206,7 +206,7 @@ table.cmp td.cmpmap .mini{width:88px;margin-left:auto}
 .dline{display:flex;justify-content:space-between;gap:10px;font-size:14.5px;padding:5px 0;border-bottom:1px solid var(--line2);cursor:pointer}
 .dline:hover{background:var(--bg2)}
 .dline .dv{font-weight:700;white-space:nowrap;font-variant-numeric:tabular-nums}
-.dline .dr{font-family:var(--display);font-variation-settings:'wdth' 75;font-weight:700;min-width:46px;text-align:right;margin-left:10px;color:var(--fg2);font-variant-numeric:tabular-nums}
+.dline .dr{font-family:var(--display);font-weight:700;min-width:46px;text-align:right;margin-left:10px;color:var(--fg2);font-variant-numeric:tabular-nums}
 .dline .dr.hi{color:var(--sun)}
 .dline .dr.lo{color:var(--cyan)}
 /* neighborhood lookup */
@@ -232,7 +232,7 @@ table.cmp{border-collapse:collapse;width:100%;font-size:14px}
 table.cmp th,table.cmp td{padding:7px 10px;border-bottom:1px solid var(--line2);text-align:right;white-space:nowrap}
 table.cmp th:first-child,table.cmp td:first-child{text-align:left;padding-left:0}
 table.cmp thead th{position:sticky;top:0;background:var(--bg);border-bottom:1.5px solid var(--fg);font-family:var(--display);
-  font-variation-settings:'wdth' 85;font-weight:700;font-size:14.5px;vertical-align:bottom}
+  font-weight:700;font-size:14.5px;vertical-align:bottom}
 table.cmp thead th .thb{font-family:var(--sans);font-weight:400;font-size:12.5px;color:var(--fg2);display:inline-flex;align-items:center;gap:5px}
 table.cmp thead th .thb i{width:8px;height:8px;display:inline-block}
 table.cmp td.cat{font-weight:600;cursor:pointer;max-width:260px;white-space:normal}
